@@ -36,3 +36,55 @@
     transform: rotate(360deg);
   }
 }
+
+.game-options {
+  margin-bottom: 10px;
+}
+
+.deck-info {
+  margin-bottom: 10px;
+}
+
+.pile-set {
+  margin-bottom: 10px;
+}
+
+.pile {
+  margin: 5px;
+  min-width: 200px;
+  border: 1px solid white;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-text {
+  font-size: 36px;
+}
+
+.direction-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px 0px;
+  font-size: 18px;
+}
+
+.hand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  margin-bottom: 10px;
+}
+
+.card {
+  margin: 5px;
+  min-width: 80px;
+  border: 1px solid white;
+  font-size: 24px;
+}
