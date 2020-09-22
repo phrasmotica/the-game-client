@@ -106,6 +106,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                 <div>
                     <HandView
+                        ruleSet={ruleSet}
                         hand={this.state.hand}
                         cardToPlay={this.state.cardToPlay}
                         setCardToPlay={(card) => this.setCardToPlay(card)} />

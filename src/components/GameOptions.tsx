@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { IRuleSet, RuleSet, RuleSetBuilder } from "../gameData/RuleSet"
+import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../gameData/RuleSet"
 
 interface GameOptionsProps {
     /**
@@ -25,6 +25,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             jumpBackSize: defaultRuleSet.jumpBackSize,
             topLimit: defaultRuleSet.topLimit,
             handSize: defaultRuleSet.handSize,
+            gameMode: defaultRuleSet.gameMode,
+            onFireCards: defaultRuleSet.onFireCards,
         }
     }
 
@@ -32,6 +34,13 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
      * Renders the game options.
      */
     render() {
+        let gameModeOptions = []
+        for (let mode of Object.values(GameMode)) {
+            gameModeOptions.push(
+                <option value={mode}>{mode}</option>
+            )
+        }
+
         return (
             <div className="game-options">
                 <div className="margin-right">
@@ -42,6 +51,16 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                 </div>
 
                 <div className="margin-right">
+                    <label className="margin-right">
+                        Game mode
+                        <select
+                            className="ruleset-select"
+                            onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
+                            value={this.state.gameMode}>
+                            {gameModeOptions}
+                        </select>
+                    </label>
+
                     <label className="margin-right">
                         Pairs of piles
                         <input
@@ -100,6 +119,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             .withJumpBackSize(this.state.jumpBackSize)
             .withTopLimit(this.state.topLimit)
             .withHandSize(this.state.handSize)
+            .withGameMode(this.state.gameMode)
             .build()
 
         this.props.newGame(newRuleSet)

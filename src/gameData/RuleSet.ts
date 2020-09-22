@@ -1,4 +1,12 @@
 /**
+ * Represents the possible game modes.
+ */
+export enum GameMode {
+    Regular = "Regular",
+    OnFire = "On Fire"
+}
+
+/**
  * Interface for types containing a set of rules.
  */
 export interface IRuleSet {
@@ -21,6 +29,16 @@ export interface IRuleSet {
      * The size of a player's hand.
      */
     handSize: number
+
+    /**
+     * The game mode.
+     */
+    gameMode: GameMode
+
+    /**
+     * The cards that are on fire.
+     */
+    onFireCards: number[]
 }
 
 /**
@@ -48,6 +66,16 @@ export class RuleSet implements IRuleSet {
     handSize: number
 
     /**
+     * The game mode.
+     */
+    gameMode: GameMode
+
+    /**
+     * The cards that are on fire.
+     */
+    onFireCards: number[]
+
+    /**
      * Creates a new rule set.
      */
     constructor() {
@@ -55,6 +83,8 @@ export class RuleSet implements IRuleSet {
         this.jumpBackSize = 10
         this.topLimit = 100
         this.handSize = 8
+        this.gameMode = GameMode.Regular
+        this.onFireCards = [22, 33, 44, 55, 66, 77]
     }
 
     /**
@@ -66,7 +96,15 @@ export class RuleSet implements IRuleSet {
             .withJumpBackSize(10)
             .withTopLimit(100)
             .withHandSize(8)
+            .withGameMode(GameMode.Regular)
             .build()
+    }
+
+    /**
+     * Returns whether the given card is on fire.
+     */
+    cardIsOnFire(card: number) {
+        return this.onFireCards.includes(card)
     }
 }
 
@@ -115,6 +153,14 @@ export class RuleSetBuilder {
      */
     withHandSize(handSize: number) {
         this.ruleSet.handSize = handSize
+        return this
+    }
+
+    /**
+     * Sets the game mode in the rule set.
+     */
+    withGameMode(gameMode: GameMode) {
+        this.ruleSet.gameMode = gameMode
         return this
     }
 

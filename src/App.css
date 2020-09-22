@@ -48,6 +48,10 @@
   margin-right: 10px;
 }
 
+.ruleset-select {
+  margin-left: 5px;
+}
+
 .ruleset-input {
   max-width: 40px;
   margin-left: 5px;
@@ -99,4 +103,12 @@
   min-width: 80px;
   border: 1px solid white;
   font-size: 24px;
+}
+
+.card-on-fire {
+  margin: 5px;
+  min-width: 80px;
+  border: 1px solid white;
+  font-size: 24px;
+  background-color: dodgerblue;
 }
