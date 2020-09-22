@@ -65,11 +65,11 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         let ruleSet = this.state.ruleSet
 
-        let piles = []
+        let ascendingPiles = []
         for (let p = 0; p < ruleSet.pairsOfPiles; p++) {
-            piles.push(
+            ascendingPiles.push(
                 <PileView
-                    ruleSet={this.state.ruleSet}
+                    ruleSet={ruleSet}
                     start={1}
                     direction={Direction.Ascending}
                     cardToPlay={this.state.cardToPlay}
@@ -78,10 +78,11 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
-        for (let p = 0; p < ruleSet.pairsOfPiles; p++) {
-            piles.push(
+        let descendingPiles = []
+        for (let q = 0; q < ruleSet.pairsOfPiles; q++) {
+            descendingPiles.push(
                 <PileView
-                    ruleSet={this.state.ruleSet}
+                    ruleSet={ruleSet}
                     start={ruleSet.topLimit}
                     direction={Direction.Descending}
                     cardToPlay={this.state.cardToPlay}
@@ -99,7 +100,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 </div>
 
                 <div className="flex-center">
-                    {piles}
+                    {ascendingPiles}
+                    {descendingPiles}
                 </div>
 
                 <div>
