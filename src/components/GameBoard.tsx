@@ -152,9 +152,16 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                     <button
                         className="end-turn-button"
-                        disabled={!this.areEnoughCardsPlayed()}
+                        disabled={this.state.isLost || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End Turn
+                    </button>
+
+                    <button
+                        className="pass-button"
+                        disabled={this.state.isLost}
+                        onClick={() => this.loseGame()}>
+                        Pass
                     </button>
                 </div>
             </div>
