@@ -1,7 +1,9 @@
 import React, { Component } from "react"
 
+import { CardView } from "./CardView"
+
 import { Hand } from "../gameData/Hand"
-import { GameMode, RuleSet } from "../gameData/RuleSet"
+import { RuleSet } from "../gameData/RuleSet"
 
 interface HandProps {
     /**
@@ -53,7 +55,7 @@ export class HandView extends Component<HandProps, HandState> {
                     {this.props.hand.cards.map(c => {
                         return (
                             <div>
-                                {this.renderCard(c)}
+                                <CardView ruleSet={this.props.ruleSet} card={c} />
 
                                 <div>
                                     <button
@@ -71,21 +73,8 @@ export class HandView extends Component<HandProps, HandState> {
     }
 
     /**
-     * Renders the given card.
+     * Sets the card to play.
      */
-    renderCard(card: number) {
-        let gameIsOnFire = this.props.ruleSet.gameMode === GameMode.OnFire
-        let cardIsOnFire = this.props.ruleSet.cardIsOnFire(card)
-        let className = gameIsOnFire && cardIsOnFire ? "card-on-fire" : "card"
-
-        return (
-            <div className={className}>
-                <span>{card}</span>
-            </div>
-        )
-    }
-
-
     setCardToPlay(card: number) {
         this.props.setCardToPlay(card)
     }
