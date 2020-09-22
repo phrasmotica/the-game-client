@@ -1,4 +1,4 @@
-import { RuleSet } from "./RuleSet"
+import { GameMode, RuleSet } from "./RuleSet"
 
 import { Stack } from "../util/Stack"
 
@@ -72,5 +72,12 @@ export class Pile {
         }
 
         return number < top || number === top + ruleSet.jumpBackSize
+    }
+
+    /**
+     * Returns whether this pile is on fire.
+     */
+    isOnFire(ruleSet: RuleSet) {
+        return ruleSet.isOnFire() && ruleSet.cardIsOnFire(this.top())
     }
 }

@@ -84,11 +84,13 @@ export class PileView extends Component<PileProps, PileState> {
             topElement = <CardView ruleSet={this.props.ruleSet} />
         }
 
+        let pileClassName = this.isOnFire() ? "pile-on-fire" : "pile"
+
         let cardToPlay = this.props.cardToPlay
 
         return (
             <div className="pile-set">
-                <div className="pile">
+                <div className={pileClassName}>
                     <div>
                         <span className="start-text">{this.state.pile.start}</span>
                     </div>
@@ -137,5 +139,12 @@ export class PileView extends Component<PileProps, PileState> {
      */
     canPlayCard(card: number) {
         return this.state.pile.canBePlayed(card, this.props.ruleSet)
+    }
+
+    /**
+     * Returns whether this pile is on fire.
+     */
+    isOnFire() {
+        return this.state.pile.isOnFire(this.props.ruleSet)
     }
 }

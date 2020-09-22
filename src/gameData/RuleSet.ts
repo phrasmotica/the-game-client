@@ -101,6 +101,13 @@ export class RuleSet implements IRuleSet {
     }
 
     /**
+     * Returns whether this rule set is using the On Fire game mode.
+     */
+    isOnFire() {
+        return this.gameMode === GameMode.OnFire
+    }
+
+    /**
      * Returns whether the given card is on fire.
      */
     cardIsOnFire(card: number) {
