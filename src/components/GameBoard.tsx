@@ -188,6 +188,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             hand: hand,
             turnsPlayed: 0,
             cardToPlay: undefined,
+            cardsPlayedThisTurn: 0,
+            isLost: false,
         })
     }
 
