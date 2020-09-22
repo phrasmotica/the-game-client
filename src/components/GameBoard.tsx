@@ -7,13 +7,18 @@ import { PileView } from "./PileView"
 import { Deck } from "../gameData/Deck"
 import { Hand } from "../gameData/Hand"
 import { Direction } from "../gameData/Pile"
-import { Settings } from "../gameData/Settings"
+import { RuleSet } from "../gameData/RuleSet"
 
 interface GameBoardProps {
 
 }
 
 interface GameBoardState {
+    /**
+     * The rule set.
+     */
+    ruleSet: RuleSet
+
     /**
      * The deck of cards.
      */
@@ -37,10 +42,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     constructor(props: GameBoardProps) {
         super(props)
 
-        let deck = Deck.create(2, Settings.TopLimit)
-        let hand = new Hand(deck.draw(Settings.HandSize))
+        let ruleSet = RuleSet.default()
+        let deck = Deck.create(2, ruleSet.topLimit)
+        let hand = new Hand(deck.draw(ruleSet.handSize))
 
         this.state = {
+            ruleSet: ruleSet,
             deck: deck,
             hand: hand,
             cardToPlay: undefined
@@ -56,10 +63,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             deckInfo = <span>You won!</span>
         }
 
+        let ruleSet = this.state.ruleSet
+
         let piles = []
-        for (let p = 0; p < Settings.PairsOfPiles; p++) {
+        for (let p = 0; p < ruleSet.pairsOfPiles; p++) {
             piles.push(
                 <PileView
+                    ruleSet={this.state.ruleSet}
                     start={1}
                     direction={Direction.Ascending}
                     cardToPlay={this.state.cardToPlay}
@@ -68,10 +78,11 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
-        for (let p = 0; p < Settings.PairsOfPiles; p++) {
+        for (let p = 0; p < ruleSet.pairsOfPiles; p++) {
             piles.push(
                 <PileView
-                    start={Settings.TopLimit}
+                    ruleSet={this.state.ruleSet}
+                    start={ruleSet.topLimit}
                     direction={Direction.Descending}
                     cardToPlay={this.state.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
@@ -120,8 +131,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Starts a new game.
      */
     newGame() {
-        let deck = Deck.create(2, Settings.TopLimit)
-        let hand = new Hand(deck.draw(Settings.HandSize))
+        let ruleSet = RuleSet.default()
+        let deck = Deck.create(2, ruleSet.topLimit)
+        let hand = new Hand(deck.draw(ruleSet.handSize))
 
         this.setState({
             deck: deck,

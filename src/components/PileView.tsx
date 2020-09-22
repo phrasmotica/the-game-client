@@ -1,8 +1,14 @@
 import React, { Component } from "react"
 
 import { Direction, Pile } from "../gameData/Pile"
+import { RuleSet } from "../gameData/RuleSet"
 
 interface PileProps {
+    /**
+     * The rule set.
+     */
+    ruleSet: RuleSet
+
     /**
      * The pile's starting number.
      */
@@ -100,7 +106,7 @@ export class PileView extends Component<PileProps, PileState> {
      */
     playCard(card: number | undefined) {
         if (card) {
-            this.state.pile.push(card)
+            this.state.pile.push(card, this.props.ruleSet)
             this.props.removeCardFromHand(card)
         }
 
@@ -111,6 +117,6 @@ export class PileView extends Component<PileProps, PileState> {
      * Returns whether the given card can be played on this pile.
      */
     canPlayCard(card: number) {
-        return this.state.pile.canBePlayed(card)
+        return this.state.pile.canBePlayed(card, this.props.ruleSet)
     }
 }

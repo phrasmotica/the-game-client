@@ -1,4 +1,5 @@
-import { Settings } from "./Settings"
+import { RuleSet } from "./RuleSet"
+
 import { Stack } from "../util/Stack"
 
 /**
@@ -43,8 +44,8 @@ export class Pile {
     /**
      * Adds a number to the pile if possible.
      */
-    push(number: number) {
-        if (this.canBePlayed(number)) {
+    push(number: number, ruleSet: RuleSet) {
+        if (this.canBePlayed(number, ruleSet)) {
             this.cards.push(number)
         }
     }
@@ -63,13 +64,13 @@ export class Pile {
     /**
      * Returns whether the given number can be played on this pile.
      */
-    canBePlayed(number: number) {
+    canBePlayed(number: number, ruleSet: RuleSet) {
         let top = this.top()
 
         if (this.direction === Direction.Ascending) {
-            return number > top || number === top - Settings.JumpBackSize
+            return number > top || number === top - ruleSet.jumpBackSize
         }
 
-        return number < top || number === top + Settings.JumpBackSize
+        return number < top || number === top + ruleSet.jumpBackSize
     }
 }

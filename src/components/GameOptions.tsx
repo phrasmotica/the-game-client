@@ -1,6 +1,9 @@
 import React, { Component } from "react"
 
 interface GameOptionsProps {
+    /**
+     * Starts a new game.
+     */
     newGame: () => void
 }
 
