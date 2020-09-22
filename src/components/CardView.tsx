@@ -11,20 +11,22 @@ interface CardViewProps {
     /**
      * The card to render.
      */
-    card: number
+    card?: number
 }
 
 /**
  * Renders a card.
  */
 export function CardView(props: CardViewProps) {
+    let card = props.card
+
     let gameIsOnFire = props.ruleSet.gameMode === GameMode.OnFire
-    let cardIsOnFire = props.ruleSet.cardIsOnFire(props.card)
+    let cardIsOnFire = card !== undefined && props.ruleSet.cardIsOnFire(card)
     let className = gameIsOnFire && cardIsOnFire ? "card-on-fire" : "card"
 
     return (
         <div className={className}>
-            <span>{props.card}</span>
+            <span>{card ?? "-"}</span>
         </div>
     )
 }

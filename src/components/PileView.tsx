@@ -2,6 +2,7 @@ import React, { Component } from "react"
 
 import { Direction, Pile } from "../gameData/Pile"
 import { RuleSet } from "../gameData/RuleSet"
+import { CardView } from "./CardView"
 
 interface PileProps {
     /**
@@ -78,9 +79,9 @@ export class PileView extends Component<PileProps, PileState> {
         }
 
         let top = this.state.pile.top()
-        let topElement = <span>{top}</span>
+        let topElement = <CardView ruleSet={this.props.ruleSet} card={top} />
         if (top === this.state.pile.start) {
-            topElement = <span>-</span>
+            topElement = <CardView ruleSet={this.props.ruleSet} />
         }
 
         let cardToPlay = this.props.cardToPlay
