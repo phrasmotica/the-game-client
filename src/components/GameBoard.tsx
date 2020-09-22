@@ -30,9 +30,19 @@ interface GameBoardState {
     hand: Hand
 
     /**
+     * The number of turns played.
+     */
+    turnsPlayed: number
+
+    /**
      * The card to play.
      */
     cardToPlay: number | undefined
+
+    /**
+     * Whether the game is lost.
+     */
+    isLost: boolean
 }
 
 export class GameBoard extends Component<GameBoardProps, GameBoardState> {
@@ -50,7 +60,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             ruleSet: ruleSet,
             deck: deck,
             hand: hand,
-            cardToPlay: undefined
+            turnsPlayed: 0,
+            cardToPlay: undefined,
+            isLost: false,
         }
     }
 
@@ -62,6 +74,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         if (this.isWon()) {
             deckInfo = <span>You won!</span>
         }
+        else if (this.state.isLost) {
+            deckInfo = <span>You lost!</span>
+        }
 
         let ruleSet = this.state.ruleSet
 
@@ -69,12 +84,17 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         for (let p = 0; p < ruleSet.pairsOfPiles; p++) {
             ascendingPiles.push(
                 <PileView
+                    index={p}
                     ruleSet={ruleSet}
                     start={1}
                     direction={Direction.Ascending}
+                    turnsPlayed={this.state.turnsPlayed}
+                    isLost={this.state.isLost}
                     cardToPlay={this.state.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
-                    removeCardFromHand={(card) => this.playCard(card)} />
+                    removeCardFromHand={(card) => this.playCard(card)}
+                    endTurn={() => this.endTurn()}
+                    loseGame={() => this.loseGame()} />
             )
         }
 
@@ -82,12 +102,17 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         for (let q = 0; q < ruleSet.pairsOfPiles; q++) {
             descendingPiles.push(
                 <PileView
+                    index={ruleSet.pairsOfPiles + q}
                     ruleSet={ruleSet}
                     start={ruleSet.topLimit}
                     direction={Direction.Descending}
+                    turnsPlayed={this.state.turnsPlayed}
+                    isLost={this.state.isLost}
                     cardToPlay={this.state.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
-                    removeCardFromHand={(card) => this.playCard(card)} />
+                    removeCardFromHand={(card) => this.playCard(card)}
+                    endTurn={() => this.endTurn()}
+                    loseGame={() => this.loseGame()} />
             )
         }
 
@@ -109,12 +134,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         ruleSet={ruleSet}
                         hand={this.state.hand}
                         cardToPlay={this.state.cardToPlay}
+                        isLost={this.state.isLost}
                         setCardToPlay={(card) => this.setCardToPlay(card)} />
                 </div>
 
                 <div>
                     <button
-                        disabled={this.state.cardToPlay === undefined}
+                        disabled={this.state.isLost || this.state.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
                     </button>
@@ -141,7 +167,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             ruleSet: ruleSet,
             deck: deck,
             hand: hand,
-            cardToPlay: undefined
+            turnsPlayed: 0,
+            cardToPlay: undefined,
         })
     }
 
@@ -162,5 +189,22 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             let newCard = this.state.deck.drawOne()
             this.state.hand.add(newCard)
         }
+    }
+
+    /**
+     * Ends the turn according to the given rule set.
+     */
+    endTurn() {
+        console.log(`Turns played: ${this.state.turnsPlayed + 1}`)
+        this.setState((prevState => ({ turnsPlayed: prevState.turnsPlayed + 1 })))
+    }
+
+    /**
+     * Loses the game.
+     */
+    loseGame() {
+        this.setState({
+            isLost: true
+        })
     }
 }

@@ -1,10 +1,15 @@
 import React, { Component } from "react"
 
-import { Direction, Pile } from "../gameData/Pile"
+import { Direction, Pile, PileState } from "../gameData/Pile"
 import { RuleSet } from "../gameData/RuleSet"
 import { CardView } from "./CardView"
 
-interface PileProps {
+interface PileViewProps {
+    /**
+     * The index of the pile.
+     */
+    index: number
+
     /**
      * The rule set.
      */
@@ -21,9 +26,19 @@ interface PileProps {
     direction: Direction
 
     /**
+     * The number of turns played.
+     */
+    turnsPlayed: number
+
+    /**
      * The card to play.
      */
     cardToPlay: number | undefined
+
+    /**
+     * Whether the game is lost.
+     */
+    isLost: boolean
 
     /**
      * Sets the card to be played.
@@ -34,9 +49,19 @@ interface PileProps {
      * Removes the given card from the player's hand.
      */
     removeCardFromHand: (card: number) => void
+
+    /**
+     * Ends the turn.
+     */
+    endTurn: (ruleSet: RuleSet) => void
+
+    /**
+     * Loses the game.
+     */
+    loseGame: () => void
 }
 
-interface PileState {
+interface PileViewState {
     /**
      * The pile.
      */
@@ -46,11 +71,11 @@ interface PileState {
 /**
  * Renders a pile.
  */
-export class PileView extends Component<PileProps, PileState> {
+export class PileView extends Component<PileViewProps, PileViewState> {
     /**
      * Constructor.
      */
-    constructor(props: PileProps) {
+    constructor(props: PileViewProps) {
         super(props)
 
         this.state = {
@@ -61,10 +86,23 @@ export class PileView extends Component<PileProps, PileState> {
     /**
      * Checks for rule set changes and creates a new pile if necessary.
      */
-    componentDidUpdate(prevProps: PileProps) {
+    componentDidUpdate(prevProps: PileViewProps) {
         if (this.props.ruleSet !== prevProps.ruleSet) {
             this.setState({
                 pile: this.createPile()
+            })
+        }
+
+        if (this.props.turnsPlayed === prevProps.turnsPlayed + 1) {
+            this.state.pile.endTurn(this.props.ruleSet)
+            if (this.state.pile.isDestroyed(this.props.ruleSet)) {
+                console.log(`Pile ${this.props.index} is destroyed! You lose!`)
+                this.props.loseGame()
+            }
+
+            this.setState({
+                // hacky way of ensuring a re-render
+                pile: this.state.pile
             })
         }
     }
@@ -84,7 +122,18 @@ export class PileView extends Component<PileProps, PileState> {
             topElement = <CardView ruleSet={this.props.ruleSet} />
         }
 
-        let pileClassName = this.isOnFire() ? "pile-on-fire" : "pile"
+        let pileClassName = "pile"
+        let pileState = this.state.pile.getState(this.props.ruleSet)
+        switch (pileState) {
+            case PileState.Destroyed:
+                pileClassName = "pile-destroyed"
+                break;
+            case PileState.OnFire:
+                pileClassName = "pile-on-fire"
+                break;
+            default:
+                break;
+        }
 
         let cardToPlay = this.props.cardToPlay
 
@@ -106,7 +155,7 @@ export class PileView extends Component<PileProps, PileState> {
 
                 <div className="pile-button">
                     <button
-                        disabled={cardToPlay === undefined || !this.canPlayCard(cardToPlay)}
+                        disabled={this.props.isLost || cardToPlay === undefined || !this.canPlayCard(cardToPlay)}
                         onClick={() => this.playCard(cardToPlay)}>
                         Play
                     </button>
@@ -119,7 +168,7 @@ export class PileView extends Component<PileProps, PileState> {
      * Creates a new pile from the props.
      */
     createPile() {
-        return new Pile(this.props.start, this.props.direction)
+        return new Pile(this.props.index, this.props.start, this.props.direction)
     }
 
     /**
@@ -128,6 +177,8 @@ export class PileView extends Component<PileProps, PileState> {
     playCard(card: number | undefined) {
         if (card) {
             this.state.pile.push(card, this.props.ruleSet)
+            this.props.endTurn(this.props.ruleSet)
+
             this.props.removeCardFromHand(card)
         }
 
@@ -139,12 +190,5 @@ export class PileView extends Component<PileProps, PileState> {
      */
     canPlayCard(card: number) {
         return this.state.pile.canBePlayed(card, this.props.ruleSet)
-    }
-
-    /**
-     * Returns whether this pile is on fire.
-     */
-    isOnFire() {
-        return this.state.pile.isOnFire(this.props.ruleSet)
     }
 }

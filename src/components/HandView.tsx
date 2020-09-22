@@ -22,6 +22,11 @@ interface HandProps {
     cardToPlay: number | undefined
 
     /**
+     * Whether the game is lost.
+     */
+    isLost: boolean
+
+    /**
      * Sets the card to be played.
      */
     setCardToPlay: (card: number | undefined) => void
@@ -59,7 +64,7 @@ export class HandView extends Component<HandProps, HandState> {
 
                                 <div>
                                     <button
-                                        disabled={this.props.cardToPlay !== undefined}
+                                        disabled={this.props.isLost || this.props.cardToPlay !== undefined}
                                         onClick={() => this.setCardToPlay(c)}>
                                         Select
                                     </button>
