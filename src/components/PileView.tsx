@@ -1,8 +1,9 @@
 import React, { Component } from "react"
 
+import { CardView } from "./CardView"
+
 import { Direction, Pile, PileState } from "../gameData/Pile"
 import { RuleSet } from "../gameData/RuleSet"
-import { CardView } from "./CardView"
 
 interface PileViewProps {
     /**
@@ -49,11 +50,6 @@ interface PileViewProps {
      * Removes the given card from the player's hand.
      */
     removeCardFromHand: (card: number) => void
-
-    /**
-     * Ends the turn.
-     */
-    endTurn: (ruleSet: RuleSet) => void
 
     /**
      * Loses the game.
@@ -177,8 +173,6 @@ export class PileView extends Component<PileViewProps, PileViewState> {
     playCard(card: number | undefined) {
         if (card) {
             this.state.pile.push(card, this.props.ruleSet)
-            this.props.endTurn(this.props.ruleSet)
-
             this.props.removeCardFromHand(card)
         }
 

@@ -40,6 +40,11 @@ interface GameBoardState {
     cardToPlay: number | undefined
 
     /**
+     * The number of cards played this turn.
+     */
+    cardsPlayedThisTurn: number
+
+    /**
      * Whether the game is lost.
      */
     isLost: boolean
@@ -62,6 +67,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             hand: hand,
             turnsPlayed: 0,
             cardToPlay: undefined,
+            cardsPlayedThisTurn: 0,
             isLost: false,
         }
     }
@@ -93,7 +99,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     cardToPlay={this.state.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     removeCardFromHand={(card) => this.playCard(card)}
-                    endTurn={() => this.endTurn()}
                     loseGame={() => this.loseGame()} />
             )
         }
@@ -111,7 +116,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     cardToPlay={this.state.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     removeCardFromHand={(card) => this.playCard(card)}
-                    endTurn={() => this.endTurn()}
                     loseGame={() => this.loseGame()} />
             )
         }
@@ -138,11 +142,19 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         setCardToPlay={(card) => this.setCardToPlay(card)} />
                 </div>
 
-                <div>
+                <div className="flex-center">
                     <button
+                        className="cancel-button"
                         disabled={this.state.isLost || this.state.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
+                    </button>
+
+                    <button
+                        className="end-turn-button"
+                        disabled={this.state.cardsPlayedThisTurn < ruleSet.cardsPerTurn}
+                        onClick={() => this.endTurn()}>
+                        End Turn
                     </button>
                 </div>
             </div>
@@ -185,10 +197,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     playCard(card: number) {
         this.state.hand.remove(card)
 
-        if (!this.state.deck.isEmpty()) {
-            let newCard = this.state.deck.drawOne()
-            this.state.hand.add(newCard)
-        }
+        this.setState((prevState => ({
+            cardsPlayedThisTurn: prevState.cardsPlayedThisTurn + 1
+        })))
     }
 
     /**
@@ -196,7 +207,18 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     endTurn() {
         console.log(`Turns played: ${this.state.turnsPlayed + 1}`)
-        this.setState((prevState => ({ turnsPlayed: prevState.turnsPlayed + 1 })))
+
+        for (let i = 0; i < this.state.cardsPlayedThisTurn; i++) {
+            if (!this.state.deck.isEmpty()) {
+                let newCard = this.state.deck.drawOne()
+                this.state.hand.add(newCard)
+            }
+        }
+
+        this.setState((prevState => ({
+            turnsPlayed: prevState.turnsPlayed + 1,
+            cardsPlayedThisTurn: 0
+        })))
     }
 
     /**

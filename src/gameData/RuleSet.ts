@@ -31,6 +31,11 @@ export interface IRuleSet {
     handSize: number
 
     /**
+     * The number of cards that must be played per turn.
+     */
+    cardsPerTurn: number
+
+    /**
      * The game mode.
      */
     gameMode: GameMode
@@ -66,6 +71,11 @@ export class RuleSet implements IRuleSet {
     handSize: number
 
     /**
+     * The number of cards that must be played per turn.
+     */
+    cardsPerTurn: number
+
+    /**
      * The game mode.
      */
     gameMode: GameMode
@@ -83,6 +93,7 @@ export class RuleSet implements IRuleSet {
         this.jumpBackSize = 10
         this.topLimit = 100
         this.handSize = 8
+        this.cardsPerTurn = 2
         this.gameMode = GameMode.Regular
         this.onFireCards = [22, 33, 44, 55, 66, 77]
     }
@@ -96,6 +107,7 @@ export class RuleSet implements IRuleSet {
             .withJumpBackSize(10)
             .withTopLimit(100)
             .withHandSize(8)
+            .withCardsPerTurn(2)
             .withGameMode(GameMode.Regular)
             .build()
     }
@@ -160,6 +172,14 @@ export class RuleSetBuilder {
      */
     withHandSize(handSize: number) {
         this.ruleSet.handSize = handSize
+        return this
+    }
+
+    /**
+     * Sets the cards per turn in the rule set.
+     */
+    withCardsPerTurn(cardsPerTurn: number) {
+        this.ruleSet.cardsPerTurn = cardsPerTurn
         return this
     }
 
