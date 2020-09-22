@@ -53,7 +53,18 @@ export class PileView extends Component<PileProps, PileState> {
         super(props)
 
         this.state = {
-            pile: new Pile(props.start, props.direction)
+            pile: this.createPile()
+        }
+    }
+
+    /**
+     * Checks for rule set changes and creates a new pile if necessary.
+     */
+    componentDidUpdate(prevProps: PileProps) {
+        if (this.props.ruleSet != prevProps.ruleSet) {
+            this.setState({
+                pile: this.createPile()
+            })
         }
     }
 
@@ -99,6 +110,13 @@ export class PileView extends Component<PileProps, PileState> {
                 </div>
             </div>
         )
+    }
+
+    /**
+     * Creates a new pile from the props.
+     */
+    createPile() {
+        return new Pile(this.props.start, this.props.direction)
     }
 
     /**
