@@ -61,7 +61,7 @@ export class PileView extends Component<PileProps, PileState> {
      * Checks for rule set changes and creates a new pile if necessary.
      */
     componentDidUpdate(prevProps: PileProps) {
-        if (this.props.ruleSet != prevProps.ruleSet) {
+        if (this.props.ruleSet !== prevProps.ruleSet) {
             this.setState({
                 pile: this.createPile()
             })
