@@ -92,7 +92,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         return (
             <div className="game-board">
-                <GameOptions newGame={() => this.newGame()} />
+                <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
 
                 <div className="deck-info">
                     {deckInfo}
@@ -130,12 +130,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     /**
      * Starts a new game.
      */
-    newGame() {
-        let ruleSet = RuleSet.default()
+    newGame(ruleSet: RuleSet) {
         let deck = Deck.create(2, ruleSet.topLimit)
         let hand = new Hand(deck.draw(ruleSet.handSize))
 
         this.setState({
+            ruleSet: ruleSet,
             deck: deck,
             hand: hand,
             cardToPlay: undefined

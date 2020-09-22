@@ -1,7 +1,32 @@
 /**
+ * Interface for types containing a set of rules.
+ */
+export interface IRuleSet {
+    /**
+     * The number of pairs of piles.
+     */
+    pairsOfPiles: number
+
+    /**
+     * The size of valid backward jumps on a pile.
+     */
+    jumpBackSize: number
+
+    /**
+     * The start value for descending piles.
+     */
+    topLimit: number
+
+    /**
+     * The size of a player's hand.
+     */
+    handSize: number
+}
+
+/**
  * Represents a set of rules for the game.
  */
-export class RuleSet {
+export class RuleSet implements IRuleSet {
     /**
      * The number of pairs of piles.
      */
