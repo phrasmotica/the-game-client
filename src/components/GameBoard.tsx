@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 
 import { HandView } from "./HandView"
+import { GameOptions } from "./GameOptions"
 import { PileView } from "./PileView"
 
 import { Deck } from "../gameData/Deck"
@@ -80,12 +81,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         return (
             <div className="game-board">
-                <div className="game-options">
-                    <button
-                        onClick={() => this.newGame()}>
-                        New Game
-                    </button>
-                </div>
+                <GameOptions newGame={() => this.newGame()} />
 
                 <div className="deck-info">
                     {deckInfo}
