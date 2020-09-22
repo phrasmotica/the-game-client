@@ -26,6 +26,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             topLimit: defaultRuleSet.topLimit,
             handSize: defaultRuleSet.handSize,
             cardsPerTurn: defaultRuleSet.cardsPerTurn,
+            cardsPerTurnInEndgame: defaultRuleSet.cardsPerTurnInEndgame,
             gameMode: defaultRuleSet.gameMode,
             onFireCards: defaultRuleSet.onFireCards,
         }
@@ -116,6 +117,17 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                             max={5}
                             onChange={(e) => { this.setState({ cardsPerTurn: Number(e.target.value) })}}
                             value={this.state.cardsPerTurn} />
+                    </label>
+
+                    <label className="margin-right">
+                        Cards per turn in endgame
+                        <input
+                            className="ruleset-input"
+                            type="number"
+                            min={1}
+                            max={5}
+                            onChange={(e) => { this.setState({ cardsPerTurnInEndgame: Number(e.target.value) })}}
+                            value={this.state.cardsPerTurnInEndgame} />
                     </label>
                 </div>
             </div>

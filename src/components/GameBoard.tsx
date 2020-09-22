@@ -152,7 +152,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                     <button
                         className="end-turn-button"
-                        disabled={this.state.cardsPlayedThisTurn < ruleSet.cardsPerTurn}
+                        disabled={!this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End Turn
                     </button>
@@ -200,6 +200,17 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         this.setState((prevState => ({
             cardsPlayedThisTurn: prevState.cardsPlayedThisTurn + 1
         })))
+    }
+
+    /**
+     * Returns whether enough cards have been played
+     */
+    areEnoughCardsPlayed() {
+        if (this.state.deck.isEmpty()) {
+            return this.state.cardsPlayedThisTurn >= this.state.ruleSet.cardsPerTurnInEndgame
+        }
+
+        return this.state.cardsPlayedThisTurn >= this.state.ruleSet.cardsPerTurn
     }
 
     /**

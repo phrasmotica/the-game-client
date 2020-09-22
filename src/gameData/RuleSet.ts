@@ -36,6 +36,12 @@ export interface IRuleSet {
     cardsPerTurn: number
 
     /**
+     * The number of cards that must be played per turn during the endgame.
+     * Useless for single player but will have a use in multiplayer!
+     */
+    cardsPerTurnInEndgame: number
+
+    /**
      * The game mode.
      */
     gameMode: GameMode
@@ -76,6 +82,12 @@ export class RuleSet implements IRuleSet {
     cardsPerTurn: number
 
     /**
+     * The number of cards that must be played per turn during the endgame.
+     * Useless for single player but will have a use in multiplayer!
+     */
+    cardsPerTurnInEndgame: number
+
+    /**
      * The game mode.
      */
     gameMode: GameMode
@@ -94,6 +106,7 @@ export class RuleSet implements IRuleSet {
         this.topLimit = 100
         this.handSize = 8
         this.cardsPerTurn = 2
+        this.cardsPerTurnInEndgame = 1
         this.gameMode = GameMode.Regular
         this.onFireCards = [22, 33, 44, 55, 66, 77]
     }
@@ -108,6 +121,7 @@ export class RuleSet implements IRuleSet {
             .withTopLimit(100)
             .withHandSize(8)
             .withCardsPerTurn(2)
+            .withCardsPerTurnInEndgame(1)
             .withGameMode(GameMode.Regular)
             .build()
     }
@@ -180,6 +194,14 @@ export class RuleSetBuilder {
      */
     withCardsPerTurn(cardsPerTurn: number) {
         this.ruleSet.cardsPerTurn = cardsPerTurn
+        return this
+    }
+
+    /**
+     * Sets the cards per turn during the endgame in the rule set.
+     */
+    withCardsPerTurnInEndgame(cardsPerTurnInEndgame: number) {
+        this.ruleSet.cardsPerTurnInEndgame = cardsPerTurnInEndgame
         return this
     }
 
