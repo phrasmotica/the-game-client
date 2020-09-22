@@ -71,6 +71,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                             type="number"
                             min={100}
                             max={500}
+                            step={10}
                             onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
                             value={this.state.topLimit} />
                     </label>
