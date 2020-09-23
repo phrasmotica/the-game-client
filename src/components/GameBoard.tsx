@@ -319,13 +319,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     endTurn() {
         console.log(`Turns played: ${this.state.turnsPlayed + 1}`)
 
-        for (let i = 0; i < this.state.cardsPlayedThisTurn; i++) {
-            if (!this.state.deck.isEmpty()) {
-                let newCard = this.state.deck.drawOne()
-                this.state.hand.add(newCard)
-            }
-        }
-
         for (let pile of this.state.piles) {
             pile.endTurn(this.state.ruleSet)
 
@@ -336,10 +329,22 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             }
         }
 
+        let noCardsCanBePlayed = this.noCardsCanBePlayed()
+
+        if (!noCardsCanBePlayed) {
+            // draw new cards if the game is still going
+            for (let i = 0; i < this.state.cardsPlayedThisTurn; i++) {
+                if (!this.state.deck.isEmpty()) {
+                    let newCard = this.state.deck.drawOne()
+                    this.state.hand.add(newCard)
+                }
+            }
+        }
+
         this.setState((prevState => ({
             turnsPlayed: prevState.turnsPlayed + 1,
             cardsPlayedThisTurn: 0,
-            isLost: this.noCardsCanBePlayed(),
+            isLost: noCardsCanBePlayed,
         })))
     }
 

@@ -133,7 +133,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                             <input
                                 className="ruleset-input"
                                 type="number"
-                                min={100}
+                                min={10}
                                 max={500}
                                 step={10}
                                 onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
