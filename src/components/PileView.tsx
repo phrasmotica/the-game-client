@@ -1,22 +1,40 @@
-import React, { Component } from "react"
+import React from "react"
 
-import { Direction, Pile } from "../gameData/Pile"
+import { CardView } from "./CardView"
 
-interface PileProps {
+import { Direction, Pile, PileState } from "../gameData/Pile"
+import { RuleSet } from "../gameData/RuleSet"
+
+interface PileViewProps {
     /**
-     * The pile's starting number.
+     * The index of the pile.
      */
-    start: number
+    index: number
 
     /**
-     * The pile's direction.
+     * The pile.
      */
-    direction: Direction
+    pile: Pile
+
+    /**
+     * The rule set.
+     */
+    ruleSet: RuleSet
+
+    /**
+     * The number of turns played.
+     */
+    turnsPlayed: number
 
     /**
      * The card to play.
      */
     cardToPlay: number | undefined
+
+    /**
+     * Whether the game is lost.
+     */
+    isLost: boolean
 
     /**
      * Sets the card to be played.
@@ -26,91 +44,88 @@ interface PileProps {
     /**
      * Removes the given card from the player's hand.
      */
-    removeCardFromHand: (card: number) => void
-}
+    playCard: (card: number) => void
 
-interface PileState {
     /**
-     * The pile.
+     * Loses the game.
      */
-    pile: Pile
+    loseGame: () => void
 }
 
 /**
  * Renders a pile.
  */
-export class PileView extends Component<PileProps, PileState> {
-    /**
-     * Constructor.
-     */
-    constructor(props: PileProps) {
-        super(props)
+export function PileView(props: PileViewProps) {
+    let pile = props.pile
 
-        this.state = {
-            pile: new Pile(props.start, props.direction)
-        }
+    let directionElement = <span className="direction-text">(UP)</span>
+    if (pile.direction === Direction.Descending) {
+        directionElement = <span className="direction-text">(DOWN)</span>
     }
 
-    /**
-     * Renders the pile.
-     */
-    render() {
-        let directionElement = <span className="direction-text">(UP)</span>
-        if (this.state.pile.direction === Direction.Descending) {
-            directionElement = <span className="direction-text">(DOWN)</span>
-        }
-
-        let top = this.state.pile.top()
-        let topElement = <span>{top}</span>
-        if (top === this.state.pile.start) {
-            topElement = <span>-</span>
-        }
-
-        let cardToPlay = this.props.cardToPlay
-
-        return (
-            <div className="pile-set">
-                <div className="pile">
-                    <div>
-                        <span className="start-text">{this.state.pile.start}</span>
-                    </div>
-
-                    <div>
-                        {directionElement}
-                    </div>
-
-                    <div>
-                        {topElement}
-                    </div>
-                </div>
-
-                <div className="pile-button">
-                    <button
-                        disabled={cardToPlay === undefined || !this.canPlayCard(cardToPlay)}
-                        onClick={() => this.playCard(cardToPlay)}>
-                        Play
-                    </button>
-                </div>
-            </div>
-        )
+    let top = pile.top()
+    let topElement = <CardView ruleSet={props.ruleSet} card={top} />
+    if (top === pile.start) {
+        topElement = <CardView ruleSet={props.ruleSet} />
     }
+
+    let pileClassName = "pile"
+    let pileState = pile.getState(props.ruleSet)
+    switch (pileState) {
+        case PileState.Destroyed:
+            pileClassName = "pile-destroyed"
+            break;
+        case PileState.OnFire:
+            pileClassName = "pile-on-fire"
+            break;
+        default:
+            break;
+    }
+
+    let cardToPlay = props.cardToPlay
 
     /**
      * Plays the given card on this pile.
      */
-    playCard(card: number | undefined) {
+    const playCard = (card: number | undefined) => {
         if (card) {
-            this.state.pile.push(card)
-            this.props.removeCardFromHand(card)
+            props.playCard(card)
         }
 
-        this.props.setCardToPlay(undefined)
+        props.setCardToPlay(undefined)
     }
 
     /**
      * Returns whether the given card can be played on this pile.
      */
-    canPlayCard(card: number) {
-        return this.state.pile.canBePlayed(card)
+    const canPlayCard = (card: number) => {
+        return props.pile.canBePlayed(card, props.ruleSet)
     }
+
+    return (
+        <div className="pile-set">
+            <div className={pileClassName}>
+                <div>
+                    <span className="start-text">{pile.start}</span>
+                </div>
+
+                <div>
+                    {directionElement}
+                </div>
+
+                <div>
+                    {topElement}
+                </div>
+            </div>
+
+            <div>
+                <button
+                    className="pile-button"
+                    disabled={props.isLost || cardToPlay === undefined || !canPlayCard(cardToPlay)}
+                    onClick={() => playCard(cardToPlay)}>
+                    Play
+                </button>
+            </div>
+        </div>
+    )
 }

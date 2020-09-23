@@ -1,8 +1,16 @@
-import React, { Component } from "react"
+import React from "react"
+
+import { CardView } from "./CardView"
 
 import { Hand } from "../gameData/Hand"
+import { RuleSet } from "../gameData/RuleSet"
 
 interface HandProps {
+    /**
+     * The rule set.
+     */
+    ruleSet: RuleSet
+
     /**
      * The hand.
      */
@@ -14,60 +22,50 @@ interface HandProps {
     cardToPlay: number | undefined
 
     /**
+     * Whether the game is lost.
+     */
+    isLost: boolean
+
+    /**
      * Sets the card to be played.
      */
     setCardToPlay: (card: number | undefined) => void
 }
 
-interface HandState {
-
-}
-
 /**
  * Renders a hand.
  */
-export class HandView extends Component<HandProps, HandState> {
-    /**
-     * Renders the hand.
-     */
-    render() {
-        if (this.props.hand.isEmpty()) {
-            return (
-                <div className="hand">
-                    <div className="flex-center">
-                        Your hand is empty!
-                    </div>
-                </div>
-            )
-        }
-
+export function HandView(props: HandProps) {
+    if (props.hand.isEmpty()) {
         return (
             <div className="hand">
                 <div className="flex-center">
-                    {this.props.hand.cards.map(c => {
-                        return (
-                            <div>
-                                <div className="card">
-                                    <span>{c}</span>
-                                </div>
-
-                                <div>
-                                    <button
-                                        disabled={this.props.cardToPlay !== undefined}
-                                        onClick={() => this.setCardToPlay(c)}>
-                                        Select
-                                    </button>
-                                </div>
-                            </div>
-                        )
-                    })}
+                    Your hand is empty!
                 </div>
             </div>
         )
     }
 
+    return (
+        <div className="hand">
+            <div className="flex-center">
+                {props.hand.cards.map((c, i) => {
+                    return (
+                        <div key={i} className="card-set">
+                            <CardView ruleSet={props.ruleSet} card={c} />
 
-    setCardToPlay(card: number) {
-        this.props.setCardToPlay(card)
-    }
+                            <div>
+                                <button
+                                    className="card-button"
+                                    disabled={props.isLost || props.cardToPlay !== undefined}
+                                    onClick={() => props.setCardToPlay(c)}>
+                                    Select
+                                </button>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
 }
