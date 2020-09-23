@@ -144,6 +144,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             .withTopLimit(this.state.topLimit)
             .withHandSize(this.state.handSize)
             .withGameMode(this.state.gameMode)
+            .withCardsPerTurn(this.state.cardsPerTurn)
+            .withCardsPerTurnInEndgame(this.state.cardsPerTurnInEndgame)
             .build()
 
         this.props.newGame(newRuleSet)
