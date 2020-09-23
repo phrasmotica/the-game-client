@@ -57,9 +57,9 @@ export class HandView extends Component<HandProps, HandState> {
         return (
             <div className="hand">
                 <div className="flex-center">
-                    {this.props.hand.cards.map(c => {
+                    {this.props.hand.cards.map((c, i) => {
                         return (
-                            <div>
+                            <div key={i}>
                                 <CardView ruleSet={this.props.ruleSet} card={c} />
 
                                 <div>

@@ -98,6 +98,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         for (let i = 0; i < ruleSet.pairsOfPiles; i++) {
             ascendingPiles.push(
                 <PileView
+                    key={i}
                     index={i}
                     pile={piles[i]}
                     ruleSet={ruleSet}
@@ -115,6 +116,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             let index = ruleSet.pairsOfPiles + j
             descendingPiles.push(
                 <PileView
+                    key={index}
                     index={index}
                     pile={piles[index]}
                     ruleSet={ruleSet}

@@ -39,7 +39,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
         let gameModeOptions = []
         for (let mode of Object.values(GameMode)) {
             gameModeOptions.push(
-                <option value={mode}>{mode}</option>
+                <option key={mode} value={mode}>{mode}</option>
             )
         }
 
