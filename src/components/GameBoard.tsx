@@ -182,7 +182,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                     <button
                         className="pass-button"
-                        disabled={this.state.isLost}
+                        disabled={this.state.isLost || !this.noCardsCanBePlayed()}
                         onClick={() => this.loseGame()}>
                         Pass
                     </button>
@@ -199,9 +199,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     }
 
     /**
-     * Returns whether the game has been lost.
+     * Returns whether no cards can be played on any piles.
      */
-    isLost() {
+    noCardsCanBePlayed() {
         for (let card of this.state.hand.cards) {
             for (let pile of this.state.piles) {
                 if (pile.canBePlayed(card, this.state.ruleSet)) {
@@ -324,7 +324,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         this.setState((prevState => ({
             turnsPlayed: prevState.turnsPlayed + 1,
             cardsPlayedThisTurn: 0,
-            isLost: this.isLost(),
+            isLost: this.noCardsCanBePlayed(),
         })))
     }
 
