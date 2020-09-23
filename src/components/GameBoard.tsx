@@ -165,21 +165,20 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                 <div className="flex-center margin-bottom">
                     <button
-                        className="cancel-button"
+                        className="margin-right"
                         disabled={this.state.isLost || this.state.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
                     </button>
 
                     <button
-                        className="end-turn-button"
+                        className="margin-right"
                         disabled={this.state.isLost || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End turn
                     </button>
 
                     <button
-                        className="pass-button"
                         disabled={this.state.isLost || !this.noCardsCanBePlayed()}
                         onClick={() => this.loseGame()}>
                         Pass
