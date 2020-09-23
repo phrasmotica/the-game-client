@@ -45,8 +45,20 @@
   margin-bottom: 10px;
 }
 
+.option-button {
+  display: block;
+  margin-bottom: 5px;
+}
+
 .option-label {
+  display: block;
   font-size: 13.3333px;
+}
+
+.option-label-above {
+  display: block;
+  font-size: 13.3333px;
+  margin-bottom: 5px;
 }
 
 .align-right {
@@ -56,7 +68,7 @@
 }
 
 .ruleset-select {
-  margin-left: 5px;
+  display: block;
 }
 
 .ruleset-input {

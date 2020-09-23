@@ -10,7 +10,10 @@ interface GameOptionsProps {
 }
 
 interface GameOptionsState extends IRuleSet {
-
+    /**
+     * Whether to show the options panel.
+     */
+    showOptions: boolean
 }
 
 /**
@@ -30,6 +33,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             cardsPerTurnInEndgame: defaultRuleSet.cardsPerTurnInEndgame,
             gameMode: defaultRuleSet.gameMode,
             onFireCards: defaultRuleSet.onFireCards,
+            showOptions: false,
         }
     }
 
@@ -37,6 +41,40 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
      * Renders the game options.
      */
     render() {
+        let showOptionsText = "Show Options"
+        let options = null
+        if (this.state.showOptions) {
+            showOptionsText = "Hide Options"
+            options = this.renderOptions()
+        }
+
+        return (
+            <div className="margin-bottom">
+                <div>
+                    <div className="flex-center">
+                        <button className="option-button"
+                            onClick={() => this.newGame()}>
+                            New Game
+                        </button>
+                    </div>
+
+                    <div className="flex-center">
+                        <button className="option-button"
+                            onClick={() => this.toggleShowOptions()}>
+                            {showOptionsText}
+                        </button>
+                    </div>
+                </div>
+
+                {options}
+            </div>
+        )
+    }
+
+    /**
+     * Renders the options.
+     */
+    renderOptions() {
         let gameModeOptions = []
         for (let mode of Object.values(GameMode)) {
             gameModeOptions.push(
@@ -45,25 +83,20 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
         }
 
         return (
-            <div className="flex-center margin-bottom">
-                <div className="margin-right">
+            <div className="flex-center">
+                <div className="align-right margin-right">
                     <div>
-                        <button
-                            onClick={() => this.newGame()}>
-                            New Game
-                        </button>
-                    </div>
-
-                    <div>
-                        <label className="option-label">
+                        <label className="option-label-above" htmlFor="gameModeSelect">
                             Game mode
-                            <select
-                                className="ruleset-select"
-                                onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
-                                value={this.state.gameMode}>
-                                {gameModeOptions}
-                            </select>
                         </label>
+
+                        <select
+                            id="gameModeSelect"
+                            className="ruleset-select"
+                            onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
+                            value={this.state.gameMode}>
+                            {gameModeOptions}
+                        </select>
                     </div>
                 </div>
 
@@ -168,5 +201,14 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
             .build()
 
         this.props.newGame(newRuleSet)
+    }
+
+    /**
+     * Toggles whether the options are shown.
+     */
+    toggleShowOptions() {
+        this.setState(prevState => ({
+            showOptions: !prevState.showOptions
+        }))
     }
 }
