@@ -173,6 +173,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
                     <button
                         className="margin-right"
+                        disabled={this.state.isLost || this.state.hand.isEmpty()}
+                        onClick={() => this.sortHand()}>
+                        Sort hand
+                    </button>
+
+                    <button
+                        className="margin-right"
                         disabled={this.state.isLost || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End turn
@@ -295,6 +302,15 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     getCardsLeftToPlayThisTurn() {
         return Math.max(this.getCardsToPlay() - this.state.cardsPlayedThisTurn, 0)
+    }
+
+    /**
+     * Sorts the hand into ascending order.
+     */
+    sortHand() {
+        this.setState(prevState => ({
+            hand: prevState.hand.sort()
+        }))
     }
 
     /**

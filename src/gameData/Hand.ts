@@ -46,4 +46,11 @@ export class Hand {
         let index = this.cards.indexOf(card)
         this.cards.splice(index, 1)
     }
+
+    /**
+     * Returns a new hand containing this hand's cards sorted into ascending order.
+     */
+    sort() {
+        return new Hand(this.cards.sort((a, b) => a - b))
+    }
 }
