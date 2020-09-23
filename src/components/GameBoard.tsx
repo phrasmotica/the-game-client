@@ -92,14 +92,14 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         }
 
         let deckInfoElement = (
-            <div className="margin-right">
+            <div className="half-width">
                 <span>{deckInfo}</span>
             </div>
         )
 
         let handInfo = `Cards left to play this turn: ${this.getCardsLeftToPlayThisTurn()}`
         let handInfoElement = (
-            <div>
+            <div className="half-width">
                 <span>{handInfo}</span>
             </div>
         )
@@ -146,7 +146,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             <div className="game-board">
                 <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
 
-                <div className="flex-space-evenly margin-bottom">
+                <div className="flex-center margin-bottom">
                     {deckInfoElement}
                     {handInfoElement}
                 </div>
