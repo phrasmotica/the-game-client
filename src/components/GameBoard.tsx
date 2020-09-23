@@ -83,13 +83,26 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Renders the game board.
      */
     render() {
-        let deckInfo = <span>Cards left: {this.state.deck.size()}</span>
+        let deckInfo = `Cards left in deck: ${this.state.deck.size()}`
         if (this.isWon()) {
-            deckInfo = <span>You won!</span>
+            deckInfo = "You won!"
         }
         else if (this.state.isLost) {
-            deckInfo = <span>You lost!</span>
+            deckInfo = "You lost!"
         }
+
+        let deckInfoElement = (
+            <div className="margin-right">
+                <span>{deckInfo}</span>
+            </div>
+        )
+
+        let handInfo = `Cards left to play this turn: ${this.getCardsLeftToPlayThisTurn()}`
+        let handInfoElement = (
+            <div>
+                <span>{handInfo}</span>
+            </div>
+        )
 
         let ruleSet = this.state.ruleSet
         let piles = this.state.piles
@@ -129,17 +142,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
-        let endTurnText = "End Turn"
-        if (!this.areEnoughCardsPlayed()) {
-            endTurnText = `Card(s) left to play: ${this.getCardsToPlay() - this.state.cardsPlayedThisTurn}`
-        }
-
         return (
             <div className="game-board">
                 <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
 
-                <div className="deck-info">
-                    {deckInfo}
+                <div className="flex-space-evenly margin-bottom">
+                    {deckInfoElement}
+                    {handInfoElement}
                 </div>
 
                 <div className="flex-center">
@@ -168,7 +177,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         className="end-turn-button"
                         disabled={this.state.isLost || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
-                        {endTurnText}
+                        End turn
                     </button>
 
                     <button
@@ -280,6 +289,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     areEnoughCardsPlayed() {
         return this.state.cardsPlayedThisTurn >= this.getCardsToPlay()
+    }
+
+    /**
+     * Returns the remaining number of cards that must be played this turn.
+     */
+    getCardsLeftToPlayThisTurn() {
+        return Math.max(this.getCardsToPlay() - this.state.cardsPlayedThisTurn, 0)
     }
 
     /**
