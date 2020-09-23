@@ -24,7 +24,17 @@
 }
 
 .elements {
-  margin: 20vh 5vw 0vh 5vw;
+  margin: 5vh 5vw 0vh 5vw;
+  min-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#footer {
+  background-color: #282c34;
+  font-size: calc(10px + 0.5vmin);
+  padding: 10px;
 }
 
 .App-link {
