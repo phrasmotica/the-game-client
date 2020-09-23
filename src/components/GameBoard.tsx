@@ -144,8 +144,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         return (
             <div className="game-board">
-                <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
-
                 <div className="flex-center margin-bottom">
                     {deckInfoElement}
                     {handInfoElement}
@@ -165,7 +163,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         setCardToPlay={(card) => this.setCardToPlay(card)} />
                 </div>
 
-                <div className="flex-center">
+                <div className="flex-center margin-bottom">
                     <button
                         className="cancel-button"
                         disabled={this.state.isLost || this.state.cardToPlay === undefined}
@@ -187,6 +185,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         Pass
                     </button>
                 </div>
+
+                <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
             </div>
         )
     }
