@@ -50,16 +50,16 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
 
         return (
             <div className="margin-bottom">
-                <div>
-                    <div className="flex-center">
+                <div className="flex-center">
+                    <div className="margin-right">
                         <button className="option-button"
                             onClick={() => this.newGame()}>
                             New Game
                         </button>
                     </div>
 
-                    <div className="flex-center">
-                        <button className="option-button"
+                    <div>
+                        <button className="option-button show-options-button"
                             onClick={() => this.toggleShowOptions()}>
                             {showOptionsText}
                         </button>

@@ -50,6 +50,10 @@
   margin-bottom: 5px;
 }
 
+.show-options-button {
+  min-width: 100px;
+}
+
 .option-label {
   display: block;
   font-size: 13.3333px;
