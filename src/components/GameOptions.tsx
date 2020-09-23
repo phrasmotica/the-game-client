@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+
 import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../gameData/RuleSet"
 
 interface GameOptionsProps {
@@ -44,91 +45,109 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
         }
 
         return (
-            <div className="game-options">
+            <div className="flex-center margin-bottom">
                 <div className="margin-right">
-                    <button
-                        onClick={() => this.newGame()}>
-                        New Game
-                    </button>
+                    <div>
+                        <button
+                            onClick={() => this.newGame()}>
+                            New Game
+                        </button>
+                    </div>
+
+                    <div>
+                        <label className="option-label">
+                            Game mode
+                            <select
+                                className="ruleset-select"
+                                onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
+                                value={this.state.gameMode}>
+                                {gameModeOptions}
+                            </select>
+                        </label>
+                    </div>
                 </div>
 
-                <div className="margin-right">
-                    <label className="margin-right">
-                        Game mode
-                        <select
-                            className="ruleset-select"
-                            onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
-                            value={this.state.gameMode}>
-                            {gameModeOptions}
-                        </select>
-                    </label>
+                <div className="align-right margin-right">
+                    <div>
+                        <label className="option-label">
+                            Pairs of piles
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={1}
+                                max={5}
+                                onChange={(e) => { this.setState({ pairsOfPiles: Number(e.target.value) })}}
+                                value={this.state.pairsOfPiles} />
+                        </label>
+                    </div>
 
-                    <label className="margin-right">
-                        Pairs of piles
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={1}
-                            max={5}
-                            onChange={(e) => { this.setState({ pairsOfPiles: Number(e.target.value) })}}
-                            value={this.state.pairsOfPiles} />
-                    </label>
+                    <div>
+                        <label className="option-label">
+                            Jump back size
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={2}
+                                max={20}
+                                onChange={(e) => { this.setState({ jumpBackSize: Number(e.target.value) })}}
+                                value={this.state.jumpBackSize} />
+                        </label>
+                    </div>
 
-                    <label className="margin-right">
-                        Jump back size
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={2}
-                            max={20}
-                            onChange={(e) => { this.setState({ jumpBackSize: Number(e.target.value) })}}
-                            value={this.state.jumpBackSize} />
-                    </label>
+                    <div>
+                        <label className="option-label">
+                            Top limit
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={100}
+                                max={500}
+                                step={10}
+                                onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
+                                value={this.state.topLimit} />
+                        </label>
+                    </div>
+                </div>
 
-                    <label className="margin-right">
-                        Top limit
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={100}
-                            max={500}
-                            step={10}
-                            onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
-                            value={this.state.topLimit} />
-                    </label>
+                <div className="align-right">
+                    <div>
+                        <label className="option-label">
+                            Hand size
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={5}
+                                max={10}
+                                onChange={(e) => { this.setState({ handSize: Number(e.target.value) })}}
+                                value={this.state.handSize} />
+                        </label>
+                    </div>
 
-                    <label className="margin-right">
-                        Hand size
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={5}
-                            max={10}
-                            onChange={(e) => { this.setState({ handSize: Number(e.target.value) })}}
-                            value={this.state.handSize} />
-                    </label>
+                    <div>
+                        <label className="option-label">
+                            Cards per turn
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={1}
+                                max={5}
+                                onChange={(e) => { this.setState({ cardsPerTurn: Number(e.target.value) })}}
+                                value={this.state.cardsPerTurn} />
+                        </label>
+                    </div>
 
-                    <label className="margin-right">
-                        Cards per turn
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={1}
-                            max={5}
-                            onChange={(e) => { this.setState({ cardsPerTurn: Number(e.target.value) })}}
-                            value={this.state.cardsPerTurn} />
-                    </label>
-
-                    <label className="margin-right">
-                        Cards per turn in endgame
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            min={1}
-                            max={5}
-                            onChange={(e) => { this.setState({ cardsPerTurnInEndgame: Number(e.target.value) })}}
-                            value={this.state.cardsPerTurnInEndgame} />
-                    </label>
+                    <div>
+                        <label className="option-label">
+                            Cards per turn in endgame
+                            <input
+                                className="ruleset-input"
+                                type="number"
+                                min={1}
+                                max={5}
+                                onChange={(e) => { this.setState({ cardsPerTurnInEndgame: Number(e.target.value) })}}
+                                value={this.state.cardsPerTurnInEndgame} />
+                        </label>
+                    </div>
                 </div>
             </div>
         )
