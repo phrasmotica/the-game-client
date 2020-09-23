@@ -93,14 +93,14 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         let deckInfoElement = (
             <div className="half-width">
-                <span>{deckInfo}</span>
+                <span className="game-info-text">{deckInfo}</span>
             </div>
         )
 
         let handInfo = `Cards left to play this turn: ${this.getCardsLeftToPlayThisTurn()}`
         let handInfoElement = (
             <div className="half-width">
-                <span>{handInfo}</span>
+                <span className="game-info-text">{handInfo}</span>
             </div>
         )
 
@@ -149,7 +149,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     {handInfoElement}
                 </div>
 
-                <div className="flex-center">
+                <div className="flex-center space-around">
                     {ascendingPiles}
                     {descendingPiles}
                 </div>
