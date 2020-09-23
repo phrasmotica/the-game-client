@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React from "react"
 
 import { CardView } from "./CardView"
 
@@ -52,88 +52,79 @@ interface PileViewProps {
     loseGame: () => void
 }
 
-interface PileViewState {
-
-}
-
 /**
  * Renders a pile.
  */
-export class PileView extends Component<PileViewProps, PileViewState> {
-    /**
-     * Renders the pile.
-     */
-    render() {
-        let pile = this.props.pile
+export function PileView(props: PileViewProps) {
+    let pile = props.pile
 
-        let directionElement = <span className="direction-text">(UP)</span>
-        if (pile.direction === Direction.Descending) {
-            directionElement = <span className="direction-text">(DOWN)</span>
-        }
-
-        let top = pile.top()
-        let topElement = <CardView ruleSet={this.props.ruleSet} card={top} />
-        if (top === pile.start) {
-            topElement = <CardView ruleSet={this.props.ruleSet} />
-        }
-
-        let pileClassName = "pile"
-        let pileState = pile.getState(this.props.ruleSet)
-        switch (pileState) {
-            case PileState.Destroyed:
-                pileClassName = "pile-destroyed"
-                break;
-            case PileState.OnFire:
-                pileClassName = "pile-on-fire"
-                break;
-            default:
-                break;
-        }
-
-        let cardToPlay = this.props.cardToPlay
-
-        return (
-            <div className="pile-set">
-                <div className={pileClassName}>
-                    <div>
-                        <span className="start-text">{pile.start}</span>
-                    </div>
-
-                    <div>
-                        {directionElement}
-                    </div>
-
-                    <div>
-                        {topElement}
-                    </div>
-                </div>
-
-                <div className="pile-button">
-                    <button
-                        disabled={this.props.isLost || cardToPlay === undefined || !this.canPlayCard(cardToPlay)}
-                        onClick={() => this.playCard(cardToPlay)}>
-                        Play
-                    </button>
-                </div>
-            </div>
-        )
+    let directionElement = <span className="direction-text">(UP)</span>
+    if (pile.direction === Direction.Descending) {
+        directionElement = <span className="direction-text">(DOWN)</span>
     }
+
+    let top = pile.top()
+    let topElement = <CardView ruleSet={props.ruleSet} card={top} />
+    if (top === pile.start) {
+        topElement = <CardView ruleSet={props.ruleSet} />
+    }
+
+    let pileClassName = "pile"
+    let pileState = pile.getState(props.ruleSet)
+    switch (pileState) {
+        case PileState.Destroyed:
+            pileClassName = "pile-destroyed"
+            break;
+        case PileState.OnFire:
+            pileClassName = "pile-on-fire"
+            break;
+        default:
+            break;
+    }
+
+    let cardToPlay = props.cardToPlay
 
     /**
      * Plays the given card on this pile.
      */
-    playCard(card: number | undefined) {
+    const playCard = (card: number | undefined) => {
         if (card) {
-            this.props.playCard(card)
+            props.playCard(card)
         }
 
-        this.props.setCardToPlay(undefined)
+        props.setCardToPlay(undefined)
     }
 
     /**
      * Returns whether the given card can be played on this pile.
      */
-    canPlayCard(card: number) {
-        return this.props.pile.canBePlayed(card, this.props.ruleSet)
+    const canPlayCard = (card: number) => {
+        return props.pile.canBePlayed(card, props.ruleSet)
     }
+
+    return (
+        <div className="pile-set">
+            <div className={pileClassName}>
+                <div>
+                    <span className="start-text">{pile.start}</span>
+                </div>
+
+                <div>
+                    {directionElement}
+                </div>
+
+                <div>
+                    {topElement}
+                </div>
+            </div>
+
+            <div className="pile-button">
+                <button
+                    disabled={props.isLost || cardToPlay === undefined || !canPlayCard(cardToPlay)}
+                    onClick={() => playCard(cardToPlay)}>
+                    Play
+                </button>
+            </div>
+        </div>
+    )
 }

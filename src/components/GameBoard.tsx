@@ -6,7 +6,7 @@ import { PileView } from "./PileView"
 
 import { Deck } from "../gameData/Deck"
 import { Hand } from "../gameData/Hand"
-import { Direction, Pile, PileState } from "../gameData/Pile"
+import { Direction, Pile } from "../gameData/Pile"
 import { RuleSet } from "../gameData/RuleSet"
 
 interface GameBoardProps {
