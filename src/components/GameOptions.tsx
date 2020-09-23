@@ -115,7 +115,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 className="ruleset-input"
                                 type="number"
                                 min={1}
-                                max={5}
+                                max={2}
                                 onChange={(e) => { this.setState({ pairsOfPiles: Number(e.target.value) })}}
                                 value={this.state.pairsOfPiles} />
                         </label>
@@ -141,7 +141,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 className="ruleset-input"
                                 type="number"
                                 min={10}
-                                max={500}
+                                max={200}
                                 step={10}
                                 onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
                                 value={this.state.topLimit} />
@@ -157,7 +157,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 className="ruleset-input"
                                 type="number"
                                 min={5}
-                                max={10}
+                                max={8}
                                 onChange={(e) => { this.setState({ handSize: Number(e.target.value) })}}
                                 value={this.state.handSize} />
                         </label>
@@ -170,7 +170,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 className="ruleset-input"
                                 type="number"
                                 min={1}
-                                max={5}
+                                max={4}
                                 onChange={(e) => { this.setState({ cardsPerTurn: Number(e.target.value) })}}
                                 value={this.state.cardsPerTurn} />
                         </label>
@@ -183,7 +183,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 className="ruleset-input"
                                 type="number"
                                 min={1}
-                                max={5}
+                                max={4}
                                 onChange={(e) => { this.setState({ cardsPerTurnInEndgame: Number(e.target.value) })}}
                                 value={this.state.cardsPerTurnInEndgame} />
                         </label>
