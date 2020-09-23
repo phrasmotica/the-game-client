@@ -12,19 +12,14 @@ interface PileViewProps {
     index: number
 
     /**
+     * The pile.
+     */
+    pile: Pile
+
+    /**
      * The rule set.
      */
     ruleSet: RuleSet
-
-    /**
-     * The pile's starting number.
-     */
-    start: number
-
-    /**
-     * The pile's direction.
-     */
-    direction: Direction
 
     /**
      * The number of turns played.
@@ -49,7 +44,7 @@ interface PileViewProps {
     /**
      * Removes the given card from the player's hand.
      */
-    removeCardFromHand: (card: number) => void
+    playCard: (card: number) => void
 
     /**
      * Loses the game.
@@ -58,10 +53,7 @@ interface PileViewProps {
 }
 
 interface PileViewState {
-    /**
-     * The pile.
-     */
-    pile: Pile
+
 }
 
 /**
@@ -69,57 +61,24 @@ interface PileViewState {
  */
 export class PileView extends Component<PileViewProps, PileViewState> {
     /**
-     * Constructor.
-     */
-    constructor(props: PileViewProps) {
-        super(props)
-
-        this.state = {
-            pile: this.createPile()
-        }
-    }
-
-    /**
-     * Checks for rule set changes and creates a new pile if necessary.
-     */
-    componentDidUpdate(prevProps: PileViewProps) {
-        if (this.props.ruleSet !== prevProps.ruleSet) {
-            this.setState({
-                pile: this.createPile()
-            })
-        }
-
-        if (this.props.turnsPlayed === prevProps.turnsPlayed + 1) {
-            this.state.pile.endTurn(this.props.ruleSet)
-            if (this.state.pile.isDestroyed(this.props.ruleSet)) {
-                console.log(`Pile ${this.props.index} is destroyed! You lose!`)
-                this.props.loseGame()
-            }
-
-            this.setState({
-                // hacky way of ensuring a re-render
-                pile: this.state.pile
-            })
-        }
-    }
-
-    /**
      * Renders the pile.
      */
     render() {
+        let pile = this.props.pile
+
         let directionElement = <span className="direction-text">(UP)</span>
-        if (this.state.pile.direction === Direction.Descending) {
+        if (pile.direction === Direction.Descending) {
             directionElement = <span className="direction-text">(DOWN)</span>
         }
 
-        let top = this.state.pile.top()
+        let top = pile.top()
         let topElement = <CardView ruleSet={this.props.ruleSet} card={top} />
-        if (top === this.state.pile.start) {
+        if (top === pile.start) {
             topElement = <CardView ruleSet={this.props.ruleSet} />
         }
 
         let pileClassName = "pile"
-        let pileState = this.state.pile.getState(this.props.ruleSet)
+        let pileState = pile.getState(this.props.ruleSet)
         switch (pileState) {
             case PileState.Destroyed:
                 pileClassName = "pile-destroyed"
@@ -137,7 +96,7 @@ export class PileView extends Component<PileViewProps, PileViewState> {
             <div className="pile-set">
                 <div className={pileClassName}>
                     <div>
-                        <span className="start-text">{this.state.pile.start}</span>
+                        <span className="start-text">{pile.start}</span>
                     </div>
 
                     <div>
@@ -161,19 +120,11 @@ export class PileView extends Component<PileViewProps, PileViewState> {
     }
 
     /**
-     * Creates a new pile from the props.
-     */
-    createPile() {
-        return new Pile(this.props.index, this.props.start, this.props.direction)
-    }
-
-    /**
      * Plays the given card on this pile.
      */
     playCard(card: number | undefined) {
         if (card) {
-            this.state.pile.push(card, this.props.ruleSet)
-            this.props.removeCardFromHand(card)
+            this.props.playCard(card)
         }
 
         this.props.setCardToPlay(undefined)
@@ -183,6 +134,6 @@ export class PileView extends Component<PileViewProps, PileViewState> {
      * Returns whether the given card can be played on this pile.
      */
     canPlayCard(card: number) {
-        return this.state.pile.canBePlayed(card, this.props.ruleSet)
+        return this.props.pile.canBePlayed(card, this.props.ruleSet)
     }
 }
