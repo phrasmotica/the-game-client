@@ -118,8 +118,9 @@ export function PileView(props: PileViewProps) {
                 </div>
             </div>
 
-            <div className="pile-button">
+            <div>
                 <button
+                    className="pile-button"
                     disabled={props.isLost || cardToPlay === undefined || !canPlayCard(cardToPlay)}
                     onClick={() => playCard(cardToPlay)}>
                     Play

@@ -51,11 +51,12 @@ export function HandView(props: HandProps) {
             <div className="flex-center">
                 {props.hand.cards.map((c, i) => {
                     return (
-                        <div key={i}>
+                        <div key={i} className="card-set">
                             <CardView ruleSet={props.ruleSet} card={c} />
 
                             <div>
                                 <button
+                                    className="card-button"
                                     disabled={props.isLost || props.cardToPlay !== undefined}
                                     onClick={() => props.setCardToPlay(c)}>
                                     Select
