@@ -84,7 +84,14 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
 
         return (
             <div className="flex-center">
-                <div className="align-right margin-right">
+                <div className="align-centre margin-right">
+                    <div>
+                        <button className="option-button"
+                            onClick={() => this.resetOptions()}>
+                            Reset
+                        </button>
+                    </div>
+
                     <div>
                         <label className="option-label-above" htmlFor="gameModeSelect">
                             Game mode
@@ -184,6 +191,23 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                 </div>
             </div>
         )
+    }
+
+    /**
+     * Resets the options to that of a default game.
+     */
+    resetOptions() {
+        let defaultRuleSet = RuleSet.default()
+
+        this.setState({
+            pairsOfPiles: defaultRuleSet.pairsOfPiles,
+            jumpBackSize: defaultRuleSet.jumpBackSize,
+            topLimit: defaultRuleSet.topLimit,
+            handSize: defaultRuleSet.handSize,
+            gameMode: defaultRuleSet.gameMode,
+            cardsPerTurn: defaultRuleSet.cardsPerTurn,
+            cardsPerTurnInEndgame: defaultRuleSet.cardsPerTurnInEndgame,
+        })
     }
 
     /**
