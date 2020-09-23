@@ -1,10 +1,28 @@
-import React from "react"
+import React, { useState, useEffect} from "react"
+import socketIOClient from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
 
+import { RoomData } from "./models/RoomData"
+
 import "./App.css"
 
+/**
+ * The socket.io endpoint.
+ */
+const ENDPOINT = "http://127.0.0.1:4001"
+
 function App() {
+    const [roomData, setRoomData] = useState<RoomData>()
+
+    useEffect(() => {
+        const socket = socketIOClient(ENDPOINT)
+
+        socket.on("roomData", (roomData: RoomData) => {
+            setRoomData(roomData)
+        })
+    }, [])
+
     let gameLink = "https://boardgamegeek.com/boardgame/173090/game"
 
     return (
@@ -18,6 +36,20 @@ function App() {
                             <span>
                                 Version 1.0
                             </span>
+                        </div>
+
+                        <div>
+                            <div>
+                                <span>
+                                    Room ID: {roomData?.name ?? "-"}
+                                </span>
+                            </div>
+
+                            <div>
+                                <span>
+                                    Players: {roomData?.numberOfPlayers ?? "-"}
+                                </span>
+                            </div>
                         </div>
 
                         <div>
