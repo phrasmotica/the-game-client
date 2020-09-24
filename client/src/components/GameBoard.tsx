@@ -10,15 +10,18 @@ import { Direction, Pile } from "../gameData/Pile"
 import { RuleSet } from "../gameData/RuleSet"
 
 interface GameBoardProps {
-
-}
-
-interface GameBoardState {
     /**
      * The rule set.
      */
     ruleSet: RuleSet
 
+    /**
+     * Sets the rule set.
+     */
+    setRuleSet: (ruleSet: RuleSet) => void
+}
+
+interface GameBoardState {
     /**
      * The deck of cards.
      */
@@ -62,13 +65,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     constructor(props: GameBoardProps) {
         super(props)
 
-        let ruleSet = RuleSet.default()
+        let ruleSet = props.ruleSet
         let deck = Deck.create(2, ruleSet.topLimit)
         let hand = new Hand(deck.draw(ruleSet.handSize))
         let piles = this.createPiles(ruleSet)
 
         this.state = {
-            ruleSet: ruleSet,
             deck: deck,
             hand: hand,
             piles: piles,
@@ -104,7 +106,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             </div>
         )
 
-        let ruleSet = this.state.ruleSet
+        let ruleSet = this.props.ruleSet
         let piles = this.state.piles
 
         let ascendingPiles = []
@@ -210,7 +212,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     noCardsCanBePlayed() {
         for (let card of this.state.hand.cards) {
             for (let pile of this.state.piles) {
-                if (pile.canBePlayed(card, this.state.ruleSet)) {
+                if (pile.canBePlayed(card, this.props.ruleSet)) {
                     return false
                 }
             }
@@ -223,12 +225,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Starts a new game.
      */
     newGame(ruleSet: RuleSet) {
+        this.props.setRuleSet(ruleSet)
         let deck = Deck.create(2, ruleSet.topLimit)
         let hand = new Hand(deck.draw(ruleSet.handSize))
         let piles = this.createPiles(ruleSet)
 
         this.setState({
-            ruleSet: ruleSet,
             deck: deck,
             hand: hand,
             piles: piles,
@@ -271,7 +273,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     playCard(card: number, pileIndex: number) {
         let pile = this.state.piles[pileIndex]
-        pile.push(card, this.state.ruleSet)
+        pile.push(card, this.props.ruleSet)
         this.state.hand.remove(card)
 
         this.setState((prevState => ({
@@ -284,10 +286,10 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     getCardsToPlay() {
         if (this.state.deck.isEmpty()) {
-            return this.state.ruleSet.cardsPerTurnInEndgame
+            return this.props.ruleSet.cardsPerTurnInEndgame
         }
 
-        return this.state.ruleSet.cardsPerTurn
+        return this.props.ruleSet.cardsPerTurn
     }
 
     /**
@@ -320,9 +322,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         console.log(`Turns played: ${this.state.turnsPlayed + 1}`)
 
         for (let pile of this.state.piles) {
-            pile.endTurn(this.state.ruleSet)
+            pile.endTurn(this.props.ruleSet)
 
-            if (pile.isDestroyed(this.state.ruleSet)) {
+            if (pile.isDestroyed(this.props.ruleSet)) {
                 console.log(`Pile ${pile.index} is destroyed! You lose!`)
                 this.loseGame()
                 return
