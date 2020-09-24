@@ -4,6 +4,8 @@ import socketIOClient from "socket.io-client"
 import { GameBoard } from "./components/GameBoard"
 
 import { RuleSet } from "./gameData/RuleSet"
+
+import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 
 import "./App.css"
@@ -20,14 +22,14 @@ function App() {
     useEffect(() => {
         const socket = socketIOClient(ENDPOINT)
 
-        socket.on("roomData", (roomData: RoomData) => {
-            setRoomData(roomData)
+        socket.on("roomData", (message: Message<RoomData>) => {
+            setRoomData(message.content)
         })
 
         // TODO: make it so that when one client starts a new game with a given rule set, that propagates to the other clients
-        socket.on("ruleSet", (ruleSet: RuleSet) => {
-            setRuleSet(ruleSet)
-        })
+        // socket.on("ruleSet", (ruleSet: RuleSet) => {
+        //     setRuleSet(ruleSet)
+        // })
     }, [])
 
     let gameLink = "https://boardgamegeek.com/boardgame/173090/game"

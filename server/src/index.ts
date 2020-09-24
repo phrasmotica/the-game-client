@@ -2,6 +2,8 @@ import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
 
+import { Message } from "./models/Message"
+
 const port = process.env.PORT || 4001
 
 const app = express()
@@ -30,10 +32,10 @@ function getNumberOfClientsInRoom(namespace: string, roomName: string) {
  * Creates a room data message.
  */
 function createRoomDataMessage(roomName: string) {
-    return {
+    return Message.info({
         name: roomName,
         numberOfPlayers: getNumberOfClientsInRoom("/", roomName)
-    }
+    })
 }
 
 io.on("connection", (socket: Socket) => {
