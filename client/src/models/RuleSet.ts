@@ -127,6 +127,21 @@ export class RuleSet implements IRuleSet {
     }
 
     /**
+     * Creates a concrete rule set object. Use when processing naive message from the server.
+     */
+    static from(ruleSet: RuleSet) {
+        return new RuleSetBuilder()
+            .withPairsOfPiles(ruleSet.pairsOfPiles)
+            .withJumpBackSize(ruleSet.jumpBackSize)
+            .withTopLimit(ruleSet.topLimit)
+            .withHandSize(ruleSet.handSize)
+            .withCardsPerTurn(ruleSet.cardsPerTurn)
+            .withCardsPerTurnInEndgame(ruleSet.cardsPerTurnInEndgame)
+            .withGameMode(ruleSet.gameMode)
+            .build()
+    }
+
+    /**
      * Returns whether this rule set is using the On Fire game mode.
      */
     isOnFire() {

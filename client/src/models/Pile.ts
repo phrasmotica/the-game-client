@@ -54,13 +54,28 @@ export class Pile {
     constructor(
         index: number,
         start: number,
-        direction: Direction
+        direction: Direction,
+        cards?: number[],
+        turnsOnFire?: number,
     ) {
         this.index = index
         this.start = start
         this.direction = direction
-        this.cards = new Stack(100)
-        this.turnsOnFire = 0
+        this.cards = new Stack(100, cards)
+        this.turnsOnFire = turnsOnFire || 0
+    }
+
+    /**
+     * Returns a concrete pile object. Use when processing naive message from the server.
+     */
+    static from(pile: Pile) {
+        return new Pile(
+            pile.index,
+            pile.start,
+            pile.direction,
+            pile.cards.stack,
+            pile.turnsOnFire,
+        )
     }
 
     /**

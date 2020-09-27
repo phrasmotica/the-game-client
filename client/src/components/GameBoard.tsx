@@ -4,92 +4,37 @@ import { HandView } from "./HandView"
 import { GameOptions } from "./GameOptions"
 import { PileView } from "./PileView"
 
-import { Deck } from "../gameData/Deck"
-import { Hand } from "../gameData/Hand"
-import { Direction, Pile } from "../gameData/Pile"
-import { RuleSet } from "../gameData/RuleSet"
+import { GameData } from "../models/GameData"
+import { Direction, Pile } from "../models/Pile"
+import { RuleSet } from "../models/RuleSet"
 
 interface GameBoardProps {
     /**
      * The rule set.
      */
-    ruleSet: RuleSet
+    gameData: GameData
 
     /**
-     * Sets the rule set.
+     * Sets the game data.
      */
-    setRuleSet: (ruleSet: RuleSet) => void
+    setGameData: (gameData: GameData) => void
 }
 
 interface GameBoardState {
-    /**
-     * The deck of cards.
-     */
-    deck: Deck
 
-    /**
-     * The player's hand.
-     */
-    hand: Hand
-
-    /**
-     * The piles.
-     */
-    piles: Pile[]
-
-    /**
-     * The number of turns played.
-     */
-    turnsPlayed: number
-
-    /**
-     * The card to play.
-     */
-    cardToPlay: number | undefined
-
-    /**
-     * The number of cards played this turn.
-     */
-    cardsPlayedThisTurn: number
-
-    /**
-     * Whether the game is lost.
-     */
-    isLost: boolean
 }
 
 export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     /**
-     * Constructor.
-     */
-    constructor(props: GameBoardProps) {
-        super(props)
-
-        let ruleSet = props.ruleSet
-        let deck = Deck.create(2, ruleSet.topLimit)
-        let hand = new Hand(deck.draw(ruleSet.handSize))
-        let piles = this.createPiles(ruleSet)
-
-        this.state = {
-            deck: deck,
-            hand: hand,
-            piles: piles,
-            turnsPlayed: 0,
-            cardToPlay: undefined,
-            cardsPlayedThisTurn: 0,
-            isLost: false,
-        }
-    }
-
-    /**
      * Renders the game board.
      */
     render() {
-        let deckInfo = `Cards left in deck: ${this.state.deck.size()}`
+        let deckInfo = `Cards left in deck: ${this.props.gameData.deck.size()}`
         if (this.isWon()) {
             deckInfo = "You won!"
         }
-        else if (this.state.isLost) {
+        else if (this.props.gameData.isLost) {
+            // TODO: show remaining cards in deck after losing
             deckInfo = "You lost!"
         }
 
@@ -106,8 +51,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             </div>
         )
 
-        let ruleSet = this.props.ruleSet
-        let piles = this.state.piles
+        let ruleSet = this.props.gameData.ruleSet
+        let piles = this.props.gameData.piles
 
         let ascendingPiles = []
         for (let i = 0; i < ruleSet.pairsOfPiles; i++) {
@@ -117,9 +62,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     index={i}
                     pile={piles[i]}
                     ruleSet={ruleSet}
-                    turnsPlayed={this.state.turnsPlayed}
-                    isLost={this.state.isLost}
-                    cardToPlay={this.state.cardToPlay}
+                    turnsPlayed={this.props.gameData.turnsPlayed}
+                    isLost={this.props.gameData.isLost}
+                    cardToPlay={this.props.gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     playCard={(card) => this.playCard(card, i)}
                     loseGame={() => this.loseGame()} />
@@ -135,9 +80,9 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     index={index}
                     pile={piles[index]}
                     ruleSet={ruleSet}
-                    turnsPlayed={this.state.turnsPlayed}
-                    isLost={this.state.isLost}
-                    cardToPlay={this.state.cardToPlay}
+                    turnsPlayed={this.props.gameData.turnsPlayed}
+                    isLost={this.props.gameData.isLost}
+                    cardToPlay={this.props.gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     playCard={(card) => this.playCard(card, index)}
                     loseGame={() => this.loseGame()} />
@@ -159,42 +104,42 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 <div>
                     <HandView
                         ruleSet={ruleSet}
-                        hand={this.state.hand}
-                        cardToPlay={this.state.cardToPlay}
-                        isLost={this.state.isLost}
+                        hand={this.props.gameData.hand}
+                        cardToPlay={this.props.gameData.cardToPlay}
+                        isLost={this.props.gameData.isLost}
                         setCardToPlay={(card) => this.setCardToPlay(card)} />
                 </div>
 
                 <div className="flex-center margin-bottom">
                     <button
                         className="margin-right"
-                        disabled={this.state.isLost || this.isWon() || this.state.cardToPlay === undefined}
+                        disabled={this.props.gameData.isLost || this.isWon() || this.props.gameData.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
                     </button>
 
                     <button
                         className="margin-right"
-                        disabled={this.state.isLost || this.isWon() || this.state.hand.isEmpty()}
+                        disabled={this.props.gameData.isLost || this.isWon() || this.props.gameData.hand.isEmpty()}
                         onClick={() => this.sortHand()}>
                         Sort hand
                     </button>
 
                     <button
                         className="margin-right"
-                        disabled={this.state.isLost || this.isWon() || !this.areEnoughCardsPlayed()}
+                        disabled={this.props.gameData.isLost || this.isWon() || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End turn
                     </button>
 
                     <button
-                        disabled={this.state.isLost || this.isWon() || !this.noCardsCanBePlayed()}
+                        disabled={this.props.gameData.isLost || this.isWon() || !this.noCardsCanBePlayed()}
                         onClick={() => this.loseGame()}>
                         Pass
                     </button>
                 </div>
 
-                <GameOptions newGame={(ruleSet) => this.newGame(ruleSet)} />
+                <GameOptions ruleSet={this.props.gameData.ruleSet} newGame={(ruleSet) => this.newGame(ruleSet)} />
             </div>
         )
     }
@@ -203,16 +148,18 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Returns whether the game has been won.
      */
     isWon() {
-        return this.state.deck.isEmpty() && this.state.hand.isEmpty()
+        return this.props.gameData.deck.isEmpty() && this.props.gameData.hand.isEmpty()
     }
 
     /**
      * Returns whether no cards can be played on any piles.
      */
     noCardsCanBePlayed() {
-        for (let card of this.state.hand.cards) {
-            for (let pile of this.state.piles) {
-                if (pile.canBePlayed(card, this.props.ruleSet)) {
+        let gameData = this.props.gameData
+
+        for (let card of gameData.hand.cards) {
+            for (let pile of gameData.piles) {
+                if (pile.canBePlayed(card, gameData.ruleSet)) {
                     return false
                 }
             }
@@ -225,20 +172,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Starts a new game.
      */
     newGame(ruleSet: RuleSet) {
-        this.props.setRuleSet(ruleSet)
-        let deck = Deck.create(2, ruleSet.topLimit)
-        let hand = new Hand(deck.draw(ruleSet.handSize))
-        let piles = this.createPiles(ruleSet)
-
-        this.setState({
-            deck: deck,
-            hand: hand,
-            piles: piles,
-            turnsPlayed: 0,
-            cardToPlay: undefined,
-            cardsPlayedThisTurn: 0,
-            isLost: false,
-        })
+        let newGameData = GameData.withRuleSet(ruleSet)
+        this.props.setGameData(newGameData)
     }
 
     /**
@@ -265,66 +200,74 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Sets the card to play.
      */
     setCardToPlay(card: number | undefined) {
-        this.setState({ cardToPlay: card })
+        let newGameData = this.props.gameData
+        newGameData.cardToPlay = card
+        this.props.setGameData(newGameData)
     }
 
     /**
      * Plays the given card from the player's hand.
      */
     playCard(card: number, pileIndex: number) {
-        let pile = this.state.piles[pileIndex]
-        pile.push(card, this.props.ruleSet)
-        this.state.hand.remove(card)
+        let newGameData = this.props.gameData
 
-        this.setState((prevState => ({
-            cardsPlayedThisTurn: prevState.cardsPlayedThisTurn + 1
-        })))
+        let pile = newGameData.piles[pileIndex]
+        pile.push(card, this.props.gameData.ruleSet)
+
+        let hand = newGameData.hand
+        hand.remove(card)
+
+        newGameData.cardsPlayedThisTurn++
+
+        this.props.setGameData(newGameData)
     }
 
     /**
      * Returns the number of cards that must be played this turn.
      */
     getCardsToPlay() {
-        if (this.state.deck.isEmpty()) {
-            return this.props.ruleSet.cardsPerTurnInEndgame
+        let gameData = this.props.gameData
+
+        if (gameData.deck.isEmpty()) {
+            return gameData.ruleSet.cardsPerTurnInEndgame
         }
 
-        return this.props.ruleSet.cardsPerTurn
+        return gameData.ruleSet.cardsPerTurn
     }
 
     /**
      * Returns whether enough cards have been played.
      */
     areEnoughCardsPlayed() {
-        return this.state.cardsPlayedThisTurn >= this.getCardsToPlay()
+        return this.props.gameData.cardsPlayedThisTurn >= this.getCardsToPlay()
     }
 
     /**
      * Returns the remaining number of cards that must be played this turn.
      */
     getCardsLeftToPlayThisTurn() {
-        return Math.max(this.getCardsToPlay() - this.state.cardsPlayedThisTurn, 0)
+        return Math.max(this.getCardsToPlay() - this.props.gameData.cardsPlayedThisTurn, 0)
     }
 
     /**
      * Sorts the hand into ascending order.
      */
     sortHand() {
-        this.setState(prevState => ({
-            hand: prevState.hand.sort()
-        }))
+        let newGameData = this.props.gameData
+        newGameData.hand = newGameData.hand.sort()
+        this.props.setGameData(newGameData)
     }
 
     /**
      * Ends the turn according to the given rule set.
      */
     endTurn() {
-        console.log(`Turns played: ${this.state.turnsPlayed + 1}`)
+        let newGameData = this.props.gameData
 
-        for (let pile of this.state.piles) {
-            pile.endTurn(this.props.ruleSet)
+        for (let pile of newGameData.piles) {
+            pile.endTurn(newGameData.ruleSet)
 
-            if (pile.isDestroyed(this.props.ruleSet)) {
+            if (pile.isDestroyed(newGameData.ruleSet)) {
                 console.log(`Pile ${pile.index} is destroyed! You lose!`)
                 this.loseGame()
                 return
@@ -335,27 +278,26 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         if (!noCardsCanBePlayed) {
             // draw new cards if the game is still going
-            for (let i = 0; i < this.state.cardsPlayedThisTurn; i++) {
-                if (!this.state.deck.isEmpty()) {
-                    let newCard = this.state.deck.drawOne()
-                    this.state.hand.add(newCard)
+            for (let i = 0; i < newGameData.cardsPlayedThisTurn; i++) {
+                if (!newGameData.deck.isEmpty()) {
+                    let newCard = newGameData.deck.drawOne()
+                    newGameData.hand.add(newCard)
                 }
             }
         }
 
-        this.setState((prevState => ({
-            turnsPlayed: prevState.turnsPlayed + 1,
-            cardsPlayedThisTurn: 0,
-            isLost: noCardsCanBePlayed,
-        })))
+        newGameData.cardsPlayedThisTurn = 0
+        newGameData.isLost = noCardsCanBePlayed
+
+        this.props.setGameData(newGameData)
     }
 
     /**
      * Loses the game.
      */
     loseGame() {
-        this.setState({
-            isLost: true
-        })
+        let newGameData = this.props.gameData
+        newGameData.isLost = true
+        this.props.setGameData(newGameData)
     }
 }

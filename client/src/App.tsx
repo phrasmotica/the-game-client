@@ -1,10 +1,9 @@
-import React, { useState, useEffect} from "react"
-import socketIOClient from "socket.io-client"
+import React, { useState, useEffect, useRef } from "react"
+import socketIOClient, { Socket } from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
 
-import { RuleSet } from "./gameData/RuleSet"
-
+import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 
@@ -16,21 +15,31 @@ import "./App.css"
 const ENDPOINT = "http://127.0.0.1:4001"
 
 function App() {
-    const [roomData, setRoomData] = useState<RoomData>()
-    const [ruleSet, setRuleSet] = useState(RuleSet.default())
+    const [roomData, setRoomData] = useState<RoomData>(RoomData.default())
+
+    // Socket here is a property of socketIOClient. So we need typeof
+    const socket = useRef<typeof Socket>(Socket)
 
     useEffect(() => {
-        const socket = socketIOClient(ENDPOINT)
+        socket.current = socketIOClient(ENDPOINT)
 
-        socket.on("roomData", (message: Message<RoomData>) => {
-            setRoomData(message.content)
+        socket.current.on("roomData", (message: Message<RoomData>) => {
+            console.log(message)
+            setRoomData(RoomData.from(message.content))
         })
-
-        // TODO: make it so that when one client starts a new game with a given rule set, that propagates to the other clients
-        // socket.on("ruleSet", (ruleSet: RuleSet) => {
-        //     setRuleSet(ruleSet)
-        // })
     }, [])
+
+    /**
+     * Sets the game data and sends the new data to the server.
+     */
+    const setGameData = (gameData: GameData) => {
+        let newRoomData = RoomData.from(roomData)
+        newRoomData.gameData = gameData
+        setRoomData(newRoomData)
+
+        let message = Message.info(newRoomData)
+        socket.current.emit("roomData", message)
+    }
 
     let gameLink = "https://boardgamegeek.com/boardgame/173090/game"
 
@@ -38,7 +47,7 @@ function App() {
         <div className="App">
             <header className="App-header">
                 <div className="elements">
-                    <GameBoard ruleSet={ruleSet} setRuleSet={setRuleSet} />
+                    <GameBoard gameData={roomData.gameData} setGameData={setGameData} />
 
                     <div id="footer" className="flex-center space-around">
                         <div>

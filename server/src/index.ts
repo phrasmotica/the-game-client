@@ -2,7 +2,11 @@ import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
 
+import { GameDataManager } from "./data/GameDataManager"
+
+import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
+import { RoomData } from "./models/RoomData"
 
 const port = process.env.PORT || 4001
 
@@ -15,6 +19,8 @@ app.get("/", (req, res) => {
 const server = http.createServer(app)
 
 const io = socketIo(server)
+
+const gameDataManager = new GameDataManager()
 
 /**
  * Returns the number of clients in the given room.
@@ -32,23 +38,45 @@ function getNumberOfClientsInRoom(namespace: string, roomName: string) {
  * Creates a room data message.
  */
 function createRoomDataMessage(roomName: string) {
-    return Message.info({
-        name: roomName,
-        numberOfPlayers: getNumberOfClientsInRoom("/", roomName)
-    })
+    return Message.info(
+        new RoomData(
+            roomName,
+            getNumberOfClientsInRoom("/", roomName),
+            gameDataManager.getGameData(roomName)
+        )
+    )
 }
 
 io.on("connection", (socket: Socket) => {
-    console.log(`Player ${socket.id} joined`)
-
-    let roomName = "game room"
+    let roomName = "polysomn"
     socket.join(roomName)
+    console.log(`Player ${socket.id} joined room ${roomName}`)
 
+    // TODO: we can't incrementally add game data propagation until it's determined by the server.
+    // So move all of that to the server and then look into emitting it to the clients
+
+    // create game data for the room if necessary
+    gameDataManager.ensureRoomExists(roomName)
+
+    // send room data to all clients
     io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
 
-    socket.on("disconnect", () => {
-        console.log(`Player ${socket.id} left`)
+    socket.on("roomData", (message: Message<RoomData>) => {
+        console.log(`Player ${socket.id} data for room ${roomName}:`)
+        console.log(message.content)
+        gameDataManager.setGameData(roomName, GameData.from(message.content.gameData))
         socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
+    })
+
+    socket.on("disconnect", () => {
+        console.log(`Player ${socket.id} left room ${roomName}`)
+        socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
+
+        // clean up room if it's now empty
+        if (getNumberOfClientsInRoom("/", roomName) <= 0) {
+            console.log(`Room ${roomName} is now empty`)
+            gameDataManager.removeRoom(roomName)
+        }
     })
 })
 

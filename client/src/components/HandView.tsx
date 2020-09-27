@@ -46,6 +46,7 @@ export function HandView(props: HandProps) {
         )
     }
 
+    // TODO: show which card is selected when cardToPlay is defined
     return (
         <div className="hand">
             <div className="flex-center">

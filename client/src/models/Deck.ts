@@ -28,9 +28,14 @@ export class Deck {
             cards.push(i)
         }
 
-        console.log("Created a deck")
-
         return new Deck(cards)
+    }
+
+    /**
+     * Returns a concrete deck object. Use when processing naive message from the server.
+     */
+    static from(deck: Deck) {
+        return new Deck(deck.cards)
     }
 
     /**
