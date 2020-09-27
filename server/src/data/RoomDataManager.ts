@@ -6,20 +6,20 @@ import { RoomData } from "../models/RoomData"
 import { RuleSet } from "../models/RuleSet"
 
 /**
- * Class for managing game data on the server.
+ * Class for managing room data on the server.
  */
-export class GameDataManager {
+export class RoomDataManager {
     /**
-     * Game data indexed by room ID.
+     * Room data indexed by room name.
      */
     roomGameData: {
-        [roomName: string] : GameData
+        [roomName: string] : RoomData
     } = {}
 
     /**
-     * Returns the game data for the given room.
+     * Returns the data for the given room.
      */
-    getGameData(roomName: string) {
+    getRoomData(roomName: string) {
         return this.roomGameData[roomName]
     }
 
@@ -27,24 +27,24 @@ export class GameDataManager {
      * Returns whether the given room exists.
      */
     roomExists(roomName: string) {
-        return this.getGameData(roomName) !== undefined
+        return this.roomGameData[roomName] !== undefined
     }
 
     /**
-     * If the given room doesn't have a game yet, create one.
+     * If the given room doesn't exist then create it.
      */
     ensureRoomExists(roomName: string) {
         if (!this.roomExists(roomName)) {
             console.log(`Creating game for new room ${roomName}`)
-            this.createDefaultGame(roomName)
+            this.initialise(roomName)
         }
     }
 
     /**
-     * Creates a default game in the given room.
+     * Creates a room with the given name.
      */
-    createDefaultGame(roomName: string) {
-        this.roomGameData[roomName] = GameData.default()
+    initialise(roomName: string) {
+        this.roomGameData[roomName] = RoomData.default()
     }
 
     /**
@@ -82,10 +82,23 @@ export class GameDataManager {
     }
 
     /**
+     * Adds the given player to the given room.
+     */
+    // addToGame(playerName: string, roomName: string) {
+    //     let gameData = this.getGameData(roomName)
+    //     gameData
+    // }
+
+    /**
      * Sets the game data for the given room.
      */
     setGameData(roomName: string, gameData: GameData) {
-        this.roomGameData[roomName] = gameData
+        if (this.roomExists(roomName)) {
+            this.roomGameData[roomName].gameData = gameData
+        }
+        else {
+            console.error(`Tried to set game data for non-existent room "${roomName}"!`)
+        }
     }
 
     /**

@@ -2,7 +2,7 @@ import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
 
-import { GameDataManager } from "./data/GameDataManager"
+import { RoomDataManager } from "./data/RoomDataManager"
 
 import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
@@ -20,7 +20,7 @@ const server = http.createServer(app)
 
 const io = socketIo(server)
 
-const gameDataManager = new GameDataManager()
+const gameDataManager = new RoomDataManager()
 
 /**
  * Returns the number of clients in the given room.
@@ -38,13 +38,7 @@ function getNumberOfClientsInRoom(namespace: string, roomName: string) {
  * Creates a room data message.
  */
 function createRoomDataMessage(roomName: string) {
-    return Message.info(
-        new RoomData(
-            roomName,
-            getNumberOfClientsInRoom("/", roomName),
-            gameDataManager.getGameData(roomName)
-        )
-    )
+    return Message.info(gameDataManager.getRoomData(roomName))
 }
 
 io.on("connection", (socket: Socket) => {
@@ -57,6 +51,9 @@ io.on("connection", (socket: Socket) => {
 
     // create game data for the room if necessary
     gameDataManager.ensureRoomExists(roomName)
+
+    // add the new player to the game
+    // gameDataManager.addToGame(socket.id, roomName)
 
     // send room data to all clients
     io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
