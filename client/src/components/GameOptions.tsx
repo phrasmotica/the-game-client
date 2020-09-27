@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 
-import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../gameData/RuleSet"
+import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../models/RuleSet"
 
 interface GameOptionsProps {
     /**

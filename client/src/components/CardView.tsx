@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "../gameData/RuleSet"
+import { RuleSet } from "../models/RuleSet"
 
 interface CardViewProps {
     /**

@@ -2,8 +2,8 @@ import React from "react"
 
 import { CardView } from "./CardView"
 
-import { Direction, Pile, PileState } from "../gameData/Pile"
-import { RuleSet } from "../gameData/RuleSet"
+import { Direction, Pile, PileState } from "../models/Pile"
+import { RuleSet } from "../models/RuleSet"
 
 interface PileViewProps {
     /**
