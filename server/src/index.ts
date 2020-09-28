@@ -53,7 +53,7 @@ io.on("connection", (socket: Socket) => {
     gameDataManager.ensureRoomExists(roomName)
 
     // add the new player to the game
-    // gameDataManager.addToGame(socket.id, roomName)
+    gameDataManager.addToGame(socket.id, roomName)
 
     // send room data to all clients
     io.in(roomName).emit("roomData", createRoomDataMessage(roomName))

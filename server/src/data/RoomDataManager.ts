@@ -40,16 +40,16 @@ export class RoomDataManager {
      * Creates a room with the given name.
      */
     initialise(roomName: string) {
-        this.roomGameData[roomName] = RoomData.default()
+        this.roomGameData[roomName] = RoomData.named(roomName)
     }
 
     /**
      * Adds the given player to the given room.
      */
-    // addToGame(playerName: string, roomName: string) {
-    //     let gameData = this.getGameData(roomName)
-    //     gameData
-    // }
+    addToGame(playerName: string, roomName: string) {
+        let roomData = this.getRoomData(roomName)
+        roomData.players.push(playerName)
+    }
 
     /**
      * Sets the game data for the given room.

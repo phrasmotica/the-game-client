@@ -15,7 +15,7 @@ import "./App.css"
 const ENDPOINT = "http://127.0.0.1:4001"
 
 function App() {
-    const [roomData, setRoomData] = useState<RoomData>(RoomData.default())
+    const [roomData, setRoomData] = useState<RoomData>(RoomData.empty())
 
     // Socket here is a property of socketIOClient. So we need typeof
     const socket = useRef<typeof Socket>(Socket)
@@ -65,7 +65,7 @@ function App() {
 
                             <div>
                                 <span>
-                                    Players: {roomData?.numberOfPlayers ?? "-"}
+                                    Players: {roomData?.players.join(", ")}
                                 </span>
                             </div>
                         </div>

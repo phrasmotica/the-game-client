@@ -12,7 +12,7 @@ export class RoomData {
     /**
      * The number of players in the room.
      */
-    numberOfPlayers: number
+    players: string[]
 
     /**
      * The game data.
@@ -24,19 +24,26 @@ export class RoomData {
      */
     constructor(
         name: string,
-        numberOfPlayers: number,
+        players: string[],
         gameData: GameData
     ) {
         this.name = name
-        this.numberOfPlayers = numberOfPlayers
+        this.players = players
         this.gameData = gameData
     }
 
     /**
-     * Returns a default room data object.
+     * Returns an empty room data object.
      */
-    static default() {
-        return new RoomData("", 0, GameData.default())
+    static empty() {
+        return RoomData.named("")
+    }
+
+    /**
+     * Returns an room data object with the given name.
+     */
+    static named(roomName: string) {
+        return new RoomData(roomName, [], GameData.default())
     }
 
     /**
@@ -45,7 +52,7 @@ export class RoomData {
     static from(roomData: RoomData) {
         return new RoomData(
             roomData.name,
-            roomData.numberOfPlayers,
+            roomData.players,
             GameData.from(roomData.gameData)
         )
     }
