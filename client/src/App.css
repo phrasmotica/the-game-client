@@ -189,6 +189,11 @@
   font-size: 24px;
 }
 
+.card-selected {
+  border: 1px solid yellow;
+  color: yellow;
+}
+
 .card-on-fire {
   margin: 5px;
   min-width: 60px;

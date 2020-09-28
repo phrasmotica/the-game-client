@@ -46,14 +46,15 @@ export function HandView(props: HandProps) {
         )
     }
 
-    // TODO: show which card is selected when cardToPlay is defined
     return (
         <div className="hand">
             <div className="flex-center">
                 {props.hand.cards.map((c, i) => {
+                    let isSelected = props.cardToPlay === c
+
                     return (
                         <div key={i} className="card-set">
-                            <CardView ruleSet={props.ruleSet} card={c} />
+                            <CardView ruleSet={props.ruleSet} card={c} isSelected={isSelected} />
 
                             <div>
                                 <button

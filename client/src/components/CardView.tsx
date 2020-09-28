@@ -12,6 +12,11 @@ interface CardViewProps {
      * The card to render.
      */
     card?: number
+
+    /**
+     * Whether the card should be rendered as selected.
+     */
+    isSelected?: boolean
 }
 
 /**
@@ -22,6 +27,10 @@ export function CardView(props: CardViewProps) {
 
     let cardIsOnFire = card !== undefined && props.ruleSet.cardIsOnFire(card)
     let className = props.ruleSet.isOnFire() && cardIsOnFire ? "card-on-fire" : "card"
+
+    if (props.isSelected) {
+        className += " card-selected"
+    }
 
     return (
         <div className={className}>
