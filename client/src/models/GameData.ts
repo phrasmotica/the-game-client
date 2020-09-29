@@ -4,6 +4,13 @@ import { Direction, Pile } from "./Pile"
 import { RuleSet } from "./RuleSet"
 
 /**
+ * Represents a map of player names to hands.
+ */
+type PlayerHandMap = {
+    [playerName: string] : Hand
+}
+
+/**
  * Represents data about a game.
  */
 export class GameData {
@@ -25,7 +32,7 @@ export class GameData {
     /**
      * The players' hands.
      */
-    hands: { [playerName: string] : Hand }
+    hands: PlayerHandMap
 
     /**
      * The piles for the game.
@@ -69,7 +76,7 @@ export class GameData {
         players: string[],
         ruleSet: RuleSet,
         deck: Deck,
-        hands: { [playerName: string] : Hand },
+        hands: PlayerHandMap,
         piles: Pile[],
         turnsPlayed: number,
         currentPlayerIndex: number,

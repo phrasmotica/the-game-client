@@ -1,13 +1,18 @@
 /**
+ * Represents a map of socket IDs to player names.
+ */
+type SocketPlayerMap = {
+    [socketId: string] : string
+}
+
+/**
  * Class for managing sockets on the server.
  */
 export class SocketManager {
     /**
      * Player names indexed by socket ID.
      */
-    socketData: {
-        [socketId: string] : string
-    } = {}
+    socketData: SocketPlayerMap = {}
 
     /**
      * Returns the player name for the given socket ID.

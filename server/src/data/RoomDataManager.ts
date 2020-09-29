@@ -4,15 +4,20 @@ import { RoomData } from "../models/RoomData"
 import { RuleSet } from "../models/RuleSet"
 
 /**
+ * Represents a map of room names to room data.
+ */
+type RoomDataMap = {
+    [roomName: string] : RoomData
+}
+
+/**
  * Class for managing room data on the server.
  */
 export class RoomDataManager {
     /**
      * Room data indexed by room name.
      */
-    roomGameData: {
-        [roomName: string] : RoomData
-    } = {}
+    roomGameData: RoomDataMap = {}
 
     /**
      * Returns the data for the given room.
