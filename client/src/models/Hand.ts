@@ -14,8 +14,13 @@ export class Hand {
         cards: number[]
     ) {
         this.cards = cards
+    }
 
-        console.log("Created a hand")
+    /**
+     * Returns a concrete hand object. Use when processing naive message from the server.
+     */
+    static from(hand: Hand) {
+        return new Hand(hand.cards)
     }
 
     /**

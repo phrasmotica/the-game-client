@@ -1,12 +1,22 @@
 import React, { Component } from "react"
 
-import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../gameData/RuleSet"
+import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../models/RuleSet"
 
 interface GameOptionsProps {
+    /**
+     * The rule set.
+     */
+    ruleSet: RuleSet
+
     /**
      * Starts a new game.
      */
     newGame: (ruleSet: RuleSet) => void
+
+    /**
+     * Leaves the game.
+     */
+    leaveGame: () => void
 }
 
 interface GameOptionsState extends IRuleSet {
@@ -23,17 +33,26 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     constructor(props: GameOptionsProps) {
         super(props)
 
-        let defaultRuleSet = RuleSet.default()
+        let ruleSet = props.ruleSet
         this.state = {
-            pairsOfPiles: defaultRuleSet.pairsOfPiles,
-            jumpBackSize: defaultRuleSet.jumpBackSize,
-            topLimit: defaultRuleSet.topLimit,
-            handSize: defaultRuleSet.handSize,
-            cardsPerTurn: defaultRuleSet.cardsPerTurn,
-            cardsPerTurnInEndgame: defaultRuleSet.cardsPerTurnInEndgame,
-            gameMode: defaultRuleSet.gameMode,
-            onFireCards: defaultRuleSet.onFireCards,
+            pairsOfPiles: ruleSet.pairsOfPiles,
+            jumpBackSize: ruleSet.jumpBackSize,
+            topLimit: ruleSet.topLimit,
+            handSize: ruleSet.handSize,
+            cardsPerTurn: ruleSet.cardsPerTurn,
+            cardsPerTurnInEndgame: ruleSet.cardsPerTurnInEndgame,
+            gameMode: ruleSet.gameMode,
+            onFireCards: ruleSet.onFireCards,
             showOptions: false,
+        }
+    }
+
+    /**
+     * Re-render if the rule set changed.
+     */
+    componentDidUpdate(prevProps: GameOptionsProps) {
+        if (this.props.ruleSet !== prevProps.ruleSet) {
+            this.updateInputs(this.props.ruleSet)
         }
     }
 
@@ -58,10 +77,17 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                         </button>
                     </div>
 
-                    <div>
+                    <div className="margin-right">
                         <button className="option-button show-options-button"
                             onClick={() => this.toggleShowOptions()}>
                             {showOptionsText}
+                        </button>
+                    </div>
+
+                    <div>
+                        <button className="option-button"
+                            onClick={() => this.props.leaveGame()}>
+                            Leave Game
                         </button>
                     </div>
                 </div>
@@ -194,19 +220,24 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     }
 
     /**
-     * Resets the options to that of a default game.
+     * Resets the options to those of a default game.
      */
     resetOptions() {
-        let defaultRuleSet = RuleSet.default()
+        this.updateInputs(RuleSet.default())
+    }
 
+    /**
+     * Resets the options to those of the given ruleset.
+     */
+    updateInputs(ruleSet: RuleSet) {
         this.setState({
-            pairsOfPiles: defaultRuleSet.pairsOfPiles,
-            jumpBackSize: defaultRuleSet.jumpBackSize,
-            topLimit: defaultRuleSet.topLimit,
-            handSize: defaultRuleSet.handSize,
-            gameMode: defaultRuleSet.gameMode,
-            cardsPerTurn: defaultRuleSet.cardsPerTurn,
-            cardsPerTurnInEndgame: defaultRuleSet.cardsPerTurnInEndgame,
+            pairsOfPiles: ruleSet.pairsOfPiles,
+            jumpBackSize: ruleSet.jumpBackSize,
+            topLimit: ruleSet.topLimit,
+            handSize: ruleSet.handSize,
+            gameMode: ruleSet.gameMode,
+            cardsPerTurn: ruleSet.cardsPerTurn,
+            cardsPerTurnInEndgame: ruleSet.cardsPerTurnInEndgame,
         })
     }
 

@@ -11,19 +11,6 @@ export class Random {
     }
 
     /**
-     * Returns a list of the given length of random numbers from the range defined by inclusive
-     * minimum and maximum.
-     */
-    static fromRange(min: number, max: number, count: number) {
-        let range = []
-        for (let i = min; i <= max; i++) {
-            range.push(i)
-        }
-
-        return this.fromList(range, count)
-    }
-
-    /**
      * Returns a list of the given length of random numbers from the given range.
      */
     static fromList(range: number[], count: number) {
@@ -48,5 +35,16 @@ export class Random {
         range.splice(index, 1)
 
         return choice
+    }
+
+    /**
+     * Randomly shuffles the given array.
+     * Adapted from https://stackoverflow.com/a/12646864
+     */
+    static shuffleArray<T>(arr: T[]) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
     }
 }

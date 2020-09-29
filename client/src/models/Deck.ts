@@ -28,9 +28,14 @@ export class Deck {
             cards.push(i)
         }
 
-        console.log("Created a deck")
-
         return new Deck(cards)
+    }
+
+    /**
+     * Returns a concrete deck object. Use when processing naive message from the server.
+     */
+    static from(deck: Deck) {
+        return new Deck(deck.cards)
     }
 
     /**
@@ -68,5 +73,19 @@ export class Deck {
         let choice = this.cards[index]
         this.cards.splice(index, 1)
         return choice
+    }
+
+    /**
+     * Adds the given cards to the deck.
+     */
+    addCards(cards: number[]) {
+        this.cards.push(...cards)
+    }
+
+    /**
+     * Shuffles the deck.
+     */
+    shuffle() {
+        Random.shuffleArray(this.cards)
     }
 }
