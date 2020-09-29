@@ -27,6 +27,13 @@ export class RoomDataManager {
     }
 
     /**
+     * Returns the data for all rooms.
+     */
+    getAllRoomData() {
+        return Object.values(this.roomGameData)
+    }
+
+    /**
      * Returns the players in the given room.
      */
     getPlayers(roomName: string) {

@@ -6,6 +6,7 @@ import { RoomDataManager } from "./data/RoomDataManager"
 import { SocketManager } from "./data/SocketManager"
 
 import { GameData } from "./models/GameData"
+import { JoinGameRequest } from "./models/JoinGameRequest"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 import { RuleSet } from "./models/RuleSet"
@@ -28,9 +29,16 @@ const socketManager = new SocketManager()
 const gameDataManager = new RoomDataManager()
 
 /**
+ * The name of the only room on the server.
+ */
+// TODO: allow players to create and join rooms
+const roomName = "polysomn"
+gameDataManager.ensureRoomExists(roomName)
+
+/**
  * Returns the number of clients in the given room.
  */
-function getNumberOfClientsInRoom(namespace: string, roomName: string) {
+const getNumberOfClientsInRoom = (namespace: string, roomName: string) => {
     var clients = io.nsps[namespace].adapter.rooms[roomName]?.sockets
     if (clients === undefined) {
         return 0
@@ -42,30 +50,38 @@ function getNumberOfClientsInRoom(namespace: string, roomName: string) {
 /**
  * Creates a room data message.
  */
-function createRoomDataMessage(roomName: string) {
+const createRoomDataMessage = (roomName: string) => {
     return Message.info(gameDataManager.getRoomData(roomName))
 }
 
 io.on("connection", (socket: Socket) => {
-    // TODO: allow players to create and join rooms
-    let roomName = "polysomn"
-
     socket.on("playerJoined", (playerName: string) => {
         socketManager.setPlayerName(socket.id, playerName)
-        socket.emit("playerReceived")
+        console.log(`Player ${playerName} joined the server!`)
 
+        socket.emit("playerReceived", gameDataManager.getAllRoomData())
+    })
+
+    socket.on("joinGame", (req: JoinGameRequest) => {
+        let roomName = req.roomName
         socket.join(roomName)
+
+        let playerName = req.playerName
+        console.log(`Player ${playerName} joined room ${roomName}.`)
 
         // create game data for the room if necessary
         gameDataManager.ensureRoomExists(roomName)
 
         // add the new player to the game
         gameDataManager.addToRoom(playerName, roomName)
+
+        socket.emit("joinGameReceived", createRoomDataMessage(roomName))
+
+        // deal the player in
         gameDataManager.dealHand(playerName, roomName)
 
         // send room data to all clients
-        let roomData = createRoomDataMessage(roomName)
-        io.in(roomName).emit("roomData", roomData)
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
     })
 
     socket.on("newGame", (message: Message<RuleSet>) => {
@@ -88,13 +104,11 @@ io.on("connection", (socket: Socket) => {
         io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
     })
 
-    socket.on("disconnect", () => {
+    socket.on("leaveGame", () => {
         let playerName = socketManager.getPlayerName(socket.id)
         console.log(`Player ${playerName} left room ${roomName}`)
 
         gameDataManager.removeFromGame(playerName, roomName)
-        socketManager.removePlayerName(socket.id)
-
         socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
 
         // clean up room if it's now empty
@@ -102,6 +116,13 @@ io.on("connection", (socket: Socket) => {
             console.log(`Room ${roomName} is now empty`)
             gameDataManager.removeRoom(roomName)
         }
+    })
+
+    socket.on("disconnect", () => {
+        let playerName = socketManager.getPlayerName(socket.id)
+        console.log(`Player ${playerName} left the server.`)
+
+        socketManager.removePlayerName(socket.id)
     })
 })
 

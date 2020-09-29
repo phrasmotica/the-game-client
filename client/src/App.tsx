@@ -2,25 +2,29 @@ import React, { useState, useRef } from "react"
 import socketIOClient, { Socket } from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
+import { GameBrowser } from "./components/GameBrowser"
 import { GameMenu } from "./components/GameMenu"
 
 import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
+import { RuleSet } from "./models/RuleSet"
 
 import "./App.css"
-import { RuleSet } from "./models/RuleSet"
+import { JoinGameRequest } from "./models/JoinGameRequest"
 
 /**
  * The states the app can adopt.
  */
 enum AppState {
     Menu,
+    Browse,
     Game
 }
 
 function App() {
     const [state, setState] = useState(AppState.Menu)
+    const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
     const [roomData, setRoomData] = useState<RoomData>(RoomData.empty())
     const [playerName, setPlayerName] = useState("")
 
@@ -30,33 +34,44 @@ function App() {
     /**
      * Connects to the server and sets up event listeners for the socket.
      */
-    const connectToServer = (playerName: string) => {
+    const joinServer = (playerName: string) => {
         let endpoint = process.env.REACT_APP_SERVER_ENDPOINT
         if (endpoint === undefined) {
             throw new Error("No server endpoint found!")
         }
 
         socket.current = socketIOClient(endpoint)
+        setPlayerName(playerName)
 
         socket.current.emit("playerJoined", playerName)
 
-        socket.current.on("playerReceived", () => {
+        socket.current.on("playerReceived", (allRoomData: RoomData[]) => {
+            setAllRoomData(allRoomData)
+            setState(AppState.Browse)
+        })
+
+        socket.current.on("joinGameReceived", (message: Message<RoomData>) => {
             setState(AppState.Game)
+            setRoomData(RoomData.from(message.content))
         })
 
         socket.current.on("roomData", (message: Message<RoomData>) => {
-            console.log(message)
             setRoomData(RoomData.from(message.content))
-            console.log("Re-rendering with new room data")
         })
     }
 
     /**
-     * Joins the game with the given player name.
+     * Creates a game with the given name.
      */
-    const joinGame = (playerName: string) => {
-        setPlayerName(playerName)
-        connectToServer(playerName)
+    const createGame = (gameName: string) => {
+
+    }
+
+    /**
+     * Joins the given game with the given player name.
+     */
+    const joinGame = (roomName: string, playerName: string) => {
+        socket.current.emit("joinGame", new JoinGameRequest(roomName, playerName))
     }
 
     /**
@@ -90,9 +105,16 @@ function App() {
      * Leaves the game.
      */
     const leaveGame = () => {
+        setRoomData(RoomData.empty())
+        setState(AppState.Browse)
+    }
+
+    /**
+     * Leaves the server.
+     */
+    const leaveServer = () => {
         socket.current.disconnect()
         setPlayerName("")
-        setRoomData(RoomData.empty())
         setState(AppState.Menu)
     }
 
@@ -103,7 +125,17 @@ function App() {
         case AppState.Menu:
             contents = (
                 <GameMenu
-                    joinGame={joinGame} />
+                    joinServer={joinServer} />
+            )
+            break
+        case AppState.Browse:
+            contents = (
+                <GameBrowser
+                    playerName={playerName}
+                    games={allRoomData}
+                    createGame={createGame}
+                    joinGame={joinGame}
+                    leaveServer={leaveServer} />
             )
             break
         case AppState.Game:
