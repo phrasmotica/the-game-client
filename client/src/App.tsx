@@ -12,11 +12,6 @@ import "./App.css"
 import { RuleSet } from "./models/RuleSet"
 
 /**
- * The socket.io endpoint.
- */
-const ENDPOINT = "http://127.0.0.1:4001"
-
-/**
  * The states the app can adopt.
  */
 enum AppState {
@@ -36,7 +31,12 @@ function App() {
      * Connects to the server and sets up event listeners for the socket.
      */
     const connectToServer = (playerName: string) => {
-        socket.current = socketIOClient(ENDPOINT)
+        let endpoint = process.env.REACT_APP_SERVER_ENDPOINT
+        if (endpoint === undefined) {
+            throw new Error("No server endpoint found!")
+        }
+
+        socket.current = socketIOClient(endpoint)
 
         socket.current.emit("playerJoined", playerName)
 

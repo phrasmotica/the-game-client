@@ -10,6 +10,8 @@ import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 import { RuleSet } from "./models/RuleSet"
 
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV || "local"}`})
+
 const port = process.env.PORT || 4001
 
 const app = express()
