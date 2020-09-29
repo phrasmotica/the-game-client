@@ -175,6 +175,8 @@ export class RoomDataManager {
         // draw new cards
         let gameData = this.getRoomData(roomName).gameData
         let currentPlayer = gameData.getCurrentPlayer()
+
+        if (currentPlayer !== undefined) {
         let hand = gameData.getHand(currentPlayer)
 
         if (hand !== undefined) {
@@ -185,6 +187,7 @@ export class RoomDataManager {
                 }
             }
         }
+    }
     }
 
     /**
@@ -234,6 +237,6 @@ export class RoomDataManager {
      */
     removeRoom(roomName: string) {
         console.log(`Removing room ${roomName}`)
-        this.roomGameData[roomName] = undefined
+        delete this.roomGameData[roomName]
     }
 }

@@ -27,6 +27,6 @@ export class SocketManager {
      * Removes the socket with the given ID.
      */
     removePlayerName(socketId: string) {
-        this.socketData[socketId] = undefined
+        delete this.socketData[socketId]
     }
 }
