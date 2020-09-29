@@ -51,6 +51,10 @@
   }
 }
 
+.name-field {
+  text-align: center;
+}
+
 .margin-right {
   margin-right: 10px;
 }

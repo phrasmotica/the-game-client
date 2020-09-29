@@ -14,12 +14,17 @@ interface HandProps {
     /**
      * The hand.
      */
-    hand: Hand
+    hand: Hand | undefined
 
     /**
      * The card to play.
      */
     cardToPlay: number | undefined
+
+    /**
+     * Whether it is the player's turn.
+     */
+    isMyTurn: boolean
 
     /**
      * Whether the game is lost.
@@ -36,6 +41,10 @@ interface HandProps {
  * Renders a hand.
  */
 export function HandView(props: HandProps) {
+    if (props.hand === undefined) {
+        return null
+    }
+
     if (props.hand.isEmpty()) {
         return (
             <div className="hand">
@@ -45,6 +54,8 @@ export function HandView(props: HandProps) {
             </div>
         )
     }
+
+    let buttonIsDisabled = props.isLost || !props.isMyTurn || props.cardToPlay !== undefined
 
     return (
         <div className="hand">
@@ -59,7 +70,7 @@ export function HandView(props: HandProps) {
                             <div>
                                 <button
                                     className="card-button"
-                                    disabled={props.isLost || props.cardToPlay !== undefined}
+                                    disabled={buttonIsDisabled}
                                     onClick={() => props.setCardToPlay(c)}>
                                     Select
                                 </button>

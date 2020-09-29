@@ -32,6 +32,11 @@ interface PileViewProps {
     cardToPlay: number | undefined
 
     /**
+     * Whether it is the player's turn.
+     */
+    isMyTurn: boolean
+
+    /**
      * Whether the game is lost.
      */
     isLost: boolean
@@ -45,11 +50,6 @@ interface PileViewProps {
      * Removes the given card from the player's hand.
      */
     playCard: (card: number) => void
-
-    /**
-     * Loses the game.
-     */
-    loseGame: () => void
 }
 
 /**
@@ -102,6 +102,8 @@ export function PileView(props: PileViewProps) {
         return props.pile.canBePlayed(card, props.ruleSet)
     }
 
+    let buttonIsDisabled = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
+
     return (
         <div className="pile-set">
             <div className={pileClassName}>
@@ -121,7 +123,7 @@ export function PileView(props: PileViewProps) {
             <div>
                 <button
                     className="pile-button"
-                    disabled={props.isLost || cardToPlay === undefined || !canPlayCard(cardToPlay)}
+                    disabled={buttonIsDisabled}
                     onClick={() => playCard(cardToPlay)}>
                     Play
                 </button>

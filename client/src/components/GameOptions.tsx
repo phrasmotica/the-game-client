@@ -12,6 +12,11 @@ interface GameOptionsProps {
      * Starts a new game.
      */
     newGame: (ruleSet: RuleSet) => void
+
+    /**
+     * Leaves the game.
+     */
+    leaveGame: () => void
 }
 
 interface GameOptionsState extends IRuleSet {
@@ -72,10 +77,17 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                         </button>
                     </div>
 
-                    <div>
+                    <div className="margin-right">
                         <button className="option-button show-options-button"
                             onClick={() => this.toggleShowOptions()}>
                             {showOptionsText}
+                        </button>
+                    </div>
+
+                    <div>
+                        <button className="option-button"
+                            onClick={() => this.props.leaveGame()}>
+                            Leave Game
                         </button>
                     </div>
                 </div>

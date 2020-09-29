@@ -36,4 +36,15 @@ export class Random {
 
         return choice
     }
+
+    /**
+     * Randomly shuffles the given array.
+     * Adapted from https://stackoverflow.com/a/12646864
+     */
+    static shuffleArray<T>(arr: T[]) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
 }

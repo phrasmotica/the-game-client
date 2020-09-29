@@ -74,4 +74,18 @@ export class Deck {
         this.cards.splice(index, 1)
         return choice
     }
+
+    /**
+     * Adds the given cards to the deck.
+     */
+    addCards(cards: number[]) {
+        this.cards.push(...cards)
+    }
+
+    /**
+     * Shuffles the deck.
+     */
+    shuffle() {
+        Random.shuffleArray(this.cards)
+    }
 }

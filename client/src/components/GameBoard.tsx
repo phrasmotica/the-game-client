@@ -10,14 +10,34 @@ import { RuleSet } from "../models/RuleSet"
 
 interface GameBoardProps {
     /**
+     * The player's name.
+     */
+    playerName: string
+
+    /**
      * The rule set.
      */
     gameData: GameData
 
     /**
+     * Starts a new game.
+     */
+    newGame: (ruleSet: RuleSet) => void
+
+    /**
      * Sets the game data.
      */
     setGameData: (gameData: GameData) => void
+
+    /**
+     * Ends the turn.
+     */
+    endTurn: () => void
+
+    /**
+     * Leaves the game.
+     */
+    leaveGame: () => void
 }
 
 interface GameBoardState {
@@ -30,14 +50,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     render() {
         let deckInfo = `Cards left in deck: ${this.props.gameData.deck.size()}`
-        if (this.isWon()) {
-            deckInfo = "You won!"
-        }
-        else if (this.props.gameData.isLost) {
-            // TODO: show remaining cards in deck after losing
-            deckInfo = "You lost!"
-        }
-
         let deckInfoElement = (
             <div className="half-width">
                 <span className="game-info-text">{deckInfo}</span>
@@ -63,11 +75,11 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     pile={piles[i]}
                     ruleSet={ruleSet}
                     turnsPlayed={this.props.gameData.turnsPlayed}
-                    isLost={this.props.gameData.isLost}
+                    isMyTurn={this.isMyTurn()}
+                    isLost={this.isLost()}
                     cardToPlay={this.props.gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
-                    playCard={(card) => this.playCard(card, i)}
-                    loseGame={() => this.loseGame()} />
+                    playCard={(card) => this.playCard(card, i)} />
             )
         }
 
@@ -81,13 +93,28 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     pile={piles[index]}
                     ruleSet={ruleSet}
                     turnsPlayed={this.props.gameData.turnsPlayed}
-                    isLost={this.props.gameData.isLost}
+                    isMyTurn={this.isMyTurn()}
+                    isLost={this.isLost()}
                     cardToPlay={this.props.gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
-                    playCard={(card) => this.playCard(card, index)}
-                    loseGame={() => this.loseGame()} />
+                    playCard={(card) => this.playCard(card, index)} />
             )
         }
+
+        let turnIndicatorText = "It's your turn!"
+        if (this.isWon()) {
+            turnIndicatorText = "You won!"
+        }
+        else if (this.isLost()) {
+            turnIndicatorText = "You lost!"
+        }
+        else if (!this.isMyTurn()) {
+            turnIndicatorText = `It's ${this.props.gameData.getCurrentPlayer()}'s turn.`
+        }
+
+        let gameIsOver = this.isLost() || this.isWon()
+
+        let hand = this.getHand()
 
         return (
             <div className="game-board">
@@ -102,44 +129,52 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 </div>
 
                 <div>
+                    <span>{turnIndicatorText}</span>
+                </div>
+
+                <div>
                     <HandView
                         ruleSet={ruleSet}
-                        hand={this.props.gameData.hand}
+                        hand={hand}
                         cardToPlay={this.props.gameData.cardToPlay}
-                        isLost={this.props.gameData.isLost}
+                        isMyTurn={this.isMyTurn()}
+                        isLost={this.isLost()}
                         setCardToPlay={(card) => this.setCardToPlay(card)} />
                 </div>
 
                 <div className="flex-center margin-bottom">
                     <button
                         className="margin-right"
-                        disabled={this.props.gameData.isLost || this.isWon() || this.props.gameData.cardToPlay === undefined}
+                        disabled={gameIsOver || !this.isMyTurn() || this.props.gameData.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
                     </button>
 
                     <button
                         className="margin-right"
-                        disabled={this.props.gameData.isLost || this.isWon() || this.props.gameData.hand.isEmpty()}
+                        disabled={gameIsOver || hand?.isEmpty()}
                         onClick={() => this.sortHand()}>
                         Sort hand
                     </button>
 
                     <button
                         className="margin-right"
-                        disabled={this.props.gameData.isLost || this.isWon() || !this.areEnoughCardsPlayed()}
+                        disabled={gameIsOver || !this.isMyTurn() || !this.areEnoughCardsPlayed()}
                         onClick={() => this.endTurn()}>
                         End turn
                     </button>
 
                     <button
-                        disabled={this.props.gameData.isLost || this.isWon() || !this.noCardsCanBePlayed()}
-                        onClick={() => this.loseGame()}>
+                        disabled={gameIsOver || !this.isMyTurn() || !this.noCardsCanBePlayed()}
+                        onClick={() => this.endTurn()}>
                         Pass
                     </button>
                 </div>
 
-                <GameOptions ruleSet={this.props.gameData.ruleSet} newGame={(ruleSet) => this.newGame(ruleSet)} />
+                <GameOptions
+                    ruleSet={this.props.gameData.ruleSet}
+                    newGame={(ruleSet) => this.newGame(ruleSet)}
+                    leaveGame={() => this.props.leaveGame()} />
             </div>
         )
     }
@@ -148,7 +183,14 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Returns whether the game has been won.
      */
     isWon() {
-        return this.props.gameData.deck.isEmpty() && this.props.gameData.hand.isEmpty()
+        return this.props.gameData.isWon
+    }
+
+    /**
+     * Returns whether the game has been ;lost.
+     */
+    isLost() {
+        return this.props.gameData.isLost
     }
 
     /**
@@ -156,8 +198,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     noCardsCanBePlayed() {
         let gameData = this.props.gameData
+        let hand = this.getHand()
 
-        for (let card of gameData.hand.cards) {
+        if (hand === undefined || hand.isEmpty()) {
+            return false
+        }
+
+        for (let card of hand.cards) {
             for (let pile of gameData.piles) {
                 if (pile.canBePlayed(card, gameData.ruleSet)) {
                     return false
@@ -172,8 +219,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Starts a new game.
      */
     newGame(ruleSet: RuleSet) {
-        let newGameData = GameData.withRuleSet(ruleSet)
-        this.props.setGameData(newGameData)
+        this.props.newGame(ruleSet)
     }
 
     /**
@@ -197,6 +243,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     }
 
     /**
+     * Returns whether it's the player's turn.
+     */
+    isMyTurn() {
+        return this.props.gameData.getCurrentPlayer() === this.props.playerName
+    }
+
+    /**
      * Sets the card to play.
      */
     setCardToPlay(card: number | undefined) {
@@ -214,8 +267,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         let pile = newGameData.piles[pileIndex]
         pile.push(card, this.props.gameData.ruleSet)
 
-        let hand = newGameData.hand
-        hand.remove(card)
+        let hand = this.getHand()
+        hand!.remove(card)
 
         newGameData.cardsPlayedThisTurn++
 
@@ -250,54 +303,28 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     }
 
     /**
+     * Returns the player's hand.
+     */
+    getHand() {
+        return this.props.gameData.getHand(this.props.playerName)
+    }
+
+    /**
      * Sorts the hand into ascending order.
      */
     sortHand() {
         let newGameData = this.props.gameData
-        newGameData.hand = newGameData.hand.sort()
-        this.props.setGameData(newGameData)
+        let hand = this.getHand()
+        if (hand !== undefined) {
+            newGameData.hands[this.props.playerName] = hand.sort()
+            this.props.setGameData(newGameData)
+        }
     }
 
     /**
-     * Ends the turn according to the given rule set.
+     * Ends the turn.
      */
     endTurn() {
-        let newGameData = this.props.gameData
-
-        for (let pile of newGameData.piles) {
-            pile.endTurn(newGameData.ruleSet)
-
-            if (pile.isDestroyed(newGameData.ruleSet)) {
-                console.log(`Pile ${pile.index} is destroyed! You lose!`)
-                this.loseGame()
-                return
-            }
-        }
-
-        let noCardsCanBePlayed = this.noCardsCanBePlayed()
-
-        if (!noCardsCanBePlayed) {
-            // draw new cards if the game is still going
-            for (let i = 0; i < newGameData.cardsPlayedThisTurn; i++) {
-                if (!newGameData.deck.isEmpty()) {
-                    let newCard = newGameData.deck.drawOne()
-                    newGameData.hand.add(newCard)
-                }
-            }
-        }
-
-        newGameData.cardsPlayedThisTurn = 0
-        newGameData.isLost = noCardsCanBePlayed
-
-        this.props.setGameData(newGameData)
-    }
-
-    /**
-     * Loses the game.
-     */
-    loseGame() {
-        let newGameData = this.props.gameData
-        newGameData.isLost = true
-        this.props.setGameData(newGameData)
+        this.props.endTurn()
     }
 }

@@ -3,10 +3,12 @@ import http from "http"
 import socketIo, { Socket } from "socket.io"
 
 import { RoomDataManager } from "./data/RoomDataManager"
+import { SocketManager } from "./data/SocketManager"
 
 import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
+import { RuleSet } from "./models/RuleSet"
 
 const port = process.env.PORT || 4001
 
@@ -20,6 +22,7 @@ const server = http.createServer(app)
 
 const io = socketIo(server)
 
+const socketManager = new SocketManager()
 const gameDataManager = new RoomDataManager()
 
 /**
@@ -43,30 +46,52 @@ function createRoomDataMessage(roomName: string) {
 
 io.on("connection", (socket: Socket) => {
     let roomName = "polysomn"
-    socket.join(roomName)
-    console.log(`Player ${socket.id} joined room ${roomName}`)
 
-    // TODO: we can't incrementally add game data propagation until it's determined by the server.
-    // So move all of that to the server and then look into emitting it to the clients
+    socket.on("playerJoined", (playerName: string) => {
+        socketManager.setPlayerName(socket.id, playerName)
+        socket.emit("playerReceived")
 
-    // create game data for the room if necessary
-    gameDataManager.ensureRoomExists(roomName)
+        socket.join(roomName)
 
-    // add the new player to the game
-    gameDataManager.addToGame(socket.id, roomName)
+        // create game data for the room if necessary
+        gameDataManager.ensureRoomExists(roomName)
 
-    // send room data to all clients
-    io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        // add the new player to the game
+        gameDataManager.addToRoom(playerName, roomName)
+        gameDataManager.dealHand(playerName, roomName)
+
+        // send room data to all clients
+        let roomData = createRoomDataMessage(roomName)
+        io.in(roomName).emit("roomData", roomData)
+    })
+
+    socket.on("newGame", (message: Message<RuleSet>) => {
+        gameDataManager.newGame(roomName, message.content)
+
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+    })
 
     socket.on("roomData", (message: Message<RoomData>) => {
-        console.log(`Player ${socket.id} data for room ${roomName}:`)
-        console.log(message.content)
         gameDataManager.setGameData(roomName, GameData.from(message.content.gameData))
-        socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
+        gameDataManager.processGameData(roomName)
+
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+    })
+
+    socket.on("endTurn", () => {
+        gameDataManager.replenish(roomName)
+        gameDataManager.nextPlayer(roomName)
+
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
     })
 
     socket.on("disconnect", () => {
-        console.log(`Player ${socket.id} left room ${roomName}`)
+        let playerName = socketManager.getPlayerName(socket.id)
+        console.log(`Player ${playerName} left room ${roomName}`)
+
+        gameDataManager.removeFromGame(playerName, roomName)
+        socketManager.removePlayerName(socket.id)
+
         socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
 
         // clean up room if it's now empty

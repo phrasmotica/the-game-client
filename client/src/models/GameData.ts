@@ -8,6 +8,11 @@ import { RuleSet } from "./RuleSet"
  */
 export class GameData {
     /**
+     * The players in the game.
+     */
+    players: string[]
+
+    /**
      * The rule set for the game.
      */
     ruleSet: RuleSet
@@ -18,9 +23,9 @@ export class GameData {
     deck: Deck
 
     /**
-     * The player's hand.
+     * The players' hands.
      */
-    hand: Hand
+    hands: { [playerName: string] : Hand }
 
     /**
      * The piles for the game.
@@ -33,6 +38,11 @@ export class GameData {
     turnsPlayed: number
 
     /**
+     * The index of the player whose turn it is.
+     */
+    currentPlayerIndex: number
+
+    /**
      * The card to play.
      */
     cardToPlay: number | undefined
@@ -43,6 +53,11 @@ export class GameData {
     cardsPlayedThisTurn: number
 
     /**
+     * Whether the game is won.
+     */
+    isWon: boolean
+
+    /**
      * Whether the game is lost.
      */
     isLost: boolean
@@ -51,22 +66,29 @@ export class GameData {
      * Constructor.
      */
     constructor(
+        players: string[],
         ruleSet: RuleSet,
         deck: Deck,
-        hand: Hand,
+        hands: { [playerName: string] : Hand },
         piles: Pile[],
         turnsPlayed: number,
+        currentPlayerIndex: number,
         cardToPlay: number | undefined,
         cardsPlayedThisTurn: number,
-        isLost: boolean
+        isWon: boolean,
+        isLost: boolean,
+
     ) {
+        this.players = players
         this.ruleSet = ruleSet
         this.deck = deck
-        this.hand = hand
+        this.hands = hands
         this.piles = piles
         this.turnsPlayed = turnsPlayed
+        this.currentPlayerIndex = currentPlayerIndex
         this.cardToPlay = cardToPlay
         this.cardsPlayedThisTurn = cardsPlayedThisTurn
+        this.isWon = isWon
         this.isLost = isLost
     }
 
@@ -82,10 +104,9 @@ export class GameData {
      */
     static withRuleSet(ruleSet: RuleSet) {
         let deck = GameData.createDeck(ruleSet)
-        let hand = GameData.createHand(ruleSet, deck)
         let piles = GameData.createPiles(ruleSet)
 
-        return new GameData(ruleSet, deck, hand, piles, 0, undefined, 0, false)
+        return new GameData([], ruleSet, deck, {}, piles, 0, 0, undefined, 0, false, false)
     }
 
     /**
@@ -93,14 +114,17 @@ export class GameData {
      */
     static from(gameData: GameData) {
         return new GameData(
+            gameData.players,
             RuleSet.from(gameData.ruleSet),
             Deck.from(gameData.deck),
-            Hand.from(gameData.hand),
+            gameData.hands,
             gameData.piles.map(p => Pile.from(p)),
             gameData.turnsPlayed,
+            gameData.currentPlayerIndex,
             gameData.cardToPlay,
             gameData.cardsPlayedThisTurn,
-            gameData.isLost
+            gameData.isWon,
+            gameData.isLost,
         )
     }
 
@@ -109,13 +133,6 @@ export class GameData {
      */
     static createDeck(ruleSet: RuleSet) {
         return Deck.create(2, ruleSet.topLimit)
-    }
-
-    /**
-     * Creates a hand for the rule set from the given deck.
-     */
-    static createHand(ruleSet: RuleSet, deck: Deck) {
-        return new Hand(deck.draw(ruleSet.handSize))
     }
 
     /**
@@ -136,5 +153,56 @@ export class GameData {
         }
 
         return piles
+    }
+
+    /**
+     * Creates a hand for the rule set from the given deck.
+     */
+    dealHand(playerName: string) {
+        this.hands[playerName] = new Hand(this.deck.draw(this.ruleSet.handSize))
+    }
+
+    /**
+     * Returns the current player.
+     */
+    getCurrentPlayer() {
+        if (this.players.length <= 0) {
+            return undefined
+        }
+
+        return this.players[this.currentPlayerIndex]
+    }
+
+    /**
+     * Returns the hand belonging to the given player.
+     */
+    getHand(playerName: string ) {
+        let handObj = this.hands[playerName]
+        return handObj !== undefined ? Hand.from(handObj) : undefined
+    }
+
+    /**
+     * Removes the given player from the game.
+     */
+    removePlayer(playerName: string) {
+        if (this.players.includes(playerName)) {
+            // remove player from list
+            let index = this.players.indexOf(playerName)
+            this.players.splice(index, 1)
+
+            // reset current player
+            this.currentPlayerIndex = Math.max(0, this.currentPlayerIndex - 1)
+
+            // shuffle player's hand back into the deck
+            let hand = this.getHand(playerName)
+            if (hand !== undefined) {
+                this.deck.addCards(hand.cards)
+                this.deck.shuffle()
+                delete this.hands[playerName]
+            }
+        }
+        else {
+            console.error(`Tried to remove player ${playerName} but that player is not in the room!`)
+        }
     }
 }
