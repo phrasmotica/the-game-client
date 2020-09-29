@@ -45,6 +45,7 @@ function createRoomDataMessage(roomName: string) {
 }
 
 io.on("connection", (socket: Socket) => {
+    // TODO: allow players to create and join rooms
     let roomName = "polysomn"
 
     socket.on("playerJoined", (playerName: string) => {

@@ -77,6 +77,7 @@ export class RoomDataManager {
      * Adds the given player to the given room.
      */
     addToRoom(playerName: string, roomName: string) {
+        // TODO: enforce player limit in each room
         let roomData = this.getRoomData(roomName)
         this.addToGameData(playerName, roomData.gameData)
     }
@@ -182,17 +183,17 @@ export class RoomDataManager {
         let currentPlayer = gameData.getCurrentPlayer()
 
         if (currentPlayer !== undefined) {
-        let hand = gameData.getHand(currentPlayer)
+            let hand = gameData.getHand(currentPlayer)
 
-        if (hand !== undefined) {
-            for (let i = 0; i < gameData.cardsPlayedThisTurn; i++) {
-                if (!gameData.deck.isEmpty()) {
-                    let newCard = gameData.deck.drawOne()
-                    hand.add(newCard)
+            if (hand !== undefined) {
+                for (let i = 0; i < gameData.cardsPlayedThisTurn; i++) {
+                    if (!gameData.deck.isEmpty()) {
+                        let newCard = gameData.deck.drawOne()
+                        hand.add(newCard)
+                    }
                 }
             }
         }
-    }
     }
 
     /**
