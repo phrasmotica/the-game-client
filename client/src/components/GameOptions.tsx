@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 
-import { GameMode, IRuleSet, RuleSet, RuleSetBuilder } from "../models/RuleSet"
+import { GameMode, RuleSet } from "../models/RuleSet"
 
 interface GameOptionsProps {
     /**
@@ -9,89 +9,27 @@ interface GameOptionsProps {
     ruleSet: RuleSet
 
     /**
-     * Starts a new game.
+     * Sets the rule set.
      */
-    newGame: (ruleSet: RuleSet) => void
-
-    /**
-     * Leaves the game.
-     */
-    leaveGame: () => void
+    setRuleSet: (ruleSet: RuleSet) => void
 }
 
-interface GameOptionsState extends IRuleSet {
-    /**
-     * Whether to show the options panel.
-     */
-    showOptions: boolean
+interface GameOptionsState {
+
 }
 
 /**
  * Renders the game options.
  */
 export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
-    constructor(props: GameOptionsProps) {
-        super(props)
-
-        let ruleSet = props.ruleSet
-        this.state = {
-            pairsOfPiles: ruleSet.pairsOfPiles,
-            jumpBackSize: ruleSet.jumpBackSize,
-            topLimit: ruleSet.topLimit,
-            handSize: ruleSet.handSize,
-            cardsPerTurn: ruleSet.cardsPerTurn,
-            cardsPerTurnInEndgame: ruleSet.cardsPerTurnInEndgame,
-            gameMode: ruleSet.gameMode,
-            onFireCards: ruleSet.onFireCards,
-            showOptions: false,
-        }
-    }
-
-    /**
-     * Re-render if the rule set changed.
-     */
-    componentDidUpdate(prevProps: GameOptionsProps) {
-        if (this.props.ruleSet !== prevProps.ruleSet) {
-            this.updateInputs(this.props.ruleSet)
-        }
-    }
-
     /**
      * Renders the game options.
      */
     render() {
-        let showOptionsText = "Show Options"
-        let options = null
-        if (this.state.showOptions) {
-            showOptionsText = "Hide Options"
-            options = this.renderOptions()
-        }
+        let options = this.renderOptions()
 
         return (
             <div className="margin-bottom">
-                <div className="flex-center">
-                    <div className="margin-right">
-                        <button className="option-button"
-                            onClick={() => this.newGame()}>
-                            New Game
-                        </button>
-                    </div>
-
-                    <div className="margin-right">
-                        <button className="option-button show-options-button"
-                            onClick={() => this.toggleShowOptions()}>
-                            {showOptionsText}
-                        </button>
-                    </div>
-
-                    <div>
-                        <button className="option-button"
-                            onClick={() => this.props.leaveGame()}>
-                            Leave Game
-                        </button>
-                    </div>
-                </div>
-
                 {options}
             </div>
         )
@@ -126,8 +64,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                         <select
                             id="gameModeSelect"
                             className="ruleset-select"
-                            onChange={(e) => { this.setState({ gameMode: e.target.value as GameMode })}}
-                            value={this.state.gameMode}>
+                            onChange={e => this.setGameMode(e.target.value as GameMode)}
+                            value={this.props.ruleSet.gameMode}>
                             {gameModeOptions}
                         </select>
                     </div>
@@ -142,8 +80,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 type="number"
                                 min={1}
                                 max={2}
-                                onChange={(e) => { this.setState({ pairsOfPiles: Number(e.target.value) })}}
-                                value={this.state.pairsOfPiles} />
+                                onChange={e => this.setPairsOfPiles(Number(e.target.value))}
+                                value={this.props.ruleSet.pairsOfPiles} />
                         </label>
                     </div>
 
@@ -155,8 +93,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 type="number"
                                 min={2}
                                 max={20}
-                                onChange={(e) => { this.setState({ jumpBackSize: Number(e.target.value) })}}
-                                value={this.state.jumpBackSize} />
+                                onChange={e => this.setJumpBackSize(Number(e.target.value))}
+                                value={this.props.ruleSet.jumpBackSize} />
                         </label>
                     </div>
 
@@ -169,8 +107,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 min={10}
                                 max={200}
                                 step={10}
-                                onChange={(e) => { this.setState({ topLimit: Number(e.target.value) })}}
-                                value={this.state.topLimit} />
+                                onChange={e => this.setTopLimit(Number(e.target.value))}
+                                value={this.props.ruleSet.topLimit} />
                         </label>
                     </div>
                 </div>
@@ -184,8 +122,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 type="number"
                                 min={5}
                                 max={8}
-                                onChange={(e) => { this.setState({ handSize: Number(e.target.value) })}}
-                                value={this.state.handSize} />
+                                onChange={e => this.setHandSize(Number(e.target.value))}
+                                value={this.props.ruleSet.handSize} />
                         </label>
                     </div>
 
@@ -197,8 +135,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 type="number"
                                 min={1}
                                 max={4}
-                                onChange={(e) => { this.setState({ cardsPerTurn: Number(e.target.value) })}}
-                                value={this.state.cardsPerTurn} />
+                                onChange={e => this.setCardsPerTurn(Number(e.target.value))}
+                                value={this.props.ruleSet.cardsPerTurn} />
                         </label>
                     </div>
 
@@ -210,8 +148,8 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
                                 type="number"
                                 min={1}
                                 max={4}
-                                onChange={(e) => { this.setState({ cardsPerTurnInEndgame: Number(e.target.value) })}}
-                                value={this.state.cardsPerTurnInEndgame} />
+                                onChange={e => this.setCardsPerTurnInEndgame(Number(e.target.value))}
+                                value={this.props.ruleSet.cardsPerTurnInEndgame} />
                         </label>
                     </div>
                 </div>
@@ -242,28 +180,65 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     }
 
     /**
-     * Starts a new game with the specified rule set.
+     * Sets the rule set to the given game mode.
      */
-    newGame() {
-        let newRuleSet = new RuleSetBuilder()
-            .withPairsOfPiles(this.state.pairsOfPiles)
-            .withJumpBackSize(this.state.jumpBackSize)
-            .withTopLimit(this.state.topLimit)
-            .withHandSize(this.state.handSize)
-            .withGameMode(this.state.gameMode)
-            .withCardsPerTurn(this.state.cardsPerTurn)
-            .withCardsPerTurnInEndgame(this.state.cardsPerTurnInEndgame)
-            .build()
-
-        this.props.newGame(newRuleSet)
+    setGameMode(gameMode: GameMode) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.gameMode = gameMode
+        this.props.setRuleSet(newRuleSet)
     }
 
     /**
-     * Toggles whether the options are shown.
+     * Sets the given number of pairs of piles in the rule set.
      */
-    toggleShowOptions() {
-        this.setState(prevState => ({
-            showOptions: !prevState.showOptions
-        }))
+    setPairsOfPiles(pairsOfPiles: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.pairsOfPiles = pairsOfPiles
+        this.props.setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given jump back size in the rule set.
+     */
+    setJumpBackSize(jumpBackSize: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.jumpBackSize = jumpBackSize
+        this.props.setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given top limit in the rule set.
+     */
+    setTopLimit(topLimit: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.topLimit = topLimit
+        this.props.setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given hand size in the rule set.
+     */
+    setHandSize(handSize: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.handSize = handSize
+        this.props.setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given cards per turn in the rule set.
+     */
+    setCardsPerTurn(cardsPerTurn: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.cardsPerTurn = cardsPerTurn
+        this.props.setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given cards per turn in endgame in the rule set.
+     */
+    setCardsPerTurnInEndgame(cardsPerTurnInEndgame: number) {
+        let newRuleSet = this.props.ruleSet
+        newRuleSet.cardsPerTurnInEndgame = cardsPerTurnInEndgame
+        this.props.setRuleSet(newRuleSet)
     }
 }

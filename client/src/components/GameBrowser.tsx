@@ -23,6 +23,11 @@ interface GameBrowserProps {
     joinGame: (roomName: string, playerName: string) => void
 
     /**
+     * Joins the given game with the given player name as a spectator.
+     */
+    spectateGame: (roomName: string, playerName: string) => void
+
+    /**
      * Leaves the server.
      */
     leaveServer: () => void
@@ -64,15 +69,25 @@ export function GameBrowser(props: GameBrowserProps) {
             <div>
                 {props.games.map(g => {
                     return (
-                        <div className="flex-center margin-bottom">
+                        <div
+                            key={g.name}
+                            className="flex-center margin-bottom">
                             <div className="margin-right">
                                 <span>{g.name}</span>
                             </div>
 
-                            <div>
+                            <div className="margin-right">
                                 <button
                                     onClick={() => props.joinGame(g.name, props.playerName)}>
                                     Join
+                                </button>
+                            </div>
+
+                            <div>
+                                <button
+                                    disabled={true}
+                                    onClick={() => props.spectateGame(g.name, props.playerName)}>
+                                    Spectate
                                 </button>
                             </div>
                         </div>

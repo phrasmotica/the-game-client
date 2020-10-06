@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 
 import { HandView } from "./HandView"
-import { GameOptions } from "./GameOptions"
 import { PileView } from "./PileView"
 
 import { GameData } from "../models/GameData"
@@ -171,10 +170,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     </button>
                 </div>
 
-                <GameOptions
-                    ruleSet={this.props.gameData.ruleSet}
-                    newGame={(ruleSet) => this.newGame(ruleSet)}
-                    leaveGame={() => this.props.leaveGame()} />
+                <div className="flex-center margin-bottom">
+                    <button
+                        onClick={() => this.props.leaveGame()}>
+                        Leave Game
+                    </button>
+                </div>
             </div>
         )
     }

@@ -3,15 +3,16 @@ import socketIOClient, { Socket } from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
 import { GameBrowser } from "./components/GameBrowser"
+import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
 
 import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
+import { RoomWith } from "./models/RoomWith"
 import { RuleSet } from "./models/RuleSet"
 
 import "./App.css"
-import { JoinGameRequest } from "./models/JoinGameRequest"
 
 /**
  * The states the app can adopt.
@@ -19,6 +20,7 @@ import { JoinGameRequest } from "./models/JoinGameRequest"
 enum AppState {
     Menu,
     Browse,
+    Lobby,
     Game
 }
 
@@ -43,14 +45,18 @@ function App() {
         socket.current = socketIOClient(endpoint)
         setPlayerName(playerName)
 
-        socket.current.emit("playerJoined", playerName)
+        socket.current.emit("joinServer", playerName)
 
-        socket.current.on("playerReceived", (allRoomData: RoomData[]) => {
+        socket.current.on("joinServerReceived", (allRoomData: RoomData[]) => {
             setAllRoomData(allRoomData)
             setState(AppState.Browse)
         })
 
-        socket.current.on("joinGameReceived", (message: Message<RoomData>) => {
+        socket.current.on("joinRoomReceived", () => {
+            setState(AppState.Lobby)
+        })
+
+        socket.current.on("gameStarted", (message: Message<RoomData>) => {
             setState(AppState.Game)
             setRoomData(RoomData.from(message.content))
         })
@@ -61,17 +67,31 @@ function App() {
     }
 
     /**
-     * Creates a game with the given name.
+     * Creates a room with the given name.
      */
-    const createGame = (gameName: string) => {
-
+    const createRoom = (roomName: string) => {
+        socket.current.emit("createRoom", roomName)
     }
 
     /**
-     * Joins the given game with the given player name.
+     * Joins the given room with the given player name.
      */
-    const joinGame = (roomName: string, playerName: string) => {
-        socket.current.emit("joinGame", new JoinGameRequest(roomName, playerName))
+    const joinRoom = (roomName: string, playerName: string) => {
+        socket.current.emit("joinRoom", new RoomWith<string>(roomName, playerName))
+    }
+
+    /**
+     * Joins the given room with the given player name as a spectator.
+     */
+    const spectateGame = (roomName: string, playerName: string) => {
+        socket.current.emit("spectateRoom", new RoomWith<string>(roomName, playerName))
+    }
+
+    /**
+     * Starts a game with the given rule set.
+     */
+    const startGame = (roomName: string) => {
+        socket.current.emit("startGame", roomName)
     }
 
     /**
@@ -95,6 +115,14 @@ function App() {
     }
 
     /**
+     * Sets the given rule set for the game.
+     */
+    const setRuleSet = (ruleSet: RuleSet) => {
+        let body = new RoomWith(roomData.name, ruleSet)
+        socket.current.emit("setRuleSet", body)
+    }
+
+    /**
      * Ends the turn.
      */
     const endTurn = () => {
@@ -102,9 +130,10 @@ function App() {
     }
 
     /**
-     * Leaves the game.
+     * Leaves the room.
      */
-    const leaveGame = () => {
+    const leaveRoom = () => {
+        socket.current.emit("leaveRoom", new RoomWith<string>(roomData.name, playerName))
         setRoomData(RoomData.empty())
         setState(AppState.Browse)
     }
@@ -117,8 +146,6 @@ function App() {
         setPlayerName("")
         setState(AppState.Menu)
     }
-
-    console.log(roomData.gameData.hands)
 
     let contents = null
     switch (state) {
@@ -133,9 +160,20 @@ function App() {
                 <GameBrowser
                     playerName={playerName}
                     games={allRoomData}
-                    createGame={createGame}
-                    joinGame={joinGame}
+                    createGame={createRoom}
+                    joinGame={joinRoom}
+                    spectateGame={spectateGame}
                     leaveServer={leaveServer} />
+            )
+            break
+        case AppState.Lobby:
+            contents = (
+                <GameLobby
+                    playerName={playerName}
+                    roomData={roomData}
+                    startGame={startGame}
+                    setRuleSet={setRuleSet}
+                    leaveRoom={leaveRoom} />
             )
             break
         case AppState.Game:
@@ -146,7 +184,7 @@ function App() {
                     newGame={newGame}
                     setGameData={setGameData}
                     endTurn={endTurn}
-                    leaveGame={leaveGame} />
+                    leaveGame={leaveRoom} />
             )
             break
         default:
@@ -166,20 +204,6 @@ function App() {
                             <span>
                                 Version 1.0
                             </span>
-                        </div>
-
-                        <div>
-                            <div>
-                                <span>
-                                    Room ID: {roomData?.name ?? "-"}
-                                </span>
-                            </div>
-
-                            <div>
-                                <span>
-                                    Players: {roomData?.gameData.players.join(", ")}
-                                </span>
-                            </div>
                         </div>
 
                         <div>

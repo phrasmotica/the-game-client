@@ -58,6 +58,24 @@ export class RoomDataManager {
     }
 
     /**
+     * Removes the given player from whichever rooms they're in. Returns the names of those rooms.
+     */
+    removePlayer(playerName: string) {
+        let rooms = []
+
+        for (let room of this.getAllRoomData()) {
+            if (room.playerIsPresent(playerName)) {
+                console.log(`Removed player ${playerName} from room ${room.name}`)
+
+                room.removePlayer(playerName)
+                rooms.push(room.name)
+            }
+        }
+
+        return rooms
+    }
+
+    /**
      * Creates a room with the given name.
      */
     initialise(roomName: string) {
@@ -67,26 +85,21 @@ export class RoomDataManager {
     /**
      * Starts a new game in the given room.
      */
-    newGame(roomName: string, ruleSet: RuleSet) {
-        console.log(`Starting new game in room ${roomName}`)
+    startGame(roomName: string) {
+        if (this.roomExists(roomName)) {
+            console.log(`Starting new game in room ${roomName}`)
 
-        let newGameData = GameData.withRuleSet(ruleSet)
-        let players = this.getPlayers(roomName)
-        for (let player of players) {
-            this.addToGameData(player, newGameData)
-            newGameData.dealHand(player)
+            this.getRoomData(roomName).startGame()
         }
-
-        this.roomGameData[roomName].gameData = newGameData
     }
 
     /**
      * Adds the given player to the given room.
      */
-    addToRoom(playerName: string, roomName: string) {
+    addPlayerToRoom(playerName: string, roomName: string) {
         // TODO: enforce player limit in each room
         let roomData = this.getRoomData(roomName)
-        this.addToGameData(playerName, roomData.gameData)
+        roomData.addPlayer(playerName)
     }
 
     /**
@@ -221,12 +234,10 @@ export class RoomDataManager {
     /**
      * Removes the given player from the given room.
      */
-    removeFromGame(playerName: string, roomName: string) {
-        console.log(`Removing player ${playerName} from room ${roomName}`)
-
+    removeFromRoom(playerName: string, roomName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
-            gameData.removePlayer(playerName)
+            let roomData = this.getRoomData(roomName)
+            roomData.removePlayer(playerName)
         }
         else {
             console.warn(`Tried to remove player ${playerName} from non-existent room ${roomName}!`)
@@ -242,6 +253,18 @@ export class RoomDataManager {
         }
         else {
             console.error(`Tried to set game data for non-existent room "${roomName}"!`)
+        }
+    }
+
+    /**
+     * Sets the rule set for the game in the given room.
+     */
+    setRuleSet(roomName: string, ruleSet: RuleSet) {
+        if (this.roomExists(roomName)) {
+            this.roomGameData[roomName].gameData.setRuleSet(ruleSet)
+        }
+        else {
+            console.error(`Tried to set rule set for non-existent room "${roomName}"!`)
         }
     }
 

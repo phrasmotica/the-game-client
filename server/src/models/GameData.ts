@@ -163,6 +163,40 @@ export class GameData {
     }
 
     /**
+     * Sets this game's rule set to the given one.
+     */
+    setRuleSet(ruleSet: RuleSet) {
+        this.ruleSet = ruleSet
+        this.ready()
+    }
+
+    /**
+     * Readies the game.
+     */
+    private ready() {
+        this.deck = GameData.createDeck(this.ruleSet)
+        this.piles = GameData.createPiles(this.ruleSet)
+    }
+
+    /**
+     * Starts the game with the given players and rule set.
+     */
+    start(players: string[]) {
+        this.players = players
+
+        for (let player of this.players) {
+            this.dealHand(player)
+        }
+    }
+
+    /**
+     * Returns whether this game is in progress.
+     */
+    isInProgress() {
+        return !this.isWon && !this.isLost
+    }
+
+    /**
      * Creates a hand for the rule set from the given deck.
      */
     dealHand(playerName: string) {
@@ -192,7 +226,7 @@ export class GameData {
      * Removes the given player from the game.
      */
     removePlayer(playerName: string) {
-        if (this.players.includes(playerName)) {
+        if (this.playerIsPresent(playerName)) {
             // remove player from list
             let index = this.players.indexOf(playerName)
             this.players.splice(index, 1)
@@ -209,7 +243,14 @@ export class GameData {
             }
         }
         else {
-            console.error(`Tried to remove player ${playerName} but that player is not in the room!`)
+            console.warn(`Tried to remove player ${playerName} but they were not in the game!`)
         }
+    }
+
+    /**
+     * Returns whether the given player is in this game.
+     */
+    playerIsPresent(playerName: string) {
+        return this.players.includes(playerName)
     }
 }
