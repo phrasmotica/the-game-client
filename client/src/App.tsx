@@ -77,14 +77,14 @@ function App() {
      * Joins the given room with the given player name.
      */
     const joinRoom = (roomName: string, playerName: string) => {
-        socket.current.emit("joinRoom", new RoomWith<string>(roomName, playerName))
+        socket.current.emit("joinRoom", new RoomWith(roomName, playerName))
     }
 
     /**
      * Joins the given room with the given player name as a spectator.
      */
     const spectateGame = (roomName: string, playerName: string) => {
-        socket.current.emit("spectateRoom", new RoomWith<string>(roomName, playerName))
+        socket.current.emit("spectateRoom", new RoomWith(roomName, playerName))
     }
 
     /**
@@ -92,6 +92,23 @@ function App() {
      */
     const startGame = (roomName: string) => {
         socket.current.emit("startGame", roomName)
+    }
+
+    /**
+     * Adds the given player's starting player vote in the given room.
+     */
+    const addVoteForStartingPlayer = (startingPlayer: string) => {
+        let data: [string, string] = [playerName, startingPlayer]
+        let req = new RoomWith(roomData.name, data)
+        socket.current.emit("addVoteForStartingPlayer", req)
+    }
+
+    /**
+     * Removes the given player's starting player vote in the given room.
+     */
+    const removeVoteForStartingPlayer = () => {
+        let req = new RoomWith(roomData.name, playerName)
+        socket.current.emit("removeVoteForStartingPlayer", req)
     }
 
     /**
@@ -133,7 +150,7 @@ function App() {
      * Leaves the room.
      */
     const leaveRoom = () => {
-        socket.current.emit("leaveRoom", new RoomWith<string>(roomData.name, playerName))
+        socket.current.emit("leaveRoom", new RoomWith(roomData.name, playerName))
         setRoomData(RoomData.empty())
         setState(AppState.Browse)
     }
@@ -181,6 +198,8 @@ function App() {
                 <GameBoard
                     playerName={playerName}
                     gameData={roomData.gameData}
+                    addStartVote={addVoteForStartingPlayer}
+                    removeStartVote={removeVoteForStartingPlayer}
                     newGame={newGame}
                     setGameData={setGameData}
                     endTurn={endTurn}

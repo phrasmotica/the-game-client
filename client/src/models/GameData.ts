@@ -1,6 +1,7 @@
 import { Deck } from "./Deck"
 import { Hand } from "./Hand"
 import { Direction, Pile } from "./Pile"
+import { Vote } from "./voting/Vote"
 import { RuleSet } from "./RuleSet"
 
 /**
@@ -8,6 +9,15 @@ import { RuleSet } from "./RuleSet"
  */
 type PlayerHandMap = {
     [playerName: string] : Hand
+}
+
+/**
+ * Represents the results of setting the starting player from a vote.
+ */
+export enum GameStartResult {
+    Success,
+    NoStartingPlayer,
+    NonExistent
 }
 
 /**
@@ -38,6 +48,21 @@ export class GameData {
      * The piles for the game.
      */
     piles: Pile[]
+
+    /**
+     * Whether the game has started.
+     */
+    hasStarted: boolean
+
+    /**
+     * Map of players' votes for the starting player.
+     */
+    startingPlayerVote: Vote
+
+    /**
+     * The index of the player whose turn it is.
+     */
+    startingPlayer: string | undefined
 
     /**
      * The number of turns played.
@@ -78,6 +103,9 @@ export class GameData {
         deck: Deck,
         hands: PlayerHandMap,
         piles: Pile[],
+        hasStarted: boolean,
+        startingPlayerVote: Vote,
+        startingPlayer: string | undefined,
         turnsPlayed: number,
         currentPlayerIndex: number,
         cardToPlay: number | undefined,
@@ -91,6 +119,9 @@ export class GameData {
         this.deck = deck
         this.hands = hands
         this.piles = piles
+        this.hasStarted = hasStarted
+        this.startingPlayerVote = startingPlayerVote
+        this.startingPlayer = startingPlayer
         this.turnsPlayed = turnsPlayed
         this.currentPlayerIndex = currentPlayerIndex
         this.cardToPlay = cardToPlay
@@ -113,7 +144,22 @@ export class GameData {
         let deck = GameData.createDeck(ruleSet)
         let piles = GameData.createPiles(ruleSet)
 
-        return new GameData([], ruleSet, deck, {}, piles, 0, 0, undefined, 0, false, false)
+        return new GameData(
+            [],
+            ruleSet,
+            deck,
+            {},
+            piles,
+            false,
+            Vote.empty(),
+            undefined,
+            0,
+            0,
+            undefined,
+            0,
+            false,
+            false
+        )
     }
 
     /**
@@ -125,7 +171,10 @@ export class GameData {
             RuleSet.from(gameData.ruleSet),
             Deck.from(gameData.deck),
             gameData.hands,
-            gameData.piles.map(p => Pile.from(p)),
+            gameData.piles.map(Pile.from),
+            gameData.hasStarted,
+            Vote.from(gameData.startingPlayerVote),
+            gameData.startingPlayer,
             gameData.turnsPlayed,
             gameData.currentPlayerIndex,
             gameData.cardToPlay,
@@ -187,13 +236,58 @@ export class GameData {
         for (let player of this.players) {
             this.dealHand(player)
         }
+
+        this.startingPlayerVote.setVoters(players)
+        this.hasStarted = true
+    }
+
+    /**
+     * Adds a starting player vote for the given player.
+     */
+    addStartingPlayerVote(playerName: string, startingPlayerName: string) {
+        return this.startingPlayerVote.addVote(playerName, startingPlayerName)
+    }
+
+    /**
+     * Removes the starting player vote from the given player.
+     */
+    removeStartingPlayerVote(playerName: string) {
+        return this.startingPlayerVote.removeVote(playerName)
+    }
+
+    /**
+     * Returns whether the starting player vote is complete.
+     */
+    isStartingPlayerVoteComplete() {
+        return this.startingPlayerVote.isComplete()
+    }
+
+    /**
+     * Sets the starting player for this game.
+     */
+    setStartingPlayer() {
+        this.startingPlayer = this.startingPlayerVote.getWinner()
+        if (this.startingPlayer !== undefined) {
+            this.startingPlayerVote.close()
+            this.currentPlayerIndex = this.players.indexOf(this.startingPlayer)
+            return GameStartResult.Success
+        }
+
+        return GameStartResult.NoStartingPlayer
     }
 
     /**
      * Returns whether this game is in progress.
      */
     isInProgress() {
-        return !this.isWon && !this.isLost
+        return this.hasStarted && this.startingPlayerChosen()
+    }
+
+    /**
+     * Returns whether the starting player has been chosen.
+     */
+    startingPlayerChosen() {
+        return this.startingPlayer !== undefined
     }
 
     /**

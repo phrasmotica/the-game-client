@@ -2,6 +2,7 @@ import React, { Component } from "react"
 
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
+import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { GameData } from "../models/GameData"
 import { Direction, Pile } from "../models/Pile"
@@ -17,6 +18,16 @@ interface GameBoardProps {
      * The rule set.
      */
     gameData: GameData
+
+    /**
+     * Adds the given player's starting player vote.
+     */
+    addStartVote: (startingPlayer: string) => void
+
+    /**
+     * Removes the given player's starting player vote.
+     */
+    removeStartVote: () => void
 
     /**
      * Starts a new game.
@@ -100,15 +111,24 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
-        let turnIndicatorText = "It's your turn!"
-        if (this.isWon()) {
-            turnIndicatorText = "You won!"
+        let turnIndicator = <span>It's your turn!</span>
+        if (!this.isInProgress()) {
+            turnIndicator = (
+                <StartingPlayerSelector
+                    players={this.props.gameData.players}
+                    hasVoted={this.props.gameData.startingPlayerVote.hasVoted(this.props.playerName)}
+                    confirm={this.props.addStartVote}
+                    cancel={this.props.removeStartVote} />
+            )
+        }
+        else if (this.isWon()) {
+            turnIndicator = <span>You won!</span>
         }
         else if (this.isLost()) {
-            turnIndicatorText = "You lost!"
+            turnIndicator = <span>You lost!</span>
         }
         else if (!this.isMyTurn()) {
-            turnIndicatorText = `It's ${this.props.gameData.getCurrentPlayer()}'s turn.`
+            turnIndicator = <span>{`It's ${this.props.gameData.getCurrentPlayer()}'s turn.`}</span>
         }
 
         let gameIsOver = this.isLost() || this.isWon()
@@ -128,7 +148,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 </div>
 
                 <div>
-                    <span>{turnIndicatorText}</span>
+                    {turnIndicator}
                 </div>
 
                 <div>
@@ -178,6 +198,13 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 </div>
             </div>
         )
+    }
+
+    /**
+     * Returns whether the game is in progress.
+     */
+    isInProgress() {
+        return this.props.gameData.isInProgress()
     }
 
     /**

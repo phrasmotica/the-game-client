@@ -1,15 +1,17 @@
 import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
+import { TupleType } from "typescript"
 
 import { RoomDataManager } from "./data/RoomDataManager"
 import { SocketManager } from "./data/SocketManager"
 
-import { GameData } from "./models/GameData"
+import { GameData, GameStartResult } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 import { RoomWith } from "./models/RoomWith"
 import { RuleSet } from "./models/RuleSet"
+import { VoteResult } from "./models/voting/Vote"
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV || "local"}`})
 
@@ -54,6 +56,7 @@ const getNumberOfClientsInRoom = (namespace: string, roomName: string) => {
 const cleanRoom = (roomName: string) => {
     let roomIsEmpty = getNumberOfClientsInRoom("/", roomName) <= 0
     if (roomIsEmpty) {
+        roomDataManager.clearStartingPlayerVote(roomName)
         roomDataManager.setRuleSet(roomName, RuleSet.default())
 
         let shouldRemoveRoom = !roomRetentionList.includes(roomName)
@@ -108,10 +111,82 @@ io.on("connection", (socket: Socket) => {
 
     // TODO: allow players to join game as a spectator
 
-    socket.on("startGame", () => {
+    socket.on("startGame", (roomName: string) => {
         roomDataManager.startGame(roomName)
 
         io.in(roomName).emit("gameStarted", createRoomDataMessage(roomName))
+    })
+
+    socket.on("addVoteForStartingPlayer", (req: RoomWith<[string, string]>) => {
+        let roomName = req.roomName
+        let playerName = req.data[0]
+        let startingPlayerName = req.data[1]
+
+        let voteResult = roomDataManager.addStartingPlayerVote(roomName, playerName, startingPlayerName)
+        switch (voteResult) {
+            case VoteResult.Success:
+                console.log(`Player ${playerName} voted for ${startingPlayerName} to start game in room ${roomName}.`)
+                break;
+
+            case VoteResult.Denied:
+                console.log(`Player ${playerName} was not allowed to vote for a starting player in room ${roomName}.`)
+                break;
+
+            case VoteResult.Closed:
+                console.log(`Player ${playerName} could not cast their starting player vote in room ${roomName} because the vote is closed!`)
+                break;
+
+            case VoteResult.NonExistent:
+                console.log(`Player ${playerName} could not cast their starting player vote in non-existent room ${roomName}!`)
+                break;
+        }
+
+        let voteComplete = roomDataManager.isStartingPlayerVoteComplete(roomName)
+        if (voteComplete) {
+            let gameStartResult = roomDataManager.setStartingPlayer(roomName)
+            switch (gameStartResult) {
+                case GameStartResult.Success:
+                    let startingPlayer = roomDataManager.getStartingPlayer(roomName)
+                    console.log(`Player ${startingPlayer} has been voted to start the game in room ${roomName}.`)
+                    break;
+
+                case GameStartResult.NoStartingPlayer:
+                    console.log(`Could not set starting player in room ${roomName} as no player has won the vote!`)
+                    break;
+
+                case GameStartResult.NonExistent:
+                    console.log(`Could not set starting player in non-existent room ${roomName}!`)
+                    break;
+            }
+        }
+
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+    })
+
+    socket.on("removeVoteForStartingPlayer", (req: RoomWith<string>) => {
+        let roomName = req.roomName
+        let playerName = req.data
+
+        let voteResult = roomDataManager.removeStartingPlayerVote(roomName, playerName)
+        switch (voteResult) {
+            case VoteResult.Success:
+                console.log(`Player ${playerName} removed their starting player vote in room ${roomName}.`)
+                break;
+
+            case VoteResult.Denied:
+                console.log(`Player ${playerName} was not allowed to remove a vote for a starting player in room ${roomName}.`)
+                break;
+
+            case VoteResult.Closed:
+                console.log(`Player ${playerName} could not remove their starting player vote in room ${roomName} because the vote is closed!`)
+                break;
+
+            case VoteResult.NonExistent:
+                console.log(`Player ${playerName} could not cast their starting player vote in non-existent room ${roomName}!`)
+                break;
+        }
+
+        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
     })
 
     socket.on("roomData", (message: Message<RoomData>) => {

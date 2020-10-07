@@ -1,7 +1,8 @@
 import { Hand } from "../models/Hand"
-import { GameData } from "../models/GameData"
+import { GameData, GameStartResult } from "../models/GameData"
 import { RoomData } from "../models/RoomData"
 import { RuleSet } from "../models/RuleSet"
+import { VoteResult } from "../models/voting/Vote"
 
 /**
  * Represents a map of room names to room data.
@@ -38,6 +39,13 @@ export class RoomDataManager {
      */
     getPlayers(roomName: string) {
         return this.getRoomData(roomName)?.gameData.players ?? []
+    }
+
+    /**
+     * Returns the starting player in the given room.
+     */
+    getStartingPlayer(roomName: string) {
+        return this.getRoomData(roomName)?.gameData.startingPlayer
     }
 
     /**
@@ -107,11 +115,6 @@ export class RoomDataManager {
      */
     addToGameData(playerName: string, gameData: GameData) {
         gameData.players.push(playerName)
-
-        // TODO: allow the players to decide who starts
-        if (gameData.players.length === 1) {
-            gameData.currentPlayerIndex = 0
-        }
     }
 
     /**
@@ -122,6 +125,72 @@ export class RoomDataManager {
 
         let roomData = this.getRoomData(roomName)
         roomData.gameData.dealHand(playerName)
+    }
+
+    /**
+     * Adds a starting player vote from the given player in the given room.
+     */
+    addStartingPlayerVote(roomName: string, playerName: string, startingPlayerName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            return gameData.addStartingPlayerVote(playerName, startingPlayerName)
+        }
+        else {
+            console.warn(`Tried to add starting player vote to non-existent room ${roomName}!`)
+        }
+
+        return VoteResult.NonExistent
+    }
+
+    /**
+     * Removes a starting player vote from the given player in the given room.
+     */
+    removeStartingPlayerVote(roomName: string, playerName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            return gameData.removeStartingPlayerVote(playerName)
+        }
+        else {
+            console.warn(`Tried to remove starting player vote from non-existent room ${roomName}!`)
+        }
+
+        return VoteResult.NonExistent
+    }
+
+    /**
+     * Returns whether the starting player vote is complete.
+     */
+    isStartingPlayerVoteComplete(roomName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            return gameData.isStartingPlayerVoteComplete()
+        }
+
+        return false
+    }
+
+    /**
+     * Closes the starting player vote and sets the starting player accordingly in the given room.
+     */
+    setStartingPlayer(roomName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            return gameData.setStartingPlayer()
+        }
+
+        return GameStartResult.NonExistent
+    }
+
+    /**
+     * Clears the starting player vote in the given room.
+     */
+    clearStartingPlayerVote(roomName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            return gameData.clearStartingPlayerVote()
+        }
+
+        return false
     }
 
     /**
