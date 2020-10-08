@@ -19,6 +19,13 @@ export enum VoteResult {
 }
 
 /**
+ * Represents the ways the winner of a vote can be calculated.
+ */
+export enum VoteCalculationMethod {
+    Unanimous
+}
+
+/**
  * Stores a map of voters to votees.
  */
 export class Vote {
@@ -33,9 +40,9 @@ export class Vote {
     voteMap: VoteMap
 
     /**
-     * The vote calculator.
+     * The vote calculation method.
      */
-    voteCalculator: IVoteCalculator
+    voteCalculationMethod: VoteCalculationMethod
 
     /**
      * Whether the vote is closed.
@@ -48,12 +55,12 @@ export class Vote {
     private constructor(
         voters: string[],
         voteMap: VoteMap,
-        voteCalculator: IVoteCalculator,
+        voteCalculationMethod: VoteCalculationMethod,
         isClosed: boolean
     ) {
         this.voters = voters
         this.voteMap = voteMap
-        this.voteCalculator = voteCalculator
+        this.voteCalculationMethod = voteCalculationMethod
         this.isClosed = isClosed
     }
 
@@ -112,10 +119,23 @@ export class Vote {
     }
 
     /**
+     * Returns the vote calculator to use for this vote.
+     */
+    getVoteCalculator(): IVoteCalculator {
+        switch (this.voteCalculationMethod) {
+            case VoteCalculationMethod.Unanimous:
+                return new UnanimousVoteCalculator()
+
+            default:
+                return new UnanimousVoteCalculator()
+        }
+    }
+
+    /**
      * Returns the winner of the vote.
      */
     getWinner() {
-        return this.voteCalculator.getWinner(this)
+        return this.getVoteCalculator().getWinner(this)
     }
 
     /**
@@ -129,8 +149,7 @@ export class Vote {
      * Returns an empty vote.
      */
     static empty() {
-        let voteCalculator = new UnanimousVoteCalculator()
-        return new Vote([], {}, voteCalculator, false)
+        return new Vote([], {}, VoteCalculationMethod.Unanimous, false)
     }
 
     /**
@@ -140,10 +159,7 @@ export class Vote {
         return new Vote(
             vote.voters,
             vote.voteMap,
-
-            // TODO: construct this concretely somehow? Will need to get around the fact it's an interface type...
-            vote.voteCalculator,
-
+            vote.voteCalculationMethod,
             vote.isClosed
         )
     }
