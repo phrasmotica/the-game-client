@@ -39,7 +39,7 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
     return (
         <div>
             <div className="flex-center margin-bottom">
-                <div className="margin-right">
+                <div className="starting-player-selector-text margin-right">
                     <span>
                         Select which player will start:
                     </span>

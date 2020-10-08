@@ -157,6 +157,10 @@
   justify-content: space-around;
 }
 
+/* .space-between {
+  justify-content: space-between;
+} */
+
 .half-width {
   width: 50%
 }
@@ -175,6 +179,15 @@
   justify-content: center;
   margin: 5px 0px;
   font-size: 18px;
+}
+
+.rule-summary {
+  text-align: left;
+  font-size: 10pt;
+}
+
+.starting-player-selector-text {
+  font-size: 12pt;
 }
 
 .hand {

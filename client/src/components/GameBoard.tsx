@@ -2,6 +2,7 @@ import React, { Component } from "react"
 
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
+import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { GameData } from "../models/GameData"
@@ -111,6 +112,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
+        let ruleSummary = <RuleSummary ruleSet={ruleSet} />
+
         let turnIndicator = <span>It's your turn!</span>
         if (!this.isInProgress()) {
             turnIndicator = (
@@ -147,7 +150,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     {descendingPiles}
                 </div>
 
-                <div>
+                <div className="flex-center space-around">
+                    {ruleSummary}
                     {turnIndicator}
                 </div>
 
