@@ -60,7 +60,7 @@ export class GameData {
     startingPlayerVote: Vote
 
     /**
-     * The index of the player whose turn it is.
+     * The starting player.
      */
     startingPlayer: string | undefined
 
@@ -277,11 +277,19 @@ export class GameData {
     }
 
     /**
-     * Clears the starting player vote.
+     * Clears data from a lingering game.
      */
-    clearStartingPlayerVote() {
+    clear() {
         this.startingPlayer = undefined
         this.startingPlayerVote = Vote.empty()
+        this.turnsPlayed = 0
+        this.isLost = false
+        this.isWon = false
+        this.hasStarted = false
+        this.cardToPlay = undefined
+        this.cardsPlayedThisTurn = 0
+        this.currentPlayerIndex = 0
+        this.players = []
     }
 
     /**

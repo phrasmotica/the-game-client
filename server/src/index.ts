@@ -56,7 +56,7 @@ const getNumberOfClientsInRoom = (namespace: string, roomName: string) => {
 const cleanRoom = (roomName: string) => {
     let roomIsEmpty = getNumberOfClientsInRoom("/", roomName) <= 0
     if (roomIsEmpty) {
-        roomDataManager.clearStartingPlayerVote(roomName)
+        roomDataManager.clear(roomName)
         roomDataManager.setRuleSet(roomName, RuleSet.default())
 
         let shouldRemoveRoom = !roomRetentionList.includes(roomName)

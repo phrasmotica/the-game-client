@@ -182,12 +182,12 @@ export class RoomDataManager {
     }
 
     /**
-     * Clears the starting player vote in the given room.
+     * Clears the game data in the given room.
      */
-    clearStartingPlayerVote(roomName: string) {
+    clear(roomName: string) {
         if (this.roomExists(roomName)) {
             let gameData = this.getRoomData(roomName).gameData
-            return gameData.clearStartingPlayerVote()
+            return gameData.clear()
         }
 
         return false
