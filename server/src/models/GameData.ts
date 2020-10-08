@@ -173,7 +173,7 @@ export class GameData {
             gameData.hands,
             gameData.piles.map(Pile.from),
             gameData.hasStarted,
-            gameData.startingPlayerVote,
+            Vote.from(gameData.startingPlayerVote),
             gameData.startingPlayer,
             gameData.turnsPlayed,
             gameData.currentPlayerIndex,

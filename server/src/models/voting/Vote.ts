@@ -140,7 +140,10 @@ export class Vote {
         return new Vote(
             vote.voters,
             vote.voteMap,
+
+            // TODO: construct this concretely somehow? Will need to get around the fact it's an interface type...
             vote.voteCalculator,
+
             vote.isClosed
         )
     }

@@ -277,6 +277,14 @@ export class GameData {
     }
 
     /**
+     * Clears the starting player vote.
+     */
+    clearStartingPlayerVote() {
+        this.startingPlayer = undefined
+        this.startingPlayerVote = Vote.empty()
+    }
+
+    /**
      * Returns whether this game is in progress.
      */
     isInProgress() {
