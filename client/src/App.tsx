@@ -48,8 +48,26 @@ function App() {
         socket.current.emit("joinServer", playerName)
 
         socket.current.on("joinServerReceived", (allRoomData: RoomData[]) => {
-            setAllRoomData(allRoomData)
+            setAllRoomData(allRoomData.map(RoomData.from))
             setState(AppState.Browse)
+        })
+
+        socket.current.on("lobbyData", (message: Message<RoomData>) => {
+            let roomData = RoomData.from(message.content)
+
+            let newAllRoomData = allRoomData
+
+            let index = allRoomData.findIndex(r => r.name === roomData.name)
+            if (index >= 0) {
+                newAllRoomData[index] = roomData
+            }
+            else {
+                // TODO: this is a workaround for allRoomData sometimes being an empty list,
+                // even though it should never be once the player has joined the server
+                newAllRoomData.push(roomData)
+            }
+
+            setAllRoomData(newAllRoomData)
         })
 
         socket.current.on("joinRoomReceived", () => {

@@ -68,6 +68,9 @@ export function GameBrowser(props: GameBrowserProps) {
 
             <div>
                 {props.games.map(g => {
+                    let canJoin = !g.gameData.isInProgress()
+                    let canSpectate = false
+
                     return (
                         <div
                             key={g.name}
@@ -78,6 +81,7 @@ export function GameBrowser(props: GameBrowserProps) {
 
                             <div className="margin-right">
                                 <button
+                                    disabled={!canJoin}
                                     onClick={() => props.joinGame(g.name, props.playerName)}>
                                     Join
                                 </button>
@@ -85,7 +89,7 @@ export function GameBrowser(props: GameBrowserProps) {
 
                             <div>
                                 <button
-                                    disabled={true}
+                                    disabled={!canSpectate}
                                     onClick={() => props.spectateGame(g.name, props.playerName)}>
                                     Spectate
                                 </button>

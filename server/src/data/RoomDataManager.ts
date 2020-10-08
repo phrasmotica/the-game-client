@@ -1,5 +1,5 @@
-import { Hand } from "../models/Hand"
 import { GameData, GameStartResult } from "../models/GameData"
+import { Hand } from "../models/Hand"
 import { RoomData } from "../models/RoomData"
 import { RuleSet } from "../models/RuleSet"
 import { VoteResult } from "../models/voting/Vote"

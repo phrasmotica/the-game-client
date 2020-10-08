@@ -84,21 +84,30 @@ io.on("connection", (socket: Socket) => {
 
     socket.on("joinRoom", (req: RoomWith<string>) => {
         let roomName = req.roomName
-        socket.join(roomName)
-
         let playerName = req.data
-        console.log(`Player ${playerName} joined room ${roomName}.`)
 
-        // create game data for the room if necessary
-        roomDataManager.ensureRoomExists(roomName)
+        if (roomDataManager.roomExists(roomName)) {
+            let roomData = roomDataManager.getRoomData(roomName)
+            if (!roomData.gameData.isInProgress()) {
+                socket.join(roomName)
 
-        // add the new player to the room
-        roomDataManager.addPlayerToRoom(playerName, roomName)
+                console.log(`Player ${playerName} joined room ${roomName}.`)
 
-        socket.emit("joinRoomReceived")
+                // add the new player to the room
+                roomDataManager.addPlayerToRoom(playerName, roomName)
 
-        // send room data to all clients
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+                socket.emit("joinRoomReceived")
+
+                // send room data to all clients
+                io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+            }
+            else {
+                console.warn(`Player ${playerName} could not join room ${roomName} because a game is in progress!`)
+            }
+        }
+        else {
+            console.warn(`Player ${playerName} could not join non-existent room ${roomName}!`)
+        }
     })
 
     socket.on("setRuleSet", (req: RoomWith<RuleSet>) => {
@@ -160,7 +169,9 @@ io.on("connection", (socket: Socket) => {
             }
         }
 
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        let message = createRoomDataMessage(roomName)
+        io.in(roomName).emit("roomData", message)
+        io.emit("lobbyData", message)
     })
 
     socket.on("removeVoteForStartingPlayer", (req: RoomWith<string>) => {
