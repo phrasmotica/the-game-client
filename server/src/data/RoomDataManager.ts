@@ -111,6 +111,14 @@ export class RoomDataManager {
     }
 
     /**
+     * Adds the given player to the given room as a spectator.
+     */
+    addSpectatorToRoom(playerName: string, roomName: string) {
+        let roomData = this.getRoomData(roomName)
+        roomData.addSpectator(playerName)
+    }
+
+    /**
      * Adds the given player to the game.
      */
     addToGameData(playerName: string, gameData: GameData) {
@@ -186,8 +194,8 @@ export class RoomDataManager {
      */
     clear(roomName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
-            return gameData.clear()
+            let roomData = this.getRoomData(roomName)
+            return roomData.clear()
         }
 
         return false
@@ -196,21 +204,34 @@ export class RoomDataManager {
     /**
      * Processes the game data for the given room.
      */
-    processGameData(roomName: string) {
+    onPlayCard(roomName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
-            this.checkForWin(gameData)
-            this.checkForLoss(gameData)
+            this.checkForWin(roomName)
         }
         else {
-            console.warn(`Tried to process game data for non-existent room ${roomName}!`)
+            console.warn(`Tried to play card in non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
+     * Ends the turn in the given room.
+     */
+    onTurnEnd(roomName: string) {
+        if (this.roomExists(roomName)) {
+            this.replenish(roomName)
+            this.checkForLoss(roomName)
+            this.nextPlayer(roomName)
+        }
+        else {
+            console.warn(`Tried to end turn in non-existent room ${roomName}!`)
         }
     }
 
     /**
      * Checks for the game being won.
      */
-    checkForWin(gameData: GameData) {
+    private checkForWin(roomName: string) {
+        let gameData = this.getRoomData(roomName).gameData
         let hands = Object.values(gameData.hands).map(Hand.from)
 
         let handsEmpty = true
@@ -222,14 +243,21 @@ export class RoomDataManager {
         }
 
         if (gameData.deck.isEmpty() && handsEmpty) {
+            console.log(`Game is won in room ${roomName}!`)
             gameData.isWon = true
+
+            // TODO: this isn't being sent to the client properly...
+        }
+        else {
+            console.log(`Game is not yet won in room ${roomName}.`)
         }
     }
 
     /**
      * Checks for the game being lost.
      */
-    checkForLoss(gameData: GameData) {
+    private checkForLoss(roomName: string) {
+        let gameData = this.getRoomData(roomName).gameData
         let hands = Object.values(gameData.hands).map(Hand.from)
 
         for (let pile of gameData.piles) {
@@ -259,7 +287,11 @@ export class RoomDataManager {
         }
 
         if (!gameData.deck.isEmpty() && noCardsCanBePlayed) {
+            console.log(`Game is lost in room ${roomName}!`)
             gameData.isLost = true
+        }
+        else {
+            console.log(`Game is not yet lost in room ${roomName}.`)
         }
     }
 
@@ -310,6 +342,19 @@ export class RoomDataManager {
         }
         else {
             console.warn(`Tried to remove player ${playerName} from non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
+     * Removes the given spectator from the given room.
+     */
+    removeSpectatorFromRoom(playerName: string, roomName: string) {
+        if (this.roomExists(roomName)) {
+            let roomData = this.getRoomData(roomName)
+            roomData.removeSpectator(playerName)
+        }
+        else {
+            console.warn(`Tried to remove spectator ${playerName} from non-existent room ${roomName}!`)
         }
     }
 

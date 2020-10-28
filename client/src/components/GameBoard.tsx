@@ -1,10 +1,12 @@
 import React, { Component } from "react"
 
+import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
+import { ClientMode } from "../models/ClientMode"
 import { GameData } from "../models/GameData"
 import { Direction, Pile } from "../models/Pile"
 import { RuleSet } from "../models/RuleSet"
@@ -19,6 +21,11 @@ interface GameBoardProps {
      * The rule set.
      */
     gameData: GameData
+
+    /**
+     * The client mode.
+     */
+    clientMode: ClientMode
 
     /**
      * Adds the given player's starting player vote.
@@ -39,6 +46,11 @@ interface GameBoardProps {
      * Sets the game data.
      */
     setGameData: (gameData: GameData) => void
+
+    /**
+     * Plays a card.
+     */
+    playCard: (gameData: GameData) => void
 
     /**
      * Ends the turn.
@@ -116,55 +128,80 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         let turnIndicator = <span>It's your turn!</span>
         if (!this.isInProgress()) {
-            turnIndicator = (
-                <StartingPlayerSelector
-                    players={this.props.gameData.players}
-                    hasVoted={this.props.gameData.startingPlayerVote.hasVoted(this.props.playerName)}
-                    confirm={this.props.addStartVote}
-                    cancel={this.props.removeStartVote} />
-            )
+            if (this.isPlayerClient()) {
+                turnIndicator = (
+                    <StartingPlayerSelector
+                        players={this.props.gameData.players}
+                        hasVoted={this.props.gameData.startingPlayerVote.hasVoted(this.props.playerName)}
+                        confirm={this.props.addStartVote}
+                        cancel={this.props.removeStartVote} />
+                )
+            }
+            else {
+                turnIndicator = <span>Starting player vote in progress...</span>
+            }
         }
         else if (this.isWon()) {
-            turnIndicator = <span>You won!</span>
+            if (this.isPlayerClient()) {
+                turnIndicator = <span>You won!</span>
+            }
+            else {
+                turnIndicator = <span>Game won!</span>
+            }
         }
         else if (this.isLost()) {
-            turnIndicator = <span>You lost!</span>
+            if (this.isPlayerClient()) {
+                turnIndicator = <span>You lost!</span>
+            }
+            else {
+                turnIndicator = <span>Game lost!</span>
+            }
         }
         else if (!this.isMyTurn()) {
-            turnIndicator = <span>{`It's ${this.props.gameData.getCurrentPlayer()}'s turn.`}</span>
+            turnIndicator = (
+                <span>
+                    It's {this.props.gameData.getCurrentPlayer()}'s turn.
+                </span>
+            )
         }
 
         let gameIsOver = this.isLost() || this.isWon()
 
         let hand = this.getHand()
 
-        return (
-            <div className="game-board">
-                <div className="flex-center margin-bottom">
-                    {deckInfoElement}
-                    {handInfoElement}
-                </div>
+        let handElement = null
+        if (this.isPlayerClient()) {
+            let disableButtons = !this.isInProgress() || this.isLost() || !this.isMyTurn() || this.props.gameData.cardToPlay !== undefined
+            handElement = (
+                <HandView
+                    ruleSet={ruleSet}
+                    hand={hand}
+                    disableButtons={disableButtons}
+                    cardToPlay={this.props.gameData.cardToPlay}
+                    setCardToPlay={card => this.setCardToPlay(card)} />
+            )
+        }
+        else {
+            let player = undefined
+            if (true) {
+                player = this.props.gameData.getCurrentPlayer()
+            }
 
-                <div className="flex-center space-around">
-                    {ascendingPiles}
-                    {descendingPiles}
-                </div>
+            let hand = undefined
+            if (player !== undefined) {
+                hand = this.props.gameData.getHand(player)
+            }
 
-                <div className="flex-center space-around">
-                    {ruleSummary}
-                    {turnIndicator}
-                </div>
+            handElement = (
+                <HandSummaryView
+                    player={player}
+                    hand={hand} />
+            )
+        }
 
-                <div>
-                    <HandView
-                        ruleSet={ruleSet}
-                        hand={hand}
-                        cardToPlay={this.props.gameData.cardToPlay}
-                        isMyTurn={this.isMyTurn()}
-                        isLost={this.isLost()}
-                        setCardToPlay={(card) => this.setCardToPlay(card)} />
-                </div>
-
+        let actionButtonsElement = null
+        if (this.isPlayerClient()) {
+            actionButtonsElement = (
                 <div className="flex-center margin-bottom">
                     <button
                         className="margin-right"
@@ -193,6 +230,31 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                         Pass
                     </button>
                 </div>
+            )
+        }
+
+        return (
+            <div className="game-board">
+                <div className="flex-center margin-bottom">
+                    {deckInfoElement}
+                    {handInfoElement}
+                </div>
+
+                <div className="flex-center space-around">
+                    {ascendingPiles}
+                    {descendingPiles}
+                </div>
+
+                <div className="flex-center space-around">
+                    {ruleSummary}
+                    {turnIndicator}
+                </div>
+
+                <div className="flex-center">
+                    {handElement}
+                </div>
+
+                {actionButtonsElement}
 
                 <div className="flex-center margin-bottom">
                     <button
@@ -219,7 +281,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     }
 
     /**
-     * Returns whether the game has been ;lost.
+     * Returns whether the game has been lost.
      */
     isLost() {
         return this.props.gameData.isLost
@@ -304,7 +366,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         newGameData.cardsPlayedThisTurn++
 
-        this.props.setGameData(newGameData)
+        this.props.playCard(newGameData)
     }
 
     /**
@@ -342,6 +404,18 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
     }
 
     /**
+     * Returns the current player's hand.
+     */
+    getCurrentHand() {
+        let currentPlayer = this.props.gameData.getCurrentPlayer()
+        if (currentPlayer === undefined) {
+            return null
+        }
+
+        return this.props.gameData.getHand(currentPlayer)
+    }
+
+    /**
      * Sorts the hand into ascending order.
      */
     sortHand() {
@@ -358,5 +432,12 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     endTurn() {
         this.props.endTurn()
+    }
+
+    /**
+     * Returns whether the client is in player mode.
+     */
+    isPlayerClient() {
+        return this.props.clientMode === ClientMode.Player
     }
 }

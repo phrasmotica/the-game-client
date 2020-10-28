@@ -74,11 +74,53 @@ export class RoomData {
     }
 
     /**
+     * Adds the given player to the room as a spectator.
+     */
+    addSpectator(player: string) {
+        if (!this.spectatorIsPresent(player)) {
+            this.spectators.push(player)
+        }
+        else {
+            console.warn(`Tried to add player ${player} to room ${this.name} as a spectator but they were already in the room!`)
+        }
+    }
+
+    /**
+     * Removes the given spectator from the room.
+     */
+    removeSpectator(player: string) {
+        if (this.spectatorIsPresent(player)) {
+            let index = this.spectators.indexOf(player)
+            this.spectators.splice(index, 1)
+        }
+        else {
+            console.warn(`Tried to remove spectator ${player} from room ${this.name} but they were not in the room!`)
+        }
+    }
+
+    /**
+     * Returns whether the given player is in this room as a spectator.
+     */
+    spectatorIsPresent(player: string) {
+        return this.spectators.includes(player)
+    }
+
+    /**
      * Starts a game in this room with the given rule set.
      */
     startGame() {
         console.log(`Starting game in room ${this.name} with ${this.players.length} player(s)`)
         this.gameData.start(this.players)
+    }
+
+    /**
+     * Clears the game data in this room.
+     */
+    clear() {
+        this.players = []
+        this.spectators = []
+
+        return this.gameData.clear()
     }
 
     /**

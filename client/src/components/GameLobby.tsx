@@ -36,6 +36,8 @@ interface GameLobbyProps {
  * Renders the game browser.
  */
 export function GameLobby(props: GameLobbyProps) {
+    let isPlayer = props.roomData.players.includes(props.playerName)
+
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">
@@ -51,6 +53,12 @@ export function GameLobby(props: GameLobbyProps) {
                             Players: {props.roomData.players.join(", ")}
                         </span>
                     </div>
+
+                    <div>
+                        <span>
+                            Spectators: {props.roomData.spectators.join(", ")}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -60,7 +68,9 @@ export function GameLobby(props: GameLobbyProps) {
 
             <div className="flex-center">
                 <div className="margin-right">
-                    <button className="option-button"
+                    <button
+                        className="option-button"
+                        disabled={!isPlayer}
                         onClick={() => props.startGame(props.roomData.name)}>
                         Start Game
                     </button>

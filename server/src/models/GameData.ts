@@ -237,7 +237,14 @@ export class GameData {
             this.dealHand(player)
         }
 
-        this.startingPlayerVote.setVoters(players)
+        if (this.players.length === 1) {
+            // no vote required
+            this.startingPlayer = this.players[0]
+        }
+        else {
+            this.startingPlayerVote.setVoters(players)
+        }
+
         this.hasStarted = true
     }
 

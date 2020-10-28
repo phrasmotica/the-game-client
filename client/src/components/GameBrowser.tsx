@@ -31,6 +31,11 @@ interface GameBrowserProps {
      * Leaves the server.
      */
     leaveServer: () => void
+
+    /**
+     * Refreshes the game list.
+     */
+    refreshGameList: () => void
 }
 
 /**
@@ -66,34 +71,53 @@ export function GameBrowser(props: GameBrowserProps) {
                 Games List
             </div>
 
+            <div className="flex-center margin-bottom">
+                <button
+                    onClick={() => props.refreshGameList()}>
+                    Refresh
+                </button>
+            </div>
+
             <div>
                 {props.games.map(g => {
-                    let canJoin = !g.gameData.isInProgress()
-                    let canSpectate = false
+                    let inProgress = g.gameData.isInProgress()
+
+                    let inProgressElement = null
+                    if (inProgress) {
+                        inProgressElement = (
+                            <div className="in-progress-message">
+                                <span>
+                                    This game is in progress.
+                                </span>
+                            </div>
+                        )
+                    }
 
                     return (
-                        <div
-                            key={g.name}
-                            className="flex-center margin-bottom">
-                            <div className="margin-right">
-                                <span>{g.name}</span>
+                        <div key={g.name}>
+                            <div className="flex-center margin-bottom">
+                                <div className="margin-right">
+                                    <span>{g.name}</span>
+                                </div>
+
+                                <div className="margin-right">
+                                    <button
+                                        disabled={inProgress}
+                                        onClick={() => props.joinGame(g.name, props.playerName)}>
+                                        Join
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        disabled={inProgress}
+                                        onClick={() => props.spectateGame(g.name, props.playerName)}>
+                                        Spectate
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="margin-right">
-                                <button
-                                    disabled={!canJoin}
-                                    onClick={() => props.joinGame(g.name, props.playerName)}>
-                                    Join
-                                </button>
-                            </div>
-
-                            <div>
-                                <button
-                                    disabled={!canSpectate}
-                                    onClick={() => props.spectateGame(g.name, props.playerName)}>
-                                    Spectate
-                                </button>
-                            </div>
+                            {inProgressElement}
                         </div>
                     )
                 })}

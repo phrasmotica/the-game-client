@@ -22,14 +22,9 @@ interface HandProps {
     cardToPlay: number | undefined
 
     /**
-     * Whether it is the player's turn.
+     * Whether the buttons should be disabled.
      */
-    isMyTurn: boolean
-
-    /**
-     * Whether the game is lost.
-     */
-    isLost: boolean
+    disableButtons: boolean
 
     /**
      * Sets the card to be played.
@@ -55,8 +50,6 @@ export function HandView(props: HandProps) {
         )
     }
 
-    let buttonIsDisabled = props.isLost || !props.isMyTurn || props.cardToPlay !== undefined
-
     return (
         <div className="hand">
             <div className="flex-center">
@@ -70,7 +63,7 @@ export function HandView(props: HandProps) {
                             <div>
                                 <button
                                     className="card-button"
-                                    disabled={buttonIsDisabled}
+                                    disabled={props.disableButtons}
                                     onClick={() => props.setCardToPlay(c)}>
                                     Select
                                 </button>

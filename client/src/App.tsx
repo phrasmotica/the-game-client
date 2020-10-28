@@ -6,6 +6,7 @@ import { GameBrowser } from "./components/GameBrowser"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
 
+import { ClientMode } from "./models/ClientMode"
 import { GameData } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
@@ -29,6 +30,7 @@ function App() {
     const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
     const [roomData, setRoomData] = useState<RoomData>(RoomData.empty())
     const [playerName, setPlayerName] = useState("")
+    const [clientMode, setClientMode] = useState(ClientMode.Player)
 
     // Socket here is a property of socketIOClient. So we need typeof
     const socket = useRef<typeof Socket>(Socket)
@@ -52,6 +54,11 @@ function App() {
             setState(AppState.Browse)
         })
 
+        socket.current.on("allLobbyData", (allRoomData: RoomData[]) => {
+            setAllRoomData(allRoomData.map(RoomData.from))
+            setState(AppState.Browse)
+        })
+
         socket.current.on("lobbyData", (message: Message<RoomData>) => {
             let roomData = RoomData.from(message.content)
 
@@ -71,6 +78,12 @@ function App() {
         })
 
         socket.current.on("joinRoomReceived", () => {
+            setClientMode(ClientMode.Player)
+            setState(AppState.Lobby)
+        })
+
+        socket.current.on("spectateRoomReceived", () => {
+            setClientMode(ClientMode.Spectator)
             setState(AppState.Lobby)
         })
 
@@ -80,7 +93,14 @@ function App() {
         })
 
         socket.current.on("roomData", (message: Message<RoomData>) => {
-            setRoomData(RoomData.from(message.content))
+            let roomData = RoomData.from(message.content)
+            setRoomData(roomData)
+        })
+
+        socket.current.on("kick", () => {
+            let roomData = RoomData.empty()
+            setRoomData(roomData)
+            setState(AppState.Browse)
         })
     }
 
@@ -150,6 +170,18 @@ function App() {
     }
 
     /**
+     * Plays a card and sends the new game data to the server.
+     */
+    const playCard = (gameData: GameData) => {
+        let newRoomData = RoomData.from(roomData)
+        newRoomData.gameData = gameData
+        setRoomData(newRoomData)
+
+        let message = Message.info(newRoomData)
+        socket.current.emit("playCard", message)
+    }
+
+    /**
      * Sets the given rule set for the game.
      */
     const setRuleSet = (ruleSet: RuleSet) => {
@@ -161,14 +193,28 @@ function App() {
      * Ends the turn.
      */
     const endTurn = () => {
-        socket.current.emit("endTurn")
+        socket.current.emit("endTurn", roomData.name)
     }
 
     /**
      * Leaves the room.
      */
     const leaveRoom = () => {
-        socket.current.emit("leaveRoom", new RoomWith(roomData.name, playerName))
+        let event = ""
+        switch (clientMode) {
+            case ClientMode.Player:
+                event = "leaveRoom"
+                break;
+
+            case ClientMode.Spectator:
+                event = "stopSpectating"
+                break;
+
+            default:
+                throw new Error(`Unrecognised client mode '${clientMode}'!`)
+        }
+
+        socket.current.emit(event, new RoomWith(roomData.name, playerName))
         setRoomData(RoomData.empty())
         setState(AppState.Browse)
     }
@@ -180,6 +226,13 @@ function App() {
         socket.current.disconnect()
         setPlayerName("")
         setState(AppState.Menu)
+    }
+
+    /**
+     * Refreshes the game list.
+     */
+    const refreshGameList = () => {
+        socket.current.emit("allLobbyData", playerName)
     }
 
     let contents = null
@@ -198,7 +251,8 @@ function App() {
                     createGame={createRoom}
                     joinGame={joinRoom}
                     spectateGame={spectateGame}
-                    leaveServer={leaveServer} />
+                    leaveServer={leaveServer}
+                    refreshGameList={refreshGameList} />
             )
             break
         case AppState.Lobby:
@@ -216,10 +270,12 @@ function App() {
                 <GameBoard
                     playerName={playerName}
                     gameData={roomData.gameData}
+                    clientMode={clientMode}
                     addStartVote={addVoteForStartingPlayer}
                     removeStartVote={removeVoteForStartingPlayer}
                     newGame={newGame}
                     setGameData={setGameData}
+                    playCard={playCard}
                     endTurn={endTurn}
                     leaveGame={leaveRoom} />
             )

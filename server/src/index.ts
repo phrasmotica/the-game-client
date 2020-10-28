@@ -1,7 +1,6 @@
 import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
-import { TupleType } from "typescript"
 
 import { RoomDataManager } from "./data/RoomDataManager"
 import { SocketManager } from "./data/SocketManager"
@@ -39,23 +38,47 @@ const roomRetentionList = [roomName]
 roomDataManager.ensureRoomExists(roomName)
 
 /**
- * Returns the number of clients in the given room.
+ * Returns the clients in the given room.
  */
-const getNumberOfClientsInRoom = (namespace: string, roomName: string) => {
+const getClientsInRoom = (namespace: string, roomName: string) => {
     var clients = io.nsps[namespace].adapter.rooms[roomName]?.sockets
     if (clients === undefined) {
-        return 0
+        return []
     }
 
-    return Object.keys(clients).length
+    return Object.keys(clients)
+}
+
+/**
+ * Returns the players in the given room.
+ */
+const getPlayersInRoom = (roomName: string) => {
+    var roomData = roomDataManager.getRoomData(roomName)
+    return roomData.players
+}
+
+/**
+ * Returns the spectators in the given room.
+ */
+const getSpectatorsInRoom = (roomName: string) => {
+    var roomData = roomDataManager.getRoomData(roomName)
+    return roomData.spectators
 }
 
 /**
  * Cleans up the given room.
  */
 const cleanRoom = (roomName: string) => {
-    let roomIsEmpty = getNumberOfClientsInRoom("/", roomName) <= 0
+    let clientsInRoom = getPlayersInRoom(roomName)
+    let roomIsEmpty = clientsInRoom.length <= 0
+
     if (roomIsEmpty) {
+        let spectatorsInRoom = getSpectatorsInRoom(roomName)
+        for (let spectator of spectatorsInRoom) {
+            console.log(`Kicking spectator ${spectator} from room ${roomName}`)
+            socketManager.sockets[spectator].emit("kick")
+        }
+
         roomDataManager.clear(roomName)
         roomDataManager.setRuleSet(roomName, RuleSet.default())
 
@@ -74,9 +97,19 @@ const createRoomDataMessage = (roomName: string) => {
     return Message.info(roomDataManager.getRoomData(roomName))
 }
 
+/**
+ * Sends the data for the given room to the clients.
+ */
+const sendRoomData = (roomName: string) => {
+    let message = createRoomDataMessage(roomName)
+    io.in(roomName).emit("roomData", message)
+    io.emit("lobbyData", message)
+}
+
 io.on("connection", (socket: Socket) => {
     socket.on("joinServer", (playerName: string) => {
         socketManager.setPlayerName(socket.id, playerName)
+        socketManager.setSocket(playerName, socket)
         console.log(`Player ${playerName} joined the server!`)
 
         socket.emit("joinServerReceived", roomDataManager.getAllRoomData())
@@ -99,7 +132,7 @@ io.on("connection", (socket: Socket) => {
                 socket.emit("joinRoomReceived")
 
                 // send room data to all clients
-                io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+                sendRoomData(roomName)
             }
             else {
                 console.warn(`Player ${playerName} could not join room ${roomName} because a game is in progress!`)
@@ -110,20 +143,52 @@ io.on("connection", (socket: Socket) => {
         }
     })
 
+    socket.on("allLobbyData", (playerName: string) => {
+        console.log(`Player ${playerName} refreshed lobby data.`)
+
+        socket.emit("allLobbyData", roomDataManager.getAllRoomData())
+    })
+
+    // TODO: allow players to join game as a spectator
+    socket.on("spectateRoom", (req: RoomWith<string>) => {
+        let roomName = req.roomName
+        let playerName = req.data
+
+        if (roomDataManager.roomExists(roomName)) {
+            let roomData = roomDataManager.getRoomData(roomName)
+            if (!roomData.gameData.isInProgress()) {
+                socket.join(roomName)
+
+                console.log(`Player ${playerName} joined room ${roomName} as a spectator.`)
+
+                roomDataManager.addSpectatorToRoom(playerName, roomName)
+                socket.emit("spectateRoomReceived")
+
+                // send room data to all clients
+                sendRoomData(roomName)
+            }
+            else {
+                console.warn(`Player ${playerName} could not spectate room ${roomName} because a game is in progress!`)
+            }
+        }
+        else {
+            console.warn(`Player ${playerName} could not spectate non-existent room ${roomName}!`)
+        }
+    })
+
     socket.on("setRuleSet", (req: RoomWith<RuleSet>) => {
         let roomName = req.roomName
         let ruleSet = RuleSet.from(req.data)
         roomDataManager.setRuleSet(roomName, ruleSet)
 
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        sendRoomData(roomName)
     })
-
-    // TODO: allow players to join game as a spectator
 
     socket.on("startGame", (roomName: string) => {
         roomDataManager.startGame(roomName)
 
         io.in(roomName).emit("gameStarted", createRoomDataMessage(roomName))
+        sendRoomData(roomName)
     })
 
     socket.on("addVoteForStartingPlayer", (req: RoomWith<[string, string]>) => {
@@ -169,9 +234,7 @@ io.on("connection", (socket: Socket) => {
             }
         }
 
-        let message = createRoomDataMessage(roomName)
-        io.in(roomName).emit("roomData", message)
-        io.emit("lobbyData", message)
+        sendRoomData(roomName)
     })
 
     socket.on("removeVoteForStartingPlayer", (req: RoomWith<string>) => {
@@ -197,22 +260,28 @@ io.on("connection", (socket: Socket) => {
                 break;
         }
 
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        sendRoomData(roomName)
     })
 
     socket.on("roomData", (message: Message<RoomData>) => {
         let gameData = GameData.from(message.content.gameData)
         roomDataManager.setGameData(roomName, gameData)
-        roomDataManager.processGameData(roomName)
 
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        sendRoomData(roomName)
     })
 
-    socket.on("endTurn", () => {
-        roomDataManager.replenish(roomName)
-        roomDataManager.nextPlayer(roomName)
+    socket.on("playCard", (message: Message<RoomData>) => {
+        let gameData = GameData.from(message.content.gameData)
+        roomDataManager.setGameData(roomName, gameData)
+        roomDataManager.onPlayCard(roomName)
 
-        io.in(roomName).emit("roomData", createRoomDataMessage(roomName))
+        sendRoomData(roomName)
+    })
+
+    socket.on("endTurn", (roomName: string) => {
+        roomDataManager.onTurnEnd(roomName)
+
+        sendRoomData(roomName)
     })
 
     socket.on("leaveRoom", (req: RoomWith<string>) => {
@@ -221,12 +290,27 @@ io.on("connection", (socket: Socket) => {
 
         roomDataManager.removeFromRoom(playerName, roomName)
         socket.leave(roomName)
-
-        socket.to(roomName).emit("roomData", createRoomDataMessage(roomName))
-
-        console.log(`Player ${playerName} left room ${roomName}`)
-
         cleanRoom(roomName)
+
+        console.log(`Player ${playerName} left room ${roomName}.`)
+
+        sendRoomData(roomName)
+
+        // TODO: when they leave a single player game in progress, a player's browser still
+        // shows the game as in progress
+    })
+
+    socket.on("stopSpectating", (req: RoomWith<string>) => {
+        let roomName = req.roomName
+        let playerName = req.data
+
+        roomDataManager.removeSpectatorFromRoom(playerName, roomName)
+        socket.leave(roomName)
+        cleanRoom(roomName)
+
+        console.log(`Spectator ${playerName} left room ${roomName}.`)
+
+        sendRoomData(roomName)
     })
 
     socket.on("disconnect", () => {
@@ -235,8 +319,10 @@ io.on("connection", (socket: Socket) => {
             let roomsEvicted = roomDataManager.removePlayer(playerName)
             for (let roomName of roomsEvicted) {
                 cleanRoom(roomName)
+                sendRoomData(roomName)
             }
 
+            socketManager.removeSocket(playerName)
             socketManager.removePlayerName(socket.id)
 
             console.log(`Player ${playerName} left the server.`)
