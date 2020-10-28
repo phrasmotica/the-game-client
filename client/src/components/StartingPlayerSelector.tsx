@@ -47,7 +47,7 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
 
                 <div>
                     <select onChange={e => setSelectedPlayerIndex(e.target.selectedIndex)}>
-                        {props.players.map(p => (<option>{p}</option>))}
+                        {props.players.map(p => (<option key={p}>{p}</option>))}
                     </select>
                 </div>
             </div>
