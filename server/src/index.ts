@@ -295,9 +295,6 @@ io.on("connection", (socket: Socket) => {
         console.log(`Player ${playerName} left room ${roomName}.`)
 
         sendRoomData(roomName)
-
-        // TODO: when they leave a single player game in progress, a player's browser still
-        // shows the game as in progress
     })
 
     socket.on("stopSpectating", (req: RoomWith<string>) => {

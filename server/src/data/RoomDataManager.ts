@@ -246,7 +246,8 @@ export class RoomDataManager {
             console.log(`Game is won in room ${roomName}!`)
             gameData.isWon = true
 
-            // TODO: this isn't being sent to the client properly...
+            // TODO: the client isn't rendering this properly...
+            // - maybe it's rendering this and then rendering the "Your hand is empty/It's player x's turn." message immediately afterwards?
         }
         else {
             console.log(`Game is not yet won in room ${roomName}.`)

@@ -235,6 +235,8 @@ function App() {
         socket.current.emit("allLobbyData", playerName)
     }
 
+    // TODO: when they leave a single player game in progress, a player's browser still
+    // shows the game as in progress. GameBrowser not re-rendering even though the objects passed to its props are different?
     let contents = null
     switch (state) {
         case AppState.Menu:
