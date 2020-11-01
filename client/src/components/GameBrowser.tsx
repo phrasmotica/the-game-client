@@ -68,14 +68,18 @@ export function GameBrowser(props: GameBrowserProps) {
             </div>
 
             <div className="flex-center margin-bottom">
+                <div className="margin-right">
+                    <span>
                 Games List
+                    </span>
             </div>
 
-            <div className="flex-center margin-bottom">
+                <div className="flex">
                 <button
                     onClick={() => props.refreshGameList()}>
                     Refresh
                 </button>
+            </div>
             </div>
 
             <div>
@@ -100,7 +104,7 @@ export function GameBrowser(props: GameBrowserProps) {
                                     <span>{g.name}</span>
                                 </div>
 
-                                <div className="margin-right">
+                                <div className="flex margin-right">
                                     <button
                                         disabled={inProgress}
                                         onClick={() => props.joinGame(g.name, props.playerName)}>
@@ -108,7 +112,7 @@ export function GameBrowser(props: GameBrowserProps) {
                                     </button>
                                 </div>
 
-                                <div>
+                                <div className="flex">
                                     <button
                                         disabled={inProgress}
                                         onClick={() => props.spectateGame(g.name, props.playerName)}>

@@ -182,10 +182,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
         else {
-            let player = undefined
-            if (true) {
-                player = this.props.gameData.getCurrentPlayer()
-            }
+            let player = this.props.gameData.getCurrentPlayer()
 
             let hand = undefined
             if (player !== undefined) {
