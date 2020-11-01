@@ -56,12 +56,19 @@ export class RoomDataManager {
     }
 
     /**
+     * Creates a room with the given name.
+     */
+    createRoom(roomName: string) {
+        console.log(`Creating new room ${roomName}`)
+        this.initialise(roomName)
+    }
+
+    /**
      * If the given room doesn't exist then create it.
      */
     ensureRoomExists(roomName: string) {
         if (!this.roomExists(roomName)) {
-            console.log(`Creating game for new room ${roomName}`)
-            this.initialise(roomName)
+            this.createRoom(roomName)
         }
     }
 

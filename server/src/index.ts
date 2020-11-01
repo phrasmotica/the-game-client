@@ -30,12 +30,11 @@ const socketManager = new SocketManager()
 const roomDataManager = new RoomDataManager()
 
 /**
- * The name of the only room on the server.
+ * The name of the default room on the server.
  */
-// TODO: allow players to create and join rooms
-const roomName = "polysomn"
-const roomRetentionList = [roomName]
-roomDataManager.ensureRoomExists(roomName)
+const defaultRoomName = "polysomn"
+const roomRetentionList = [defaultRoomName]
+roomDataManager.ensureRoomExists(defaultRoomName)
 
 /**
  * Returns the clients in the given room.
@@ -47,6 +46,13 @@ const getClientsInRoom = (namespace: string, roomName: string) => {
     }
 
     return Object.keys(clients)
+}
+
+/**
+ * Returns whether the given room name is valid.
+ */
+const roomNameIsValid = (roomName: string | undefined) => {
+    return roomName !== undefined && roomName.length > 0
 }
 
 /**
@@ -106,6 +112,13 @@ const sendRoomData = (roomName: string) => {
     io.emit("lobbyData", message)
 }
 
+/**
+ * Sends the data for removing the given room to the clients.
+ */
+const sendRemoveRoomData = (roomName: string) => {
+    io.emit("removeLobbyData", roomName)
+}
+
 io.on("connection", (socket: Socket) => {
     socket.on("joinServer", (playerName: string) => {
         socketManager.setPlayerName(socket.id, playerName)
@@ -113,6 +126,21 @@ io.on("connection", (socket: Socket) => {
         console.log(`Player ${playerName} joined the server!`)
 
         socket.emit("joinServerReceived", roomDataManager.getAllRoomData())
+    })
+
+    socket.on("createRoom", (roomName: string) => {
+        if (!roomNameIsValid(roomName)) {
+            console.warn(`Cannot create room with invalid name '${roomName}'!`)
+            return
+        }
+
+        if (roomDataManager.roomExists(roomName)) {
+            console.warn(`Cannot create room '${roomName}' because it already exists!`)
+            return
+        }
+
+        roomDataManager.createRoom(roomName)
+        sendRoomData(roomName)
     })
 
     socket.on("joinRoom", (req: RoomWith<string>) => {
@@ -264,15 +292,17 @@ io.on("connection", (socket: Socket) => {
     })
 
     socket.on("roomData", (message: Message<RoomData>) => {
-        let gameData = GameData.from(message.content.gameData)
-        roomDataManager.setGameData(roomName, gameData)
+        let roomData = RoomData.from(message.content)
+        let roomName = roomData.name
+        roomDataManager.setGameData(roomName, roomData.gameData)
 
         sendRoomData(roomName)
     })
 
     socket.on("playCard", (message: Message<RoomData>) => {
-        let gameData = GameData.from(message.content.gameData)
-        roomDataManager.setGameData(roomName, gameData)
+        let roomData = RoomData.from(message.content)
+        let roomName = roomData.name
+        roomDataManager.setGameData(roomName, roomData.gameData)
         roomDataManager.onPlayCard(roomName)
 
         sendRoomData(roomName)
@@ -294,7 +324,12 @@ io.on("connection", (socket: Socket) => {
 
         console.log(`Player ${playerName} left room ${roomName}.`)
 
-        sendRoomData(roomName)
+        if (roomDataManager.roomExists(roomName)) {
+            sendRoomData(roomName)
+        }
+        else {
+            sendRemoveRoomData(roomName)
+        }
     })
 
     socket.on("stopSpectating", (req: RoomWith<string>) => {
@@ -307,7 +342,12 @@ io.on("connection", (socket: Socket) => {
 
         console.log(`Spectator ${playerName} left room ${roomName}.`)
 
-        sendRoomData(roomName)
+        if (roomDataManager.roomExists(roomName)) {
+            sendRoomData(roomName)
+        }
+        else {
+            sendRemoveRoomData(roomName)
+        }
     })
 
     socket.on("disconnect", () => {

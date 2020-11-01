@@ -15,7 +15,7 @@ interface GameBrowserProps {
     /**
      * Creates a game with the given name.
      */
-    createGame: (roomName: string) => void
+    createRoom: (roomName: string) => void
 
     /**
      * Joins the given game with the given player name.
@@ -42,7 +42,9 @@ interface GameBrowserProps {
  * Renders the game browser.
  */
 export function GameBrowser(props: GameBrowserProps) {
-    const [createGameName, setCreateGameName] = useState("")
+    const [createRoomName, setCreateRoomName] = useState("")
+
+    let canCreateRoom = createRoomName.length > 0
 
     return (
         <div className="game-menu">
@@ -53,8 +55,8 @@ export function GameBrowser(props: GameBrowserProps) {
             <div className="flex-center margin-bottom">
                 <div className="margin-right">
                     <button
-                        disabled={true}
-                        onClick={() => props.createGame(createGameName)}>
+                        disabled={!canCreateRoom}
+                        onClick={() => props.createRoom(createRoomName)}>
                         Create Game
                     </button>
                 </div>
@@ -65,6 +67,14 @@ export function GameBrowser(props: GameBrowserProps) {
                         Leave Server
                     </button>
                 </div>
+            </div>
+
+            <div className="flex-center margin-bottom">
+                <input
+                    type="text"
+                    className="name-field"
+                    placeholder="new room name here"
+                    onChange={e => setCreateRoomName(e.target.value)} />
             </div>
 
             <div className="flex-center margin-bottom">
