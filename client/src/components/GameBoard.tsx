@@ -230,6 +230,24 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             )
         }
 
+        let leaveButtonElement = null
+        if (this.isPlayerClient()) {
+            leaveButtonElement = (
+                <button
+                    onClick={() => this.props.leaveGame()}>
+                    Leave Game
+                </button>
+            )
+        }
+        else {
+            leaveButtonElement = (
+                <button
+                    onClick={() => this.props.leaveGame()}>
+                    Stop Spectating
+                </button>
+            )
+        }
+
         return (
             <div className="game-board">
                 <div className="flex-center margin-bottom">
@@ -254,10 +272,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 {actionButtonsElement}
 
                 <div className="flex-center margin-bottom">
-                    <button
-                        onClick={() => this.props.leaveGame()}>
-                        Leave Game
-                    </button>
+                    {leaveButtonElement}
                 </div>
             </div>
         )
