@@ -59,6 +59,7 @@ export class RoomDataManager {
      * Creates a room with the given name.
      */
     createRoom(roomName: string) {
+        // TODO: enforce limit on total number of rooms
         console.log(`Creating new room ${roomName}`)
         this.initialise(roomName)
     }
