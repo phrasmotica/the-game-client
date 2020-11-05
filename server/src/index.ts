@@ -131,7 +131,7 @@ io.on("connection", (socket: Socket) => {
         socketManager.setSocket(playerName, socket)
         console.log(`Player ${playerName} joined the server!`)
 
-        socket.emit("joinServerReceived", roomDataManager.getAllRoomData())
+        socket.emit("joinServerResult", true)
     })
 
     socket.on("createRoom", (roomName: string) => {

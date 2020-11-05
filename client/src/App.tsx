@@ -47,8 +47,10 @@ function App() {
 
         socket.current.emit("joinServer", playerName)
 
-        socket.current.on("joinServerReceived", (newAllRoomData: RoomData[]) => {
-            setState(AppState.Browse)
+        socket.current.on("joinServerResult", (success: boolean) => {
+            if (success) {
+                setState(AppState.Browse)
+            }
         })
 
         socket.current.on("joinRoomResult", (success: boolean) => {
