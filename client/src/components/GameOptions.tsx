@@ -1,17 +1,23 @@
 import React, { Component } from "react"
+import { RoomWith } from "../models/RoomWith"
 
 import { GameMode, RuleSet } from "../models/RuleSet"
 
 interface GameOptionsProps {
     /**
+     * The socket for server communication.
+     */
+    socket: SocketIOClient.Socket
+
+    /**
+     * The room name.
+     */
+    roomName: string
+
+    /**
      * The rule set.
      */
     ruleSet: RuleSet
-
-    /**
-     * Sets the rule set.
-     */
-    setRuleSet: (ruleSet: RuleSet) => void
 }
 
 interface GameOptionsState {
@@ -180,12 +186,20 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     }
 
     /**
+     * Sets the given rule set for the game.
+     */
+    setRuleSet(ruleSet: RuleSet) {
+        let body = new RoomWith(this.props.roomName, ruleSet)
+        this.props.socket.emit("setRuleSet", body)
+    }
+
+    /**
      * Sets the rule set to the given game mode.
      */
     setGameMode(gameMode: GameMode) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.gameMode = gameMode
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -194,7 +208,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setPairsOfPiles(pairsOfPiles: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.pairsOfPiles = pairsOfPiles
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -203,7 +217,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setJumpBackSize(jumpBackSize: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.jumpBackSize = jumpBackSize
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -212,7 +226,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setTopLimit(topLimit: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.topLimit = topLimit
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -221,7 +235,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setHandSize(handSize: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.handSize = handSize
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -230,7 +244,7 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setCardsPerTurn(cardsPerTurn: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.cardsPerTurn = cardsPerTurn
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 
     /**
@@ -239,6 +253,6 @@ export class GameOptions extends Component<GameOptionsProps, GameOptionsState> {
     setCardsPerTurnInEndgame(cardsPerTurnInEndgame: number) {
         let newRuleSet = this.props.ruleSet
         newRuleSet.cardsPerTurnInEndgame = cardsPerTurnInEndgame
-        this.props.setRuleSet(newRuleSet)
+        this.setRuleSet(newRuleSet)
     }
 }

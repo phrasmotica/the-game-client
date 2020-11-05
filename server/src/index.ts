@@ -345,21 +345,28 @@ io.on("connection", (socket: Socket) => {
         sendRoomData(roomName)
     })
 
-    socket.on("leaveRoom", (req: RoomWith<string>) => {
+    socket.on("leaveGame", (req: RoomWith<string>) => {
         let roomName = req.roomName
         let playerName = req.data
 
-        roomDataManager.removeFromRoom(playerName, roomName)
+        let success = roomDataManager.removeFromRoom(playerName, roomName)
+        socket.emit("leaveGameResult", success)
         socket.leave(roomName)
+
         cleanRoom(roomName)
 
-        console.log(`Player ${playerName} left room ${roomName}.`)
+        if (success) {
+            console.log(`Player ${playerName} left game ${roomName}.`)
 
-        if (roomDataManager.roomExists(roomName)) {
-            sendRoomData(roomName)
+            if (roomDataManager.roomExists(roomName)) {
+                sendRoomData(roomName)
+            }
+            else {
+                sendRemoveRoomData(roomName)
+            }
         }
         else {
-            sendRemoveRoomData(roomName)
+            console.error(`Player ${playerName} could not leave game ${roomName}!`)
         }
     })
 
@@ -367,17 +374,49 @@ io.on("connection", (socket: Socket) => {
         let roomName = req.roomName
         let playerName = req.data
 
-        roomDataManager.removeSpectatorFromRoom(playerName, roomName)
+        let success = roomDataManager.removeSpectatorFromRoom(playerName, roomName)
+        socket.emit("leaveRoomResult", success)
         socket.leave(roomName)
+
         cleanRoom(roomName)
 
-        console.log(`Spectator ${playerName} left room ${roomName}.`)
+        if (success) {
+            console.log(`Spectator ${playerName} left room ${roomName}.`)
 
-        if (roomDataManager.roomExists(roomName)) {
-            sendRoomData(roomName)
+            if (roomDataManager.roomExists(roomName)) {
+                sendRoomData(roomName)
+            }
+            else {
+                sendRemoveRoomData(roomName)
+            }
         }
         else {
-            sendRemoveRoomData(roomName)
+            console.error(`Spectator ${playerName} could not leave room ${roomName}!`)
+        }
+    })
+
+    socket.on("leaveRoom", (req: RoomWith<string>) => {
+        let roomName = req.roomName
+        let playerName = req.data
+
+        let success = roomDataManager.removeFromRoom(playerName, roomName)
+        socket.emit("leaveRoomResult", success)
+        socket.leave(roomName)
+
+        cleanRoom(roomName)
+
+        if (success) {
+            console.log(`Player ${playerName} left room ${roomName}.`)
+
+            if (roomDataManager.roomExists(roomName)) {
+                sendRoomData(roomName)
+            }
+            else {
+                sendRemoveRoomData(roomName)
+            }
+        }
+        else {
+            console.error(`Player ${playerName} could not leave room ${roomName}!`)
         }
     })
 

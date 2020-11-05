@@ -66,6 +66,8 @@ export class RoomData {
         else {
             console.warn(`Tried to remove player ${player} from room ${this.name} but they were not in the room!`)
         }
+
+        return true
     }
 
     /**
@@ -100,6 +102,8 @@ export class RoomData {
         else {
             console.warn(`Tried to remove spectator ${player} from room ${this.name} but they were not in the room!`)
         }
+
+        return true
     }
 
     /**

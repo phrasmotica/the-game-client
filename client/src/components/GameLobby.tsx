@@ -3,9 +3,14 @@ import React from "react"
 import { GameOptions } from "./GameOptions"
 
 import { RoomData } from "../models/RoomData"
-import { RuleSet } from "../models/RuleSet"
+import { RoomWith } from "../models/RoomWith"
 
 interface GameLobbyProps {
+    /**
+     * The socket for server communication.
+     */
+    socket: SocketIOClient.Socket
+
     /**
      * The player name.
      */
@@ -15,21 +20,6 @@ interface GameLobbyProps {
      * The room data.
      */
     roomData: RoomData
-
-    /**
-     * Starts the game.
-     */
-    startGame: (roomName: string) => void
-
-    /**
-     * Sets the rule set.
-     */
-    setRuleSet: (ruleSet: RuleSet) => void
-
-    /**
-     * Leaves the room.
-     */
-    leaveRoom: () => void
 }
 
 /**
@@ -37,6 +27,20 @@ interface GameLobbyProps {
  */
 export function GameLobby(props: GameLobbyProps) {
     let isPlayer = props.roomData.players.includes(props.playerName)
+
+    /**
+     * Starts a game with the given rule set.
+     */
+    const startGame = (roomName: string) => {
+        props.socket.emit("startGame", roomName)
+    }
+
+    /**
+     * Leaves the room.
+     */
+    const leaveRoom = () => {
+        props.socket.emit("leaveRoom", new RoomWith(props.roomData.name, props.playerName))
+    }
 
     return (
         <div className="game-menu">
@@ -63,22 +67,23 @@ export function GameLobby(props: GameLobbyProps) {
             </div>
 
             <GameOptions
-                ruleSet={props.roomData.gameData.ruleSet}
-                setRuleSet={props.setRuleSet} />
+                socket={props.socket}
+                roomName={props.roomData.name}
+                ruleSet={props.roomData.gameData.ruleSet} />
 
             <div className="flex-center">
                 <div className="margin-right">
                     <button
                         className="option-button"
                         disabled={!isPlayer}
-                        onClick={() => props.startGame(props.roomData.name)}>
+                        onClick={() => startGame(props.roomData.name)}>
                         Start Game
                     </button>
                 </div>
 
                 <div>
                     <button className="option-button"
-                        onClick={props.leaveRoom}>
+                        onClick={leaveRoom}>
                         Leave Room
                     </button>
                 </div>

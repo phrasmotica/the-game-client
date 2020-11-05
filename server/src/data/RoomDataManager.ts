@@ -367,11 +367,13 @@ export class RoomDataManager {
     removeFromRoom(playerName: string, roomName: string) {
         if (this.roomExists(roomName)) {
             let roomData = this.getRoomData(roomName)
-            roomData.removePlayer(playerName)
+            return roomData.removePlayer(playerName)
         }
         else {
             console.warn(`Tried to remove player ${playerName} from non-existent room ${roomName}!`)
         }
+
+        return true
     }
 
     /**
@@ -380,11 +382,13 @@ export class RoomDataManager {
     removeSpectatorFromRoom(playerName: string, roomName: string) {
         if (this.roomExists(roomName)) {
             let roomData = this.getRoomData(roomName)
-            roomData.removeSpectator(playerName)
+            return roomData.removeSpectator(playerName)
         }
         else {
             console.warn(`Tried to remove spectator ${playerName} from non-existent room ${roomName}!`)
         }
+
+        return true
     }
 
     /**

@@ -1,6 +1,23 @@
 import React, { useState } from "react"
 
+import { RoomWith } from "../models/RoomWith"
+
 export interface StartingPlayerSelectorProps {
+    /**
+     * The socket for server communication.
+     */
+    socket: SocketIOClient.Socket
+
+    /**
+     * The room name.
+     */
+    roomName: string
+
+    /**
+     * The player name.
+     */
+    playerName: string
+
     /**
      * The players to select from.
      */
@@ -10,16 +27,6 @@ export interface StartingPlayerSelectorProps {
      * Whether the player has voted for a starting player.
      */
     hasVoted: boolean
-
-    /**
-     * Confirms a vote for the selected player.
-     */
-    confirm: (startingPlayer: string) => void
-
-    /**
-     * Cancels a vote for the selected player.
-     */
-    cancel: () => void
 }
 
 /**
@@ -29,11 +36,21 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
     const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(0)
 
     /**
-     * Confirms a vote for the selected player.
+     * Adds the given player's starting player vote in the given room.
      */
-    const confirmVote = () => {
-        let player = props.players[selectedPlayerIndex]
-        props.confirm(player)
+    const addVoteForStartingPlayer = () => {
+        let startingPlayer = props.players[selectedPlayerIndex]
+        let data: [string, string] = [props.playerName, startingPlayer]
+        let req = new RoomWith(props.roomName, data)
+        props.socket.emit("addVoteForStartingPlayer", req)
+    }
+
+    /**
+     * Removes the given player's starting player vote in the given room.
+     */
+    const removeVoteForStartingPlayer = () => {
+        let req = new RoomWith(props.roomName, props.playerName)
+        props.socket.emit("removeVoteForStartingPlayer", req)
     }
 
     return (
@@ -56,7 +73,7 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
                 <div className="margin-right">
                     <button
                         disabled={props.hasVoted}
-                        onClick={confirmVote}>
+                        onClick={addVoteForStartingPlayer}>
                         Confirm
                     </button>
                 </div>
@@ -64,7 +81,7 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
                 <div>
                     <button
                         disabled={!props.hasVoted}
-                        onClick={props.cancel}>
+                        onClick={removeVoteForStartingPlayer}>
                         Cancel
                     </button>
                 </div>

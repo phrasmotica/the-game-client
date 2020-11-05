@@ -116,7 +116,7 @@ export function GameBrowser(props: GameBrowserProps) {
 
                 <div>
                     <button
-                        onClick={() => props.leaveServer()}>
+                        onClick={props.leaveServer}>
                         Leave Server
                     </button>
                 </div>

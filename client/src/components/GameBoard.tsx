@@ -8,10 +8,18 @@ import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
 import { GameData } from "../models/GameData"
+import { Message } from "../models/Message"
 import { Direction, Pile } from "../models/Pile"
+import { RoomData } from "../models/RoomData"
 import { RuleSet } from "../models/RuleSet"
+import { RoomWith } from "../models/RoomWith"
 
 interface GameBoardProps {
+    /**
+     * The socket for server communication.
+     */
+    socket: SocketIOClient.Socket
+
     /**
      * The player's name.
      */
@@ -20,47 +28,12 @@ interface GameBoardProps {
     /**
      * The rule set.
      */
-    gameData: GameData
+    roomData: RoomData
 
     /**
      * The client mode.
      */
     clientMode: ClientMode
-
-    /**
-     * Adds the given player's starting player vote.
-     */
-    addStartVote: (startingPlayer: string) => void
-
-    /**
-     * Removes the given player's starting player vote.
-     */
-    removeStartVote: () => void
-
-    /**
-     * Starts a new game.
-     */
-    newGame: (ruleSet: RuleSet) => void
-
-    /**
-     * Sets the game data.
-     */
-    setGameData: (gameData: GameData) => void
-
-    /**
-     * Plays a card.
-     */
-    playCard: (gameData: GameData) => void
-
-    /**
-     * Ends the turn.
-     */
-    endTurn: () => void
-
-    /**
-     * Leaves the game.
-     */
-    leaveGame: () => void
 }
 
 interface GameBoardState {
@@ -72,7 +45,10 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Renders the game board.
      */
     render() {
-        let deckInfo = `Cards left in deck: ${this.props.gameData.deck.size()}`
+        let roomData = this.props.roomData
+        let gameData = roomData.gameData
+
+        let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
         let deckInfoElement = (
             <div className="half-width">
                 <span className="game-info-text">{deckInfo}</span>
@@ -86,8 +62,8 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             </div>
         )
 
-        let ruleSet = this.props.gameData.ruleSet
-        let piles = this.props.gameData.piles
+        let ruleSet = gameData.ruleSet
+        let piles = gameData.piles
 
         let ascendingPiles = []
         for (let i = 0; i < ruleSet.pairsOfPiles; i++) {
@@ -97,10 +73,10 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     index={i}
                     pile={piles[i]}
                     ruleSet={ruleSet}
-                    turnsPlayed={this.props.gameData.turnsPlayed}
+                    turnsPlayed={gameData.turnsPlayed}
                     isMyTurn={this.isMyTurn()}
                     isLost={this.isLost()}
-                    cardToPlay={this.props.gameData.cardToPlay}
+                    cardToPlay={gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     playCard={(card) => this.playCard(card, i)} />
             )
@@ -115,10 +91,10 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                     index={index}
                     pile={piles[index]}
                     ruleSet={ruleSet}
-                    turnsPlayed={this.props.gameData.turnsPlayed}
+                    turnsPlayed={gameData.turnsPlayed}
                     isMyTurn={this.isMyTurn()}
                     isLost={this.isLost()}
-                    cardToPlay={this.props.gameData.cardToPlay}
+                    cardToPlay={gameData.cardToPlay}
                     setCardToPlay={(card) => this.setCardToPlay(card)}
                     playCard={(card) => this.playCard(card, index)} />
             )
@@ -131,10 +107,11 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
             if (this.isPlayerClient()) {
                 turnIndicator = (
                     <StartingPlayerSelector
-                        players={this.props.gameData.players}
-                        hasVoted={this.props.gameData.startingPlayerVote.hasVoted(this.props.playerName)}
-                        confirm={this.props.addStartVote}
-                        cancel={this.props.removeStartVote} />
+                        socket={this.props.socket}
+                        roomName={roomData.name}
+                        playerName={this.props.playerName}
+                        players={gameData.players}
+                        hasVoted={gameData.startingPlayerVote.hasVoted(this.props.playerName)} />
                 )
             }
             else {
@@ -160,7 +137,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         else if (!this.isMyTurn()) {
             turnIndicator = (
                 <span>
-                    It's {this.props.gameData.getCurrentPlayer()}'s turn.
+                    It's {gameData.getCurrentPlayer()}'s turn.
                 </span>
             )
         }
@@ -171,22 +148,22 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
 
         let handElement = null
         if (this.isPlayerClient()) {
-            let disableButtons = !this.isInProgress() || this.isLost() || !this.isMyTurn() || this.props.gameData.cardToPlay !== undefined
+            let disableButtons = !this.isInProgress() || this.isLost() || !this.isMyTurn() || gameData.cardToPlay !== undefined
             handElement = (
                 <HandView
                     ruleSet={ruleSet}
                     hand={hand}
                     disableButtons={disableButtons}
-                    cardToPlay={this.props.gameData.cardToPlay}
+                    cardToPlay={gameData.cardToPlay}
                     setCardToPlay={card => this.setCardToPlay(card)} />
             )
         }
         else {
-            let player = this.props.gameData.getCurrentPlayer()
+            let player = gameData.getCurrentPlayer()
 
             let hand = undefined
             if (player !== undefined) {
-                hand = this.props.gameData.getHand(player)
+                hand = gameData.getHand(player)
             }
 
             handElement = (
@@ -202,7 +179,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
                 <div className="flex-center margin-bottom">
                     <button
                         className="margin-right"
-                        disabled={gameIsOver || !this.isMyTurn() || this.props.gameData.cardToPlay === undefined}
+                        disabled={gameIsOver || !this.isMyTurn() || gameData.cardToPlay === undefined}
                         onClick={() => this.setCardToPlay(undefined)}>
                         Cancel
                     </button>
@@ -234,7 +211,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         if (this.isPlayerClient()) {
             leaveButtonElement = (
                 <button
-                    onClick={() => this.props.leaveGame()}>
+                    onClick={() => this.leaveGame()}>
                     Leave Game
                 </button>
             )
@@ -242,7 +219,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         else {
             leaveButtonElement = (
                 <button
-                    onClick={() => this.props.leaveGame()}>
+                    onClick={() => this.leaveGame()}>
                     Stop Spectating
                 </button>
             )
@@ -282,28 +259,28 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Returns whether the game is in progress.
      */
     isInProgress() {
-        return this.props.gameData.isInProgress()
+        return this.props.roomData.gameData.isInProgress()
     }
 
     /**
      * Returns whether the game has been won.
      */
     isWon() {
-        return this.props.gameData.isWon
+        return this.props.roomData.gameData.isWon
     }
 
     /**
      * Returns whether the game has been lost.
      */
     isLost() {
-        return this.props.gameData.isLost
+        return this.props.roomData.gameData.isLost
     }
 
     /**
      * Returns whether no cards can be played on any piles.
      */
     noCardsCanBePlayed() {
-        let gameData = this.props.gameData
+        let gameData = this.props.roomData.gameData
         let hand = this.getHand()
 
         if (hand === undefined || hand.isEmpty()) {
@@ -319,13 +296,6 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
         }
 
         return true
-    }
-
-    /**
-     * Starts a new game.
-     */
-    newGame(ruleSet: RuleSet) {
-        this.props.newGame(ruleSet)
     }
 
     /**
@@ -352,40 +322,55 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Returns whether it's the player's turn.
      */
     isMyTurn() {
-        return this.props.gameData.getCurrentPlayer() === this.props.playerName
+        return this.props.roomData.gameData.getCurrentPlayer() === this.props.playerName
+    }
+
+    /**
+     * Sets the game data and sends the new data to the server.
+     */
+    setGameData(gameData: GameData) {
+        let newRoomData = RoomData.from(this.props.roomData)
+        newRoomData.gameData = gameData
+
+        let message = Message.info(newRoomData)
+        this.props.socket.emit("roomData", message)
     }
 
     /**
      * Sets the card to play.
      */
     setCardToPlay(card: number | undefined) {
-        let newGameData = this.props.gameData
+        let newGameData = this.props.roomData.gameData
         newGameData.cardToPlay = card
-        this.props.setGameData(newGameData)
+        this.setGameData(newGameData)
     }
 
     /**
      * Plays the given card from the player's hand.
      */
     playCard(card: number, pileIndex: number) {
-        let newGameData = this.props.gameData
+        let newGameData = this.props.roomData.gameData
 
         let pile = newGameData.piles[pileIndex]
-        pile.push(card, this.props.gameData.ruleSet)
+        pile.push(card, this.props.roomData.gameData.ruleSet)
 
         let hand = this.getHand()
         hand!.remove(card)
 
         newGameData.cardsPlayedThisTurn++
 
-        this.props.playCard(newGameData)
+        let newRoomData = RoomData.from(this.props.roomData)
+        newRoomData.gameData = newGameData
+
+        let message = Message.info(newRoomData)
+        this.props.socket.emit("playCard", message)
     }
 
     /**
      * Returns the number of cards that must be played this turn.
      */
     getCardsToPlay() {
-        let gameData = this.props.gameData
+        let gameData = this.props.roomData.gameData
 
         if (gameData.deck.isEmpty()) {
             return gameData.ruleSet.cardsPerTurnInEndgame
@@ -398,44 +383,44 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Returns whether enough cards have been played.
      */
     areEnoughCardsPlayed() {
-        return this.props.gameData.cardsPlayedThisTurn >= this.getCardsToPlay()
+        return this.props.roomData.gameData.cardsPlayedThisTurn >= this.getCardsToPlay()
     }
 
     /**
      * Returns the remaining number of cards that must be played this turn.
      */
     getCardsLeftToPlayThisTurn() {
-        return Math.max(this.getCardsToPlay() - this.props.gameData.cardsPlayedThisTurn, 0)
+        return Math.max(this.getCardsToPlay() - this.props.roomData.gameData.cardsPlayedThisTurn, 0)
     }
 
     /**
      * Returns the player's hand.
      */
     getHand() {
-        return this.props.gameData.getHand(this.props.playerName)
+        return this.props.roomData.gameData.getHand(this.props.playerName)
     }
 
     /**
      * Returns the current player's hand.
      */
     getCurrentHand() {
-        let currentPlayer = this.props.gameData.getCurrentPlayer()
+        let currentPlayer = this.props.roomData.gameData.getCurrentPlayer()
         if (currentPlayer === undefined) {
             return null
         }
 
-        return this.props.gameData.getHand(currentPlayer)
+        return this.props.roomData.gameData.getHand(currentPlayer)
     }
 
     /**
      * Sorts the hand into ascending order.
      */
     sortHand() {
-        let newGameData = this.props.gameData
+        let newGameData = this.props.roomData.gameData
         let hand = this.getHand()
         if (hand !== undefined) {
             newGameData.hands[this.props.playerName] = hand.sort()
-            this.props.setGameData(newGameData)
+            this.setGameData(newGameData)
         }
     }
 
@@ -443,7 +428,7 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      * Ends the turn.
      */
     endTurn() {
-        this.props.endTurn()
+        this.props.socket.emit("endTurn", this.props.roomData.name)
     }
 
     /**
@@ -451,5 +436,26 @@ export class GameBoard extends Component<GameBoardProps, GameBoardState> {
      */
     isPlayerClient() {
         return this.props.clientMode === ClientMode.Player
+    }
+
+    /**
+     * Leaves the game.
+     */
+    leaveGame() {
+        let event = ""
+        switch (this.props.clientMode) {
+            case ClientMode.Player:
+                event = "leaveGame"
+                break;
+
+            case ClientMode.Spectator:
+                event = "stopSpectating"
+                break;
+
+            default:
+                throw new Error(`Unrecognised client mode '${this.props.clientMode}'!`)
+        }
+
+        this.props.socket.emit(event, new RoomWith(this.props.roomData.name, this.props.playerName))
     }
 }
