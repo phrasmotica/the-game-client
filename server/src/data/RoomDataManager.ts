@@ -21,6 +21,18 @@ export class RoomDataManager {
     roomGameData: RoomDataMap = {}
 
     /**
+     * The maximum number of rooms allowed.
+     */
+    maxRooms: number
+
+    /**
+     * Constructor.
+     */
+    constructor(maxRooms: number) {
+        this.maxRooms = maxRooms
+    }
+
+    /**
      * Returns the data for the given room.
      */
     getRoomData(roomName: string) {
@@ -78,8 +90,7 @@ export class RoomDataManager {
      * Returns whether the maximum number of rooms has been reached.
      */
     maxRoomsReached() {
-        // TODO: move room limit into some settings
-        return this.getAllRoomData().length >= 3
+        return this.getAllRoomData().length >= this.maxRooms
     }
 
     /**

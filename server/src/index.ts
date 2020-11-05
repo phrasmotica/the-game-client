@@ -1,11 +1,12 @@
 import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
+import { ServerSettings } from "./config/ServerSettings"
 
 import { RoomDataManager } from "./data/RoomDataManager"
 import { SocketManager } from "./data/SocketManager"
 
-import { GameData, GameStartResult } from "./models/GameData"
+import { GameStartResult } from "./models/GameData"
 import { Message } from "./models/Message"
 import { RoomData } from "./models/RoomData"
 import { RoomWith } from "./models/RoomWith"
@@ -26,8 +27,10 @@ const server = http.createServer(app)
 
 const io = socketIo(server)
 
+const serverSettings = ServerSettings.readFromEnv()
+
 const socketManager = new SocketManager()
-const roomDataManager = new RoomDataManager()
+const roomDataManager = new RoomDataManager(serverSettings.maxRooms)
 
 /**
  * The name of the default room on the server.
