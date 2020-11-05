@@ -57,6 +57,12 @@ export function GameBrowser(props: GameBrowserProps) {
         }
     })
 
+    props.socket.on("createRoomResult", (success: boolean) => {
+        if (success) {
+            setCreateRoomName("")
+        }
+    })
+
     /**
      * Creates a room with the given name.
      */
@@ -121,6 +127,7 @@ export function GameBrowser(props: GameBrowserProps) {
                     type="text"
                     className="name-field"
                     placeholder="new room name here"
+                    value={createRoomName}
                     onChange={e => setCreateRoomName(e.target.value)} />
             </div>
 

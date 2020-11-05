@@ -59,9 +59,8 @@ export class RoomDataManager {
      * Creates a room with the given name.
      */
     createRoom(roomName: string) {
-        // TODO: enforce limit on total number of rooms
         console.log(`Creating new room ${roomName}`)
-        this.initialise(roomName)
+        return this.initialise(roomName)
     }
 
     /**
@@ -69,8 +68,18 @@ export class RoomDataManager {
      */
     ensureRoomExists(roomName: string) {
         if (!this.roomExists(roomName)) {
-            this.createRoom(roomName)
+            return this.createRoom(roomName)
         }
+
+        return true
+        }
+
+    /**
+     * Returns whether the maximum number of rooms has been reached.
+     */
+    maxRoomsReached() {
+        // TODO: move room limit into some settings
+        return this.getAllRoomData().length >= 3
     }
 
     /**
@@ -96,6 +105,7 @@ export class RoomDataManager {
      */
     initialise(roomName: string) {
         this.roomGameData[roomName] = RoomData.named(roomName)
+        return true
     }
 
     /**

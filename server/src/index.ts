@@ -134,13 +134,25 @@ io.on("connection", (socket: Socket) => {
             return
         }
 
+        if (roomDataManager.maxRoomsReached()) {
+            console.warn(`Cannot create room '${roomName}' because the room limit has been reached!`)
+            return
+        }
+
         if (roomDataManager.roomExists(roomName)) {
             console.warn(`Cannot create room '${roomName}' because it already exists!`)
             return
         }
 
-        roomDataManager.createRoom(roomName)
-        sendRoomData(roomName)
+        let success = roomDataManager.createRoom(roomName)
+        socket.emit("createRoomResult", success)
+
+        if (success) {
+            sendRoomData(roomName)
+        }
+        else {
+            console.error(`Could not create room '${roomName}'!`)
+        }
     })
 
     socket.on("joinRoom", (req: RoomWith<string>) => {
