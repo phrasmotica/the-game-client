@@ -1,41 +1,24 @@
-import React, { useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+
+import { Message } from "../models/Message"
 import { RoomData } from "../models/RoomData"
+import { RoomWith } from "../models/RoomWith"
 
 interface GameBrowserProps {
+    /**
+     * The socket for server communication.
+     */
+    socket: SocketIOClient.Socket
+
     /**
      * The player name.
      */
     playerName: string
 
     /**
-     * The available games.
-     */
-    games: RoomData[]
-
-    /**
-     * Creates a game with the given name.
-     */
-    createRoom: (roomName: string) => void
-
-    /**
-     * Joins the given game with the given player name.
-     */
-    joinGame: (roomName: string, playerName: string) => void
-
-    /**
-     * Joins the given game with the given player name as a spectator.
-     */
-    spectateGame: (roomName: string, playerName: string) => void
-
-    /**
      * Leaves the server.
      */
     leaveServer: () => void
-
-    /**
-     * Refreshes the game list.
-     */
-    refreshGameList: () => void
 }
 
 /**
@@ -43,6 +26,70 @@ interface GameBrowserProps {
  */
 export function GameBrowser(props: GameBrowserProps) {
     const [createRoomName, setCreateRoomName] = useState("")
+    const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
+
+    props.socket.on("allLobbyData", (newAllRoomData: RoomData[]) => {
+        setAllRoomData(newAllRoomData.map(RoomData.from))
+    })
+
+    props.socket.on("lobbyData", (message: Message<RoomData>) => {
+        let newAllRoomData = [...allRoomData]
+
+        let roomData = RoomData.from(message.content)
+        let index = newAllRoomData.findIndex(r => r.name === roomData.name)
+        if (index >= 0) {
+            newAllRoomData[index] = roomData
+        }
+        else {
+            newAllRoomData.push(roomData)
+        }
+
+        setAllRoomData(newAllRoomData)
+    })
+
+    props.socket.on("removeLobbyData", (roomName: string) => {
+        let newAllRoomData = [...allRoomData]
+
+        let index = newAllRoomData.findIndex(r => r.name === roomName)
+        if (index >= 0) {
+            newAllRoomData.splice(index, 1)
+            setAllRoomData(newAllRoomData)
+        }
+    })
+
+    /**
+     * Creates a room with the given name.
+     */
+    const createRoom = (roomName: string) => {
+        props.socket.emit("createRoom", roomName)
+    }
+
+    /**
+     * Joins the given room with the given player name.
+     */
+    const joinRoom = (roomName: string, playerName: string) => {
+        props.socket.emit("joinRoom", new RoomWith(roomName, playerName))
+    }
+
+    /**
+     * Joins the given room with the given player name as a spectator.
+     */
+    const spectateRoom = (roomName: string, playerName: string) => {
+        props.socket.emit("spectateRoom", new RoomWith(roomName, playerName))
+    }
+
+    /**
+     * Refreshes the room list.
+     */
+    const refreshRoomList = useCallback(() => {
+        props.socket.emit("allLobbyData", props.playerName)
+    }, [props.playerName, props.socket])
+
+    // effect for refreshing the room list after first render
+    useEffect(() => {
+        refreshRoomList()
+        return () => setAllRoomData([])
+    }, [refreshRoomList])
 
     let canCreateRoom = createRoomName.length > 0
 
@@ -56,7 +103,7 @@ export function GameBrowser(props: GameBrowserProps) {
                 <div className="margin-right">
                     <button
                         disabled={!canCreateRoom}
-                        onClick={() => props.createRoom(createRoomName)}>
+                        onClick={() => createRoom(createRoomName)}>
                         Create Game
                     </button>
                 </div>
@@ -80,21 +127,21 @@ export function GameBrowser(props: GameBrowserProps) {
             <div className="flex-center margin-bottom">
                 <div className="margin-right">
                     <span>
-                Games List
+                        Games List
                     </span>
-            </div>
+                </div>
 
                 <div className="flex">
-                <button
-                    onClick={() => props.refreshGameList()}>
-                    Refresh
-                </button>
-            </div>
+                    <button
+                        onClick={refreshRoomList}>
+                        Refresh
+                    </button>
+                </div>
             </div>
 
             <div>
-                {props.games.map(g => {
-                    let inProgress = g.gameData.isInProgress()
+                {allRoomData.map(room => {
+                    let inProgress = room.gameData.isInProgress()
 
                     let inProgressElement = null
                     if (inProgress) {
@@ -108,16 +155,16 @@ export function GameBrowser(props: GameBrowserProps) {
                     }
 
                     return (
-                        <div key={g.name}>
+                        <div key={room.name}>
                             <div className="flex-center margin-bottom">
                                 <div className="margin-right">
-                                    <span>{g.name}</span>
+                                    <span>{room.name}</span>
                                 </div>
 
                                 <div className="flex margin-right">
                                     <button
                                         disabled={inProgress}
-                                        onClick={() => props.joinGame(g.name, props.playerName)}>
+                                        onClick={() => joinRoom(room.name, props.playerName)}>
                                         Join
                                     </button>
                                 </div>
@@ -125,7 +172,7 @@ export function GameBrowser(props: GameBrowserProps) {
                                 <div className="flex">
                                     <button
                                         disabled={inProgress}
-                                        onClick={() => props.spectateGame(g.name, props.playerName)}>
+                                        onClick={() => spectateRoom(room.name, props.playerName)}>
                                         Spectate
                                     </button>
                                 </div>

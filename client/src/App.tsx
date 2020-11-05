@@ -27,7 +27,6 @@ enum AppState {
 
 function App() {
     const [state, setState] = useState(AppState.Menu)
-    const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
     const [roomData, setRoomData] = useState(RoomData.empty())
     const [playerName, setPlayerName] = useState("")
     const [clientMode, setClientMode] = useState(ClientMode.Player)
@@ -49,43 +48,7 @@ function App() {
         socket.current.emit("joinServer", playerName)
 
         socket.current.on("joinServerReceived", (newAllRoomData: RoomData[]) => {
-            setAllRoomData(newAllRoomData.map(RoomData.from))
             setState(AppState.Browse)
-        })
-
-        socket.current.on("allLobbyData", (newAllRoomData: RoomData[]) => {
-            setAllRoomData(newAllRoomData.map(RoomData.from))
-        })
-
-        socket.current.on("lobbyData", (message: Message<RoomData>) => {
-            let roomData = RoomData.from(message.content)
-
-            // TODO: allRoomData seems to be an empty list every time here.
-            // is it being reset unbeknownst to me?
-            let newAllRoomData = [...allRoomData]
-
-            let index = newAllRoomData.findIndex(r => r.name === roomData.name)
-            if (index >= 0) {
-                newAllRoomData[index] = roomData
-            }
-            else {
-                // this is a workaround for allRoomData sometimes being an empty list,
-                // even though it should never be once the player has joined the server
-                newAllRoomData.push(roomData)
-            }
-
-            setAllRoomData(newAllRoomData)
-        })
-
-        socket.current.on("removeLobbyData", (roomName: string) => {
-            // TODO: same as line 63
-            let newAllRoomData = [...allRoomData]
-
-            let index = newAllRoomData.findIndex(r => r.name === roomName)
-            if (index >= 0) {
-                newAllRoomData.splice(index, 1)
-                setAllRoomData(newAllRoomData)
-            }
         })
 
         socket.current.on("joinRoomReceived", () => {
@@ -113,27 +76,6 @@ function App() {
             setRoomData(roomData)
             setState(AppState.Browse)
         })
-    }
-
-    /**
-     * Creates a room with the given name.
-     */
-    const createRoom = (roomName: string) => {
-        socket.current.emit("createRoom", roomName)
-    }
-
-    /**
-     * Joins the given room with the given player name.
-     */
-    const joinRoom = (roomName: string, playerName: string) => {
-        socket.current.emit("joinRoom", new RoomWith(roomName, playerName))
-    }
-
-    /**
-     * Joins the given room with the given player name as a spectator.
-     */
-    const spectateGame = (roomName: string, playerName: string) => {
-        socket.current.emit("spectateRoom", new RoomWith(roomName, playerName))
     }
 
     /**
@@ -239,15 +181,6 @@ function App() {
         setState(AppState.Menu)
     }
 
-    /**
-     * Refreshes the game list.
-     */
-    const refreshGameList = () => {
-        socket.current.emit("allLobbyData", playerName)
-    }
-
-    // TODO: when they leave a single player game in progress, a player's browser still
-    // shows the game as in progress. GameBrowser not re-rendering even though the objects passed to its props are different?
     let contents = null
     switch (state) {
         case AppState.Menu:
@@ -259,13 +192,9 @@ function App() {
         case AppState.Browse:
             contents = (
                 <GameBrowser
+                    socket={socket.current}
                     playerName={playerName}
-                    games={allRoomData}
-                    createRoom={createRoom}
-                    joinGame={joinRoom}
-                    spectateGame={spectateGame}
-                    leaveServer={leaveServer}
-                    refreshGameList={refreshGameList} />
+                    leaveServer={leaveServer} />
             )
             break
         case AppState.Lobby:
