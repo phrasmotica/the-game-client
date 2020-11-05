@@ -134,9 +134,8 @@ export class RoomDataManager {
      * Adds the given player to the given room.
      */
     addPlayerToRoom(playerName: string, roomName: string) {
-        // TODO: enforce player limit in each room
         let roomData = this.getRoomData(roomName)
-        roomData.addPlayer(playerName)
+        return roomData.addPlayer(playerName)
     }
 
     /**
@@ -144,7 +143,7 @@ export class RoomDataManager {
      */
     addSpectatorToRoom(playerName: string, roomName: string) {
         let roomData = this.getRoomData(roomName)
-        roomData.addSpectator(playerName)
+        return roomData.addSpectator(playerName)
     }
 
     /**

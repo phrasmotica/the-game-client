@@ -30,7 +30,10 @@ const io = socketIo(server)
 const serverSettings = ServerSettings.readFromEnv()
 
 const socketManager = new SocketManager()
-const roomDataManager = new RoomDataManager(serverSettings.maxRooms)
+
+const roomDataManager = new RoomDataManager(
+    serverSettings.maxRooms
+)
 
 /**
  * The name of the default room on the server.
@@ -162,27 +165,33 @@ io.on("connection", (socket: Socket) => {
         let roomName = req.roomName
         let playerName = req.data
 
-        if (roomDataManager.roomExists(roomName)) {
-            let roomData = roomDataManager.getRoomData(roomName)
-            if (!roomData.gameData.isInProgress()) {
-                socket.join(roomName)
+        if (!roomDataManager.roomExists(roomName)) {
+            console.warn(`Player ${playerName} could not join non-existent room ${roomName}!`)
+            return
+        }
 
-                console.log(`Player ${playerName} joined room ${roomName}.`)
+        let roomData = roomDataManager.getRoomData(roomName)
 
-                // add the new player to the room
-                roomDataManager.addPlayerToRoom(playerName, roomName)
+        if (roomData.players.length >= serverSettings.maxPlayersPerRoom) {
+            console.warn(`Player ${playerName} could not join room ${roomName} because it is full!`)
+            return
+        }
 
-                socket.emit("joinRoomReceived")
+        if (roomData.gameData.isInProgress()) {
+            console.warn(`Player ${playerName} could not join room ${roomName} because a game is in progress!`)
+            return
+        }
 
-                // send room data to all clients
-                sendRoomData(roomName)
-            }
-            else {
-                console.warn(`Player ${playerName} could not join room ${roomName} because a game is in progress!`)
-            }
+        socket.join(roomName)
+        let success = roomDataManager.addPlayerToRoom(playerName, roomName)
+        socket.emit("joinRoomResult", success)
+
+        if (success) {
+            console.log(`Player ${playerName} joined room ${roomName}.`)
+            sendRoomData(roomName)
         }
         else {
-            console.warn(`Player ${playerName} could not join non-existent room ${roomName}!`)
+            console.error(`Player ${playerName} could not join room ${roomName}!`)
         }
     })
 
@@ -192,30 +201,37 @@ io.on("connection", (socket: Socket) => {
         socket.emit("allLobbyData", roomDataManager.getAllRoomData())
     })
 
-    // TODO: allow players to join game as a spectator
     socket.on("spectateRoom", (req: RoomWith<string>) => {
         let roomName = req.roomName
         let playerName = req.data
 
-        if (roomDataManager.roomExists(roomName)) {
-            let roomData = roomDataManager.getRoomData(roomName)
-            if (!roomData.gameData.isInProgress()) {
-                socket.join(roomName)
+        if (!roomDataManager.roomExists(roomName)) {
+            console.warn(`Player ${playerName} could not spectate non-existent room ${roomName}!`)
+            return
+        }
 
-                console.log(`Player ${playerName} joined room ${roomName} as a spectator.`)
+        let roomData = roomDataManager.getRoomData(roomName)
 
-                roomDataManager.addSpectatorToRoom(playerName, roomName)
-                socket.emit("spectateRoomReceived")
+        if (roomData.spectators.length >= serverSettings.maxSpectatorsPerRoom) {
+            console.warn(`Player ${playerName} could not spectate room ${roomName} because it is full!`)
+            return
+        }
 
-                // send room data to all clients
-                sendRoomData(roomName)
-            }
-            else {
-                console.warn(`Player ${playerName} could not spectate room ${roomName} because a game is in progress!`)
-            }
+        if (roomData.gameData.isInProgress()) {
+            console.warn(`Player ${playerName} could not spectate room ${roomName} because a game is in progress!`)
+            return
+        }
+
+        socket.join(roomName)
+        let success = roomDataManager.addSpectatorToRoom(playerName, roomName)
+        socket.emit("spectateRoomResult", success)
+
+        if (success) {
+            console.log(`Player ${playerName} joined room ${roomName} as a spectator.`)
+            sendRoomData(roomName)
         }
         else {
-            console.warn(`Player ${playerName} could not spectate non-existent room ${roomName}!`)
+            console.error(`Player ${playerName} could not spectate room ${roomName}!`)
         }
     })
 

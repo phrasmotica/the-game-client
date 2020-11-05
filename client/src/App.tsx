@@ -51,14 +51,18 @@ function App() {
             setState(AppState.Browse)
         })
 
-        socket.current.on("joinRoomReceived", () => {
-            setClientMode(ClientMode.Player)
-            setState(AppState.Lobby)
+        socket.current.on("joinRoomResult", (success: boolean) => {
+            if (success) {
+                setClientMode(ClientMode.Player)
+                setState(AppState.Lobby)
+            }
         })
 
-        socket.current.on("spectateRoomReceived", () => {
-            setClientMode(ClientMode.Spectator)
-            setState(AppState.Lobby)
+        socket.current.on("spectateRoomResult", (success: boolean) => {
+            if (success) {
+                setClientMode(ClientMode.Spectator)
+                setState(AppState.Lobby)
+            }
         })
 
         socket.current.on("gameStarted", (message: Message<RoomData>) => {

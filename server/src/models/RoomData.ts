@@ -49,6 +49,8 @@ export class RoomData {
         else {
             console.warn(`Tried to add player ${player} to room ${this.name} but they were already in the room!`)
         }
+
+        return true
     }
 
     /**
@@ -83,6 +85,8 @@ export class RoomData {
         else {
             console.warn(`Tried to add player ${player} to room ${this.name} as a spectator but they were already in the room!`)
         }
+
+        return true
     }
 
     /**
