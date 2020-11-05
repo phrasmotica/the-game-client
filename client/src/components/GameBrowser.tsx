@@ -110,7 +110,7 @@ export function GameBrowser(props: GameBrowserProps) {
                     <button
                         disabled={!canCreateRoom}
                         onClick={() => createRoom(createRoomName)}>
-                        Create Game
+                        Create Room
                     </button>
                 </div>
 
@@ -134,7 +134,7 @@ export function GameBrowser(props: GameBrowserProps) {
             <div className="flex-center margin-bottom">
                 <div className="margin-right">
                     <span>
-                        Games List
+                        Room List
                     </span>
                 </div>
 
@@ -155,7 +155,7 @@ export function GameBrowser(props: GameBrowserProps) {
                         inProgressElement = (
                             <div className="in-progress-message">
                                 <span>
-                                    This game is in progress.
+                                    Game in progress.
                                 </span>
                             </div>
                         )
