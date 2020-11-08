@@ -3,6 +3,16 @@
  */
 export class ServerSettings {
     /**
+     * The default port to use.
+     */
+    private static readonly DEFAULT_PORT = 4001
+
+    /**
+     * The port to use.
+     */
+    port: number
+
+    /**
      * The default maximum number of rooms allowed.
      */
     private static readonly DEFAULT_MAX_ROOMS = 3
@@ -36,10 +46,12 @@ export class ServerSettings {
      * Constructor.
      */
     private constructor(
+        port: number,
         maxRooms: number,
         maxPlayersPerRoom: number,
         maxSpectatorsPerRoom: number,
     ) {
+        this.port = port
         this.maxRooms = maxRooms
         this.maxPlayersPerRoom = maxPlayersPerRoom
         this.maxSpectatorsPerRoom = maxSpectatorsPerRoom
@@ -50,6 +62,7 @@ export class ServerSettings {
      */
     static readFromEnv() {
         return new ServerSettings(
+            Number(process.env.PORT || this.DEFAULT_PORT),
             Number(process.env.SERVER_MAX_ROOMS || this.DEFAULT_MAX_ROOMS),
             Number(process.env.SERVER_MAX_PLAYERS_PER_ROOM || this.DEFAULT_MAX_PLAYERS_PER_ROOM),
             Number(process.env.SERVER_MAX_SPECTATORS_PER_ROOM || this.DEFAULT_MAX_SPECTATORS_PER_ROOM),
