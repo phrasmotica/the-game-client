@@ -322,19 +322,31 @@ io.on("connection", (socket: Socket) => {
         sendRoomData(roomName)
     })
 
-    socket.on("roomData", (message: Message<RoomData>) => {
-        let roomData = RoomData.from(message.content)
-        let roomName = roomData.name
-        roomDataManager.setGameData(roomName, roomData.gameData)
+    socket.on("setCardToPlay", (res: RoomWith<number | undefined>) => {
+        let roomName = res.roomName
+        let cardToPlay = res.data
+
+        roomDataManager.setCardToPlay(roomName, cardToPlay)
 
         sendRoomData(roomName)
     })
 
-    socket.on("playCard", (message: Message<RoomData>) => {
-        let roomData = RoomData.from(message.content)
-        let roomName = roomData.name
-        roomDataManager.setGameData(roomName, roomData.gameData)
-        roomDataManager.onPlayCard(roomName)
+    socket.on("playCard", (req: RoomWith<[string, number, number]>) => {
+        let roomName = req.roomName
+        let player = req.data[0]
+        let card = req.data[1]
+        let pileIndex = req.data[2]
+
+        roomDataManager.playCard(roomName, player, card, pileIndex)
+
+        sendRoomData(roomName)
+    })
+
+    socket.on("sortHand", (req: RoomWith<string>) => {
+        let roomName = req.roomName
+        let playerName = req.data
+
+        roomDataManager.sortHand(roomName, playerName)
 
         sendRoomData(roomName)
     })

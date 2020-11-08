@@ -230,6 +230,45 @@ export class RoomDataManager {
     }
 
     /**
+     * Sets the card to play in the given room.
+     */
+    setCardToPlay(roomName: string, cardToPlay: number | undefined) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            gameData.setCardToPlay(cardToPlay)
+        }
+        else {
+            console.warn(`Tried to set card to play in non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
+     * Sorts the given player's hand in the given room.
+     */
+    sortHand(roomName: string, playerName: string) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            gameData.sortHand(playerName)
+        }
+        else {
+            console.warn(`Tried to sort hand in non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
+     * Plays the given card on the given pile from the given player's hand in the given room.
+     */
+    playCard(roomName: string, player: string, card: number, pileIndex: number) {
+        if (this.roomExists(roomName)) {
+            let gameData = this.getRoomData(roomName).gameData
+            gameData.playCard(player, card, pileIndex)
+        }
+        else {
+            console.warn(`Tried to sort hand in non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
      * Processes the game data for the given room.
      */
     onPlayCard(roomName: string) {

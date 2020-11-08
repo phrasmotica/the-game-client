@@ -340,6 +340,37 @@ export class GameData {
     }
 
     /**
+     * Sets the card to play.
+     */
+    setCardToPlay(cardToPlay: number | undefined) {
+        this.cardToPlay = cardToPlay
+    }
+
+    /**
+     * Sorts the given player's hand.
+     */
+    sortHand(playerName: string) {
+        let hand = this.getHand(playerName)
+
+        if (hand !== undefined) {
+            this.hands[playerName] = hand.sort()
+        }
+    }
+
+    /**
+     * Plays the given card on the given pile from the given player's hand.
+     */
+    playCard(player: string, card: number, pileIndex: number) {
+        let pile = this.piles[pileIndex]
+        pile.push(card, this.ruleSet)
+
+        let hand = this.getHand(player)
+        hand!.remove(card)
+
+        this.cardsPlayedThisTurn++
+    }
+
+    /**
      * Removes the given player from the game.
      */
     removePlayer(playerName: string) {

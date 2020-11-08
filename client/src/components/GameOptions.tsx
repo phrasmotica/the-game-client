@@ -1,6 +1,6 @@
 import React from "react"
-import { RoomWith } from "../models/RoomWith"
 
+import { RoomWith } from "../models/RoomWith"
 import { GameMode, RuleSet } from "../models/RuleSet"
 
 interface GameOptionsProps {

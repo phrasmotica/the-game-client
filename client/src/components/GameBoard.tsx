@@ -7,8 +7,6 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
-import { GameData } from "../models/GameData"
-import { Message } from "../models/Message"
 import { RoomData } from "../models/RoomData"
 import { RoomWith } from "../models/RoomWith"
 
@@ -24,7 +22,7 @@ interface GameBoardProps {
     playerName: string
 
     /**
-     * The rule set.
+     * The room data.
      */
     roomData: RoomData
 
@@ -86,44 +84,18 @@ export function GameBoard(props: GameBoardProps) {
     }
 
     /**
-     * Sets the game data and sends the new data to the server.
-     */
-    const setGameData = (gameData: GameData) => {
-        let newRoomData = RoomData.from(props.roomData)
-        newRoomData.gameData = gameData
-
-        let message = Message.info(newRoomData)
-        props.socket.emit("roomData", message)
-    }
-
-    /**
      * Sets the card to play.
      */
     const setCardToPlay = (card: number | undefined) => {
-        let newGameData = props.roomData.gameData
-        newGameData.cardToPlay = card
-        setGameData(newGameData)
+        props.socket.emit("setCardToPlay", new RoomWith(props.roomData.name, card))
     }
 
     /**
      * Plays the given card from the player's hand.
      */
     const playCard = (card: number, pileIndex: number) => {
-        let newGameData = props.roomData.gameData
-
-        let pile = newGameData.piles[pileIndex]
-        pile.push(card, props.roomData.gameData.ruleSet)
-
-        let hand = getHand()
-        hand!.remove(card)
-
-        newGameData.cardsPlayedThisTurn++
-
-        let newRoomData = RoomData.from(props.roomData)
-        newRoomData.gameData = newGameData
-
-        let message = Message.info(newRoomData)
-        props.socket.emit("playCard", message)
+        let data: [string, number, number] = [props.playerName, card, pileIndex]
+        props.socket.emit("playCard", new RoomWith(props.roomData.name, data))
     }
 
     /**
@@ -164,12 +136,7 @@ export function GameBoard(props: GameBoardProps) {
      * Sorts the hand into ascending order.
      */
     const sortHand = () => {
-        let newGameData = props.roomData.gameData
-        let hand = getHand()
-        if (hand !== undefined) {
-            newGameData.hands[props.playerName] = hand.sort()
-            setGameData(newGameData)
-        }
+        props.socket.emit("sortHand", new RoomWith(props.roomData.name, props.playerName))
     }
 
     /**
@@ -349,20 +316,20 @@ export function GameBoard(props: GameBoardProps) {
                 <button
                     className="margin-right"
                     disabled={gameIsOver || hand?.isEmpty()}
-                    onClick={() => sortHand()}>
+                    onClick={sortHand}>
                     Sort hand
                 </button>
 
                 <button
                     className="margin-right"
                     disabled={gameIsOver || !isMyTurn() || !areEnoughCardsPlayed()}
-                    onClick={() => endTurn()}>
+                    onClick={endTurn}>
                     End turn
                 </button>
 
                 <button
                     disabled={gameIsOver || !isMyTurn() || !noCardsCanBePlayed()}
-                    onClick={() => endTurn()}>
+                    onClick={endTurn}>
                     Pass
                 </button>
             </div>
