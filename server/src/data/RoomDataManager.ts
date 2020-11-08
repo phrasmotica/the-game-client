@@ -14,7 +14,7 @@ type RoomDataMap = {
 /**
  * Class for managing room data on the server.
  */
-export class RoomDataManager {
+export class RoomDataManager<TGameData> {
     /**
      * Room data indexed by room name.
      */
