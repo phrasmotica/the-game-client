@@ -3,18 +3,11 @@
  */
 export class Hand {
     /**
-     * The cards in the hand.
-     */
-    cards: number[]
-
-    /**
      * Creates a new hand.
      */
     constructor(
-        cards: number[]
-    ) {
-        this.cards = cards
-    }
+        public cards: number[]
+    ) { }
 
     /**
      * Returns a concrete hand object. Use when processing naive message from the server.

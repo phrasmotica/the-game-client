@@ -10,25 +10,12 @@ export enum Level {
  */
 export class Message<T> {
     /**
-     * The level of the message.
-     */
-    level: Level
-
-    /**
-     * The message content.
-     */
-    content: T
-
-    /**
      * Creates a new message.
      */
     constructor(
-        level: Level,
-        content: T
-    ) {
-        this.level = level
-        this.content = content
-    }
+        public level: Level,
+        public content: T
+    ) { }
 
     /**
      * Returns a new info message.

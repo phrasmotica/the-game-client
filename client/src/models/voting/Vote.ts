@@ -30,39 +30,14 @@ export enum VoteCalculationMethod {
  */
 export class Vote {
     /**
-     * The voters.
-     */
-    voters: string[]
-
-    /**
-     * The vote map.
-     */
-    voteMap: VoteMap
-
-    /**
-     * The vote calculation method.
-     */
-    voteCalculationMethod: VoteCalculationMethod
-
-    /**
-     * Whether the vote is closed.
-     */
-    isClosed: boolean
-
-    /**
      * Creates a new player vote.
      */
     private constructor(
-        voters: string[],
-        voteMap: VoteMap,
-        voteCalculationMethod: VoteCalculationMethod,
-        isClosed: boolean
-    ) {
-        this.voters = voters
-        this.voteMap = voteMap
-        this.voteCalculationMethod = voteCalculationMethod
-        this.isClosed = isClosed
-    }
+        private voters: string[],
+        private voteMap: VoteMap,
+        private voteCalculationMethod: VoteCalculationMethod,
+        private isClosed: boolean
+    ) { }
 
     /**
      * Sets the voters allowed to participate in this vote.

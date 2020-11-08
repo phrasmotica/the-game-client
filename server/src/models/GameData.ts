@@ -25,110 +25,24 @@ export enum GameStartResult {
  */
 export class GameData {
     /**
-     * The players in the game.
-     */
-    players: string[]
-
-    /**
-     * The rule set for the game.
-     */
-    ruleSet: RuleSet
-
-    /**
-     * The deck of cards.
-     */
-    deck: Deck
-
-    /**
-     * The players' hands.
-     */
-    hands: PlayerHandMap
-
-    /**
-     * The piles for the game.
-     */
-    piles: Pile[]
-
-    /**
-     * Whether the game has started.
-     */
-    hasStarted: boolean
-
-    /**
-     * Map of players' votes for the starting player.
-     */
-    startingPlayerVote: Vote
-
-    /**
-     * The starting player.
-     */
-    startingPlayer: string | undefined
-
-    /**
-     * The number of turns played.
-     */
-    turnsPlayed: number
-
-    /**
-     * The index of the player whose turn it is.
-     */
-    currentPlayerIndex: number
-
-    /**
-     * The card to play.
-     */
-    cardToPlay: number | undefined
-
-    /**
-     * The number of cards played this turn.
-     */
-    cardsPlayedThisTurn: number
-
-    /**
-     * Whether the game is won.
-     */
-    isWon: boolean
-
-    /**
-     * Whether the game is lost.
-     */
-    isLost: boolean
-
-    /**
      * Constructor.
      */
     constructor(
-        players: string[],
-        ruleSet: RuleSet,
-        deck: Deck,
-        hands: PlayerHandMap,
-        piles: Pile[],
-        hasStarted: boolean,
-        startingPlayerVote: Vote,
-        startingPlayer: string | undefined,
-        turnsPlayed: number,
-        currentPlayerIndex: number,
-        cardToPlay: number | undefined,
-        cardsPlayedThisTurn: number,
-        isWon: boolean,
-        isLost: boolean,
-
-    ) {
-        this.players = players
-        this.ruleSet = ruleSet
-        this.deck = deck
-        this.hands = hands
-        this.piles = piles
-        this.hasStarted = hasStarted
-        this.startingPlayerVote = startingPlayerVote
-        this.startingPlayer = startingPlayer
-        this.turnsPlayed = turnsPlayed
-        this.currentPlayerIndex = currentPlayerIndex
-        this.cardToPlay = cardToPlay
-        this.cardsPlayedThisTurn = cardsPlayedThisTurn
-        this.isWon = isWon
-        this.isLost = isLost
-    }
+        private players: string[],
+        private ruleSet: RuleSet,
+        private deck: Deck,
+        private hands: PlayerHandMap,
+        private piles: Pile[],
+        private hasStarted: boolean,
+        private startingPlayerVote: Vote,
+        private startingPlayer: string | undefined,
+        private turnsPlayed: number,
+        private currentPlayerIndex: number,
+        private cardToPlay: number | undefined,
+        private cardsPlayedThisTurn: number,
+        private isWon: boolean,
+        private isLost: boolean,
+    ) { }
 
     /**
      * Returns a default game data object.

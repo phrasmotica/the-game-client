@@ -9,21 +9,6 @@ import { SocketManager } from "../data/SocketManager"
  */
 export abstract class GameServer<TGameData, TServerSettings> {
     /**
-     * The server settings.
-     */
-    protected serverSettings: TServerSettings
-
-    /**
-     * The socket manager.
-     */
-    protected socketManager: SocketManager
-
-    /**
-     * The room data manager.
-     */
-    protected roomDataManager: RoomDataManager
-
-    /**
      * The underlying socket IO server.
      */
     protected server: http.Server
@@ -37,14 +22,10 @@ export abstract class GameServer<TGameData, TServerSettings> {
      * Constructor.
      */
     protected constructor(
-        serverSettings: TServerSettings,
-        socketManager: SocketManager,
-        roomDataManager: RoomDataManager
+        protected serverSettings: TServerSettings,
+        protected socketManager: SocketManager,
+        protected roomDataManager: RoomDataManager<TGameData>
     ) {
-        this.serverSettings = serverSettings
-        this.socketManager = socketManager
-        this.roomDataManager = roomDataManager
-
         this.server = this.createHttpServer()
         this.io = this.createSocketIOServer()
     }

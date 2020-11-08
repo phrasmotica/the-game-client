@@ -36,7 +36,7 @@ export class TheGameServer extends GameServer<GameData, ServerSettings> {
     constructor(
         serverSettings: ServerSettings,
         socketManager: SocketManager,
-        roomDataManager: RoomDataManager
+        roomDataManager: RoomDataManager<GameData>
     ) {
         super(serverSettings, socketManager, roomDataManager)
     }
@@ -238,7 +238,7 @@ export class TheGameServer extends GameServer<GameData, ServerSettings> {
             return
         }
 
-        if (roomData.gameData.isInProgress()) {
+        if (roomData.isInProgress()) {
             console.warn(`Player ${playerName} could not join room ${roomName} because a game is in progress!`)
             return
         }
@@ -275,7 +275,7 @@ export class TheGameServer extends GameServer<GameData, ServerSettings> {
             return
         }
 
-        if (roomData.gameData.isInProgress()) {
+        if (roomData.isInProgress()) {
             console.warn(`Player ${playerName} could not spectate room ${roomName} because a game is in progress!`)
             return
         }

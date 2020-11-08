@@ -24,21 +24,6 @@ export enum PileState {
  */
 export class Pile {
     /**
-     * The index of the pile.
-     */
-    index: number
-
-    /**
-     * The pile's starting number.
-     */
-    start: number
-
-    /**
-     * The pile's direction.
-     */
-    direction: Direction
-
-    /**
      * The cards in the pile.
      */
     private cards: Stack<number>
@@ -46,21 +31,18 @@ export class Pile {
     /**
      * The number of turns that this pile has been on fire for.
      */
-    turnsOnFire: number
+    private turnsOnFire: number
 
     /**
      * Creates a new pile.
      */
     constructor(
-        index: number,
-        start: number,
-        direction: Direction,
+        private index: number,
+        private start: number,
+        private direction: Direction,
         cards?: number[],
         turnsOnFire?: number,
     ) {
-        this.index = index
-        this.start = start
-        this.direction = direction
         this.cards = new Stack(100, cards)
         this.turnsOnFire = turnsOnFire || 0
     }

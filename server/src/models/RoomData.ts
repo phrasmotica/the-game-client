@@ -5,39 +5,14 @@ import { GameData } from "./GameData"
  */
 export class RoomData {
     /**
-     * The name of the room.
-     */
-    name: string
-
-    /**
-     * The players in the room.
-     */
-    players: string[]
-
-    /**
-     * The spectators in the room.
-     */
-    spectators: string[]
-
-    /**
-     * The game data.
-     */
-    gameData: GameData
-
-    /**
      * Constructor.
      */
     constructor(
-        name: string,
-        players: string[],
-        spectators: string[],
-        gameData: GameData
-    ) {
-        this.name = name
-        this.players = players
-        this.spectators = spectators
-        this.gameData = gameData
-    }
+        private name: string,
+        public players: string[],
+        public spectators: string[],
+        private gameData: GameData
+    ) { }
 
     /**
      * Adds the given player to the room.
@@ -129,6 +104,13 @@ export class RoomData {
         this.spectators = []
 
         return this.gameData.clear()
+    }
+
+    /**
+     * Returns whether this room's game is in progress.
+     */
+    isInProgress() {
+        return this.gameData.isInProgress()
     }
 
     /**

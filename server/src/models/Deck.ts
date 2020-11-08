@@ -5,18 +5,11 @@ import { Random } from "../util/Random"
  */
 export class Deck {
     /**
-     * The cards in the deck.
-     */
-    private cards: number[]
-
-    /**
      * Creates a new deck.
      */
     constructor(
-        cards: number[]
-    ) {
-        this.cards = cards
-    }
+        private cards: number[]
+    ) { }
 
     /**
      * Creates a deck for the game.
