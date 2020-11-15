@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "../models/RuleSet"
+import { RuleSet } from "../common/models/RuleSet"
 
 interface CardViewProps {
     /**

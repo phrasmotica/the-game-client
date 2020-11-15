@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { RoomWith } from "../models/RoomWith"
+import { RoomWith } from "../common/models/RoomWith"
 
 export interface StartingPlayerSelectorProps {
     /**

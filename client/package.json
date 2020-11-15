@@ -11,6 +11,7 @@
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "@types/socket.io-client": "^1.4.33",
+    "copyfiles": "^2.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
@@ -18,7 +19,7 @@
     "typescript": "^3.9"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "copyfiles --up 1 --error ../common/**/*.ts src && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

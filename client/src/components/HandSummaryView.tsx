@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Hand } from "../models/Hand"
+import { Hand } from "../common/models/Hand"
 
 interface HandSummaryViewProps {
     /**

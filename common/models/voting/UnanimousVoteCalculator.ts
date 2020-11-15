@@ -6,7 +6,7 @@ export class UnanimousVoteCalculator implements IVoteCalculator {
      * Returns the winner of the vote if it is unanimous, otherwise returns undefined.
      */
     getWinner(vote: Vote) {
-        let votes = Object.values(vote.voteMap)
+        let votes = vote.enumerateVotes()
         if (votes.length <= 0) {
             return undefined
         }

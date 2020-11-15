@@ -9,12 +9,12 @@ import { ServerSettings } from "../config/ServerSettings"
 import { SocketManager } from "../data/SocketManager"
 import { RoomDataManager } from "../data/RoomDataManager"
 
-import { GameData, GameStartResult } from "../models/GameData"
-import { Message } from "../models/Message"
-import { RoomWith } from "../models/RoomWith"
-import { RuleSet } from "../models/RuleSet"
+import { GameData, GameStartResult } from "../common/models/GameData"
+import { Message } from "../common/models/Message"
+import { RoomWith } from "../common/models/RoomWith"
+import { RuleSet } from "../common/models/RuleSet"
 
-import { VoteResult } from "../models/voting/Vote"
+import { VoteResult } from "../common/models/voting/Vote"
 
 /**
  * The name of the default room on the server.

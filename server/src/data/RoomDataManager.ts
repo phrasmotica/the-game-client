@@ -1,8 +1,8 @@
-import { GameData, GameStartResult } from "../models/GameData"
-import { Hand } from "../models/Hand"
-import { RoomData } from "../models/RoomData"
-import { RuleSet } from "../models/RuleSet"
-import { VoteResult } from "../models/voting/Vote"
+import { GameData, GameStartResult } from "../common/models/GameData"
+import { Hand } from "../common/models/Hand"
+import { RoomData } from "../common/models/RoomData"
+import { RuleSet } from "../common/models/RuleSet"
+import { VoteResult } from "../common/models/voting/Vote"
 
 /**
  * Represents a map of room names to room data.

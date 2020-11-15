@@ -8,7 +8,7 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "copyfiles --up 1 --error ../common/**/*.ts src && ts-node-dev src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "@types/express": "^4.17.8",
     "@types/node": "^14.11.2",
     "@types/socket.io": "^2.1.11",
+    "copyfiles": "^2.4.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.9.0",
     "express": "^4.17.1",

@@ -114,6 +114,13 @@ export class Vote {
     }
 
     /**
+     * Returns the votes in this vote as a list.
+     */
+    enumerateVotes() {
+        return Object.values(this.voteMap)
+    }
+
+    /**
      * Closes the vote.
      */
     close() {

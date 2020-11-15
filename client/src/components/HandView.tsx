@@ -2,8 +2,8 @@ import React from "react"
 
 import { CardView } from "./CardView"
 
-import { Hand } from "../models/Hand"
-import { RuleSet } from "../models/RuleSet"
+import { Hand } from "../common/models/Hand"
+import { RuleSet } from "../common/models/RuleSet"
 
 interface HandProps {
     /**
