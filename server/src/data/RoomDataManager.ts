@@ -147,23 +147,6 @@ export class RoomDataManager<TGameData> {
     }
 
     /**
-     * Adds the given player to the game.
-     */
-    addToGameData(playerName: string, gameData: GameData) {
-        gameData.players.push(playerName)
-    }
-
-    /**
-     * Deals a hand to the given player in the given room.
-     */
-    dealHand(playerName: string, roomName: string) {
-        console.log(`Dealing hand to player ${playerName} in room ${roomName}`)
-
-        let roomData = this.getRoomData(roomName)
-        roomData.gameData.dealHand(playerName)
-    }
-
-    /**
      * Adds a starting player vote from the given player in the given room.
      */
     addStartingPlayerVote(roomName: string, playerName: string, startingPlayerName: string) {
