@@ -38,8 +38,8 @@ export class Pile {
      */
     constructor(
         public index: number,
-        private start: number,
-        private direction: Direction,
+        public start: number,
+        public direction: Direction,
         cards?: number[],
         turnsOnFire?: number,
     ) {

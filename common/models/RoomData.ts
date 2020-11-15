@@ -8,10 +8,10 @@ export class RoomData {
      * Constructor.
      */
     constructor(
-        private name: string,
+        public name: string,
         public players: string[],
         public spectators: string[],
-        private gameData: GameData
+        public gameData: GameData,
     ) { }
 
     /**

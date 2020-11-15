@@ -28,20 +28,20 @@ export class GameData {
      * Constructor.
      */
     constructor(
-        private players: string[],
-        private ruleSet: RuleSet,
-        private deck: Deck,
+        public players: string[],
+        public ruleSet: RuleSet,
+        public deck: Deck,
         private hands: PlayerHandMap,
-        private piles: Pile[],
+        public piles: Pile[],
         private hasStarted: boolean,
-        private startingPlayerVote: Vote,
-        private startingPlayer: string | undefined,
-        private turnsPlayed: number,
-        private currentPlayerIndex: number,
-        private cardToPlay: number | undefined,
-        private cardsPlayedThisTurn: number,
-        private isWon: boolean,
-        private isLost: boolean,
+        public startingPlayerVote: Vote,
+        public startingPlayer: string | undefined,
+        public turnsPlayed: number,
+        public currentPlayerIndex: number,
+        public cardToPlay: number | undefined,
+        public cardsPlayedThisTurn: number,
+        public isWon: boolean,
+        public isLost: boolean,
     ) { }
 
     /**
@@ -248,9 +248,16 @@ export class GameData {
     /**
      * Returns the hand belonging to the given player.
      */
-    getHand(playerName: string ) {
+    getHand(playerName: string) {
         let handObj = this.hands[playerName]
         return handObj !== undefined ? Hand.from(handObj) : undefined
+    }
+
+    /**
+     * Returns the hands in this game as a list.
+     */
+    enumerateHands() {
+        return Object.values(this.hands).map(Hand.from)
     }
 
     /**

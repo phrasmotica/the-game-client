@@ -1,5 +1,4 @@
 import { GameData, GameStartResult } from "../common/models/GameData"
-import { Hand } from "../common/models/Hand"
 import { RoomData } from "../common/models/RoomData"
 import { RuleSet } from "../common/models/RuleSet"
 import { VoteResult } from "../common/models/voting/Vote"
@@ -282,10 +281,9 @@ export class RoomDataManager<TGameData> {
      */
     private checkForWin(roomName: string) {
         let gameData = this.getRoomData(roomName).gameData
-        let hands = Object.values(gameData.hands).map(Hand.from)
 
         let handsEmpty = true
-        for (let hand of hands) {
+        for (let hand of gameData.enumerateHands()) {
             if (!hand.isEmpty()) {
                 handsEmpty = false
                 break
@@ -309,7 +307,6 @@ export class RoomDataManager<TGameData> {
      */
     private checkForLoss(roomName: string) {
         let gameData = this.getRoomData(roomName).gameData
-        let hands = Object.values(gameData.hands).map(Hand.from)
 
         for (let pile of gameData.piles) {
             pile.endTurn(gameData.ruleSet)
@@ -322,7 +319,7 @@ export class RoomDataManager<TGameData> {
         }
 
         let noCardsCanBePlayed = true
-        for (let hand of hands) {
+        for (let hand of gameData.enumerateHands()) {
             if (hand === undefined || hand.isEmpty()) {
                 continue
             }
