@@ -9,7 +9,7 @@ import { ServerSettings } from "../config/ServerSettings"
 import { SocketManager } from "../data/SocketManager"
 import { RoomDataManager } from "../data/RoomDataManager"
 
-import { GameData, GameStartResult } from "../common/models/GameData"
+import { GameStartResult } from "../common/models/GameData"
 import { Message } from "../common/models/Message"
 import { RoomWith } from "../common/models/RoomWith"
 import { RuleSet } from "../common/models/RuleSet"
@@ -24,7 +24,7 @@ const DEFAULT_ROOM_NAME = "polysomn"
 /**
  * Represents a server for The Game.
  */
-export class TheGameServer extends GameServer<GameData, ServerSettings> {
+export class TheGameServer extends GameServer<ServerSettings> {
     /**
      * List of rooms that should persist.
      */
@@ -36,9 +36,9 @@ export class TheGameServer extends GameServer<GameData, ServerSettings> {
     constructor(
         serverSettings: ServerSettings,
         socketManager: SocketManager,
-        roomDataManager: RoomDataManager<GameData>
+        private roomDataManager: RoomDataManager
     ) {
-        super(serverSettings, socketManager, roomDataManager)
+        super(serverSettings, socketManager)
     }
 
     /**

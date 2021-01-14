@@ -3,6 +3,8 @@ import { RoomData } from "../common/models/RoomData"
 import { RuleSet } from "../common/models/RuleSet"
 import { VoteResult } from "../common/models/voting/Vote"
 
+import { IRoomDataManager } from "./rooms/IRoomDataManager"
+
 /**
  * Represents a map of room names to room data.
  */
@@ -13,7 +15,7 @@ type RoomDataMap = {
 /**
  * Class for managing room data on the server.
  */
-export class RoomDataManager<TGameData> {
+export class RoomDataManager implements IRoomDataManager {
     /**
      * Room data indexed by room name.
      */
@@ -53,13 +55,6 @@ export class RoomDataManager<TGameData> {
     }
 
     /**
-     * Returns the starting player in the given room.
-     */
-    getStartingPlayer(roomName: string) {
-        return this.getRoomData(roomName)?.gameData.startingPlayer
-    }
-
-    /**
      * Returns whether the given room exists.
      */
     roomExists(roomName: string) {
@@ -75,6 +70,14 @@ export class RoomDataManager<TGameData> {
     }
 
     /**
+     * Creates a room with the given name.
+     */
+    initialise(roomName: string) {
+        this.roomGameData[roomName] = RoomData.named(roomName)
+        return true
+    }
+
+    /**
      * If the given room doesn't exist then create it.
      */
     ensureRoomExists(roomName: string) {
@@ -83,13 +86,48 @@ export class RoomDataManager<TGameData> {
         }
 
         return true
-        }
+    }
 
     /**
      * Returns whether the maximum number of rooms has been reached.
      */
     maxRoomsReached() {
         return this.getAllRoomData().length >= this.maxRooms
+    }
+
+    /**
+     * Ends the turn in the given room.
+     */
+    onTurnEnd(roomName: string) {
+        if (this.roomExists(roomName)) {
+            this.replenish(roomName)
+            this.checkForLoss(roomName)
+            this.nextPlayer(roomName)
+        }
+        else {
+            console.warn(`Tried to end turn in non-existent room ${roomName}!`)
+        }
+    }
+
+    /**
+     * Clears the game data in the given room.
+     */
+    clear(roomName: string) {
+        if (this.roomExists(roomName)) {
+            let roomData = this.getRoomData(roomName)
+            return roomData.clear()
+        }
+
+        return false
+    }
+
+    /**
+     * Removes the given room.
+     */
+    removeRoom(roomName: string) {
+        console.log(`Removing room ${roomName}`)
+        delete this.roomGameData[roomName]
+        return true
     }
 
     /**
@@ -108,14 +146,6 @@ export class RoomDataManager<TGameData> {
         }
 
         return rooms
-    }
-
-    /**
-     * Creates a room with the given name.
-     */
-    initialise(roomName: string) {
-        this.roomGameData[roomName] = RoomData.named(roomName)
-        return true
     }
 
     /**
@@ -143,6 +173,13 @@ export class RoomDataManager<TGameData> {
     addSpectatorToRoom(playerName: string, roomName: string) {
         let roomData = this.getRoomData(roomName)
         return roomData.addSpectator(playerName)
+    }
+
+    /**
+     * Returns the starting player in the given room.
+     */
+    getStartingPlayer(roomName: string) {
+        return this.getRoomData(roomName)?.gameData.startingPlayer
     }
 
     /**
@@ -200,18 +237,6 @@ export class RoomDataManager<TGameData> {
     }
 
     /**
-     * Clears the game data in the given room.
-     */
-    clear(roomName: string) {
-        if (this.roomExists(roomName)) {
-            let roomData = this.getRoomData(roomName)
-            return roomData.clear()
-        }
-
-        return false
-    }
-
-    /**
      * Sets the card to play in the given room.
      */
     setCardToPlay(roomName: string, cardToPlay: number | undefined) {
@@ -259,20 +284,6 @@ export class RoomDataManager<TGameData> {
         }
         else {
             console.warn(`Tried to play card in non-existent room ${roomName}!`)
-        }
-    }
-
-    /**
-     * Ends the turn in the given room.
-     */
-    onTurnEnd(roomName: string) {
-        if (this.roomExists(roomName)) {
-            this.replenish(roomName)
-            this.checkForLoss(roomName)
-            this.nextPlayer(roomName)
-        }
-        else {
-            console.warn(`Tried to end turn in non-existent room ${roomName}!`)
         }
     }
 
@@ -432,13 +443,5 @@ export class RoomDataManager<TGameData> {
         else {
             console.error(`Tried to set rule set for non-existent room "${roomName}"!`)
         }
-    }
-
-    /**
-     * Removes the given room.
-     */
-    removeRoom(roomName: string) {
-        console.log(`Removing room ${roomName}`)
-        delete this.roomGameData[roomName]
     }
 }

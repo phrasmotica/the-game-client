@@ -1,5 +1,6 @@
 import { Deck } from "./Deck"
 import { Hand } from "./Hand"
+import { IGameData } from "./IGameData"
 import { Direction, Pile } from "./Pile"
 import { Vote } from "./voting/Vote"
 import { RuleSet } from "./RuleSet"
@@ -23,7 +24,7 @@ export enum GameStartResult {
 /**
  * Represents data about a game.
  */
-export class GameData {
+export class GameData implements IGameData {
     /**
      * Constructor.
      */
@@ -211,6 +212,8 @@ export class GameData {
         this.cardsPlayedThisTurn = 0
         this.currentPlayerIndex = 0
         this.players = []
+
+        return true
     }
 
     /**

@@ -1,13 +1,12 @@
 import http from "http"
 import { Server } from "socket.io"
 
-import { RoomDataManager } from "../data/RoomDataManager"
 import { SocketManager } from "../data/SocketManager"
 
 /**
  * Represents a server for a game with the given game data type and settings type.
  */
-export abstract class GameServer<TGameData, TServerSettings> {
+export abstract class GameServer<TServerSettings> {
     /**
      * The underlying socket IO server.
      */
@@ -23,8 +22,7 @@ export abstract class GameServer<TGameData, TServerSettings> {
      */
     protected constructor(
         protected serverSettings: TServerSettings,
-        protected socketManager: SocketManager,
-        protected roomDataManager: RoomDataManager<TGameData>
+        protected socketManager: SocketManager
     ) {
         this.server = this.createHttpServer()
         this.io = this.createSocketIOServer()
