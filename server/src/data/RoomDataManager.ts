@@ -41,6 +41,13 @@ export class RoomDataManager implements IRoomDataManager {
     }
 
     /**
+     * Returns the game data for the given room.
+     */
+    getGameData(roomName: string) {
+        return this.roomGameData[roomName].gameData
+    }
+
+    /**
      * Returns the data for all rooms.
      */
     getAllRoomData() {
@@ -51,7 +58,7 @@ export class RoomDataManager implements IRoomDataManager {
      * Returns the players in the given room.
      */
     getPlayers(roomName: string) {
-        return this.getRoomData(roomName)?.gameData.players ?? []
+        return this.getGameData(roomName)?.players ?? []
     }
 
     /**
@@ -100,9 +107,20 @@ export class RoomDataManager implements IRoomDataManager {
      */
     onTurnEnd(roomName: string) {
         if (this.roomExists(roomName)) {
-            this.replenish(roomName)
-            this.checkForLoss(roomName)
-            this.nextPlayer(roomName)
+            let gameData = this.getGameData(roomName)
+
+            gameData.replenish()
+
+            let isWon = gameData.checkForLoss()
+            if (isWon) {
+                console.log(`Game is lost in room ${roomName}!`)
+            }
+            else {
+                console.log(`Game is not yet lost in room ${roomName}.`)
+            }
+
+            let nextPlayer = gameData.nextPlayer()
+            console.log(`It is now player ${nextPlayer}'s turn in room ${roomName}`)
         }
         else {
             console.warn(`Tried to end turn in non-existent room ${roomName}!`)
@@ -138,9 +156,14 @@ export class RoomDataManager implements IRoomDataManager {
 
         for (let room of this.getAllRoomData()) {
             if (room.playerIsPresent(playerName)) {
-                console.log(`Removed player ${playerName} from room ${room.name}`)
+                let success = room.removePlayer(playerName)
+                if (success) {
+                    console.log(`Removed player ${playerName} from room ${room.name}`)
+                }
+                else {
+                    console.warn(`Tried to remove player ${playerName} but they were not in the game!`)
+                }
 
-                room.removePlayer(playerName)
                 rooms.push(room.name)
             }
         }
@@ -179,7 +202,7 @@ export class RoomDataManager implements IRoomDataManager {
      * Returns the starting player in the given room.
      */
     getStartingPlayer(roomName: string) {
-        return this.getRoomData(roomName)?.gameData.startingPlayer
+        return this.getGameData(roomName)?.startingPlayer
     }
 
     /**
@@ -187,7 +210,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     addStartingPlayerVote(roomName: string, playerName: string, startingPlayerName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             return gameData.addStartingPlayerVote(playerName, startingPlayerName)
         }
         else {
@@ -202,7 +225,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     removeStartingPlayerVote(roomName: string, playerName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             return gameData.removeStartingPlayerVote(playerName)
         }
         else {
@@ -217,7 +240,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     isStartingPlayerVoteComplete(roomName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             return gameData.isStartingPlayerVoteComplete()
         }
 
@@ -229,7 +252,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     setStartingPlayer(roomName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             return gameData.setStartingPlayer()
         }
 
@@ -241,7 +264,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     setCardToPlay(roomName: string, cardToPlay: number | undefined) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             gameData.setCardToPlay(cardToPlay)
         }
         else {
@@ -254,7 +277,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     sortHand(roomName: string, playerName: string) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             gameData.sortHand(playerName)
         }
         else {
@@ -267,7 +290,7 @@ export class RoomDataManager implements IRoomDataManager {
      */
     playCard(roomName: string, player: string, card: number, pileIndex: number) {
         if (this.roomExists(roomName)) {
-            let gameData = this.getRoomData(roomName).gameData
+            let gameData = this.getGameData(roomName)
             gameData.playCard(player, card, pileIndex)
         }
         else {
@@ -280,115 +303,19 @@ export class RoomDataManager implements IRoomDataManager {
      */
     onPlayCard(roomName: string) {
         if (this.roomExists(roomName)) {
-            this.checkForWin(roomName)
+            let gameData = this.getGameData(roomName)
+
+            let isWon = gameData.checkForWin()
+            if (isWon) {
+                console.log(`Game is won in room ${roomName}!`)
+            }
+            else {
+                console.log(`Game is not yet won in room ${roomName}.`)
+            }
         }
         else {
             console.warn(`Tried to play card in non-existent room ${roomName}!`)
         }
-    }
-
-    /**
-     * Checks for the game being won.
-     */
-    private checkForWin(roomName: string) {
-        let gameData = this.getRoomData(roomName).gameData
-
-        let handsEmpty = true
-        for (let hand of gameData.enumerateHands()) {
-            if (!hand.isEmpty()) {
-                handsEmpty = false
-                break
-            }
-        }
-
-        if (gameData.deck.isEmpty() && handsEmpty) {
-            console.log(`Game is won in room ${roomName}!`)
-            gameData.isWon = true
-
-            // TODO: the client isn't rendering this properly...
-            // - maybe it's rendering this and then rendering the "Your hand is empty/It's player x's turn." message immediately afterwards?
-        }
-        else {
-            console.log(`Game is not yet won in room ${roomName}.`)
-        }
-    }
-
-    /**
-     * Checks for the game being lost.
-     */
-    private checkForLoss(roomName: string) {
-        let gameData = this.getRoomData(roomName).gameData
-
-        for (let pile of gameData.piles) {
-            pile.endTurn(gameData.ruleSet)
-
-            if (pile.isDestroyed(gameData.ruleSet)) {
-                console.log(`Pile ${pile.index} is destroyed!`)
-                gameData.isLost = true
-                return
-            }
-        }
-
-        let noCardsCanBePlayed = true
-        for (let hand of gameData.enumerateHands()) {
-            if (hand === undefined || hand.isEmpty()) {
-                continue
-            }
-
-            for (let card of hand.cards) {
-                for (let pile of gameData.piles) {
-                    if (pile.canBePlayed(card, gameData.ruleSet)) {
-                        noCardsCanBePlayed = false
-                        break
-                    }
-                }
-            }
-        }
-
-        if (!gameData.deck.isEmpty() && noCardsCanBePlayed) {
-            console.log(`Game is lost in room ${roomName}!`)
-            gameData.isLost = true
-        }
-        else {
-            console.log(`Game is not yet lost in room ${roomName}.`)
-        }
-    }
-
-    /**
-     * Replenishes the hand of the current player in the given room.
-     */
-    replenish(roomName: string) {
-        // draw new cards
-        let gameData = this.getRoomData(roomName).gameData
-        let currentPlayer = gameData.getCurrentPlayer()
-
-        if (currentPlayer !== undefined) {
-            let hand = gameData.getHand(currentPlayer)
-
-            if (hand !== undefined) {
-                for (let i = 0; i < gameData.cardsPlayedThisTurn; i++) {
-                    if (!gameData.deck.isEmpty()) {
-                        let newCard = gameData.deck.drawOne()
-                        hand.add(newCard)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Passes control to the next player in the given room.
-     */
-    nextPlayer(roomName: string) {
-        // pass control to the next player
-        let gameData = this.getRoomData(roomName).gameData
-        let players = gameData.players
-        let newIndex = (gameData.currentPlayerIndex + 1) % players.length
-        gameData.currentPlayerIndex = newIndex
-
-        gameData.cardsPlayedThisTurn = 0
-        let nextPlayer = players[newIndex]
-        console.log(`It is now player ${nextPlayer}'s turn in room ${roomName}`)
     }
 
     /**
@@ -422,23 +349,11 @@ export class RoomDataManager implements IRoomDataManager {
     }
 
     /**
-     * Sets the game data for the given room.
-     */
-    setGameData(roomName: string, gameData: GameData) {
-        if (this.roomExists(roomName)) {
-            this.roomGameData[roomName].gameData = gameData
-        }
-        else {
-            console.error(`Tried to set game data for non-existent room "${roomName}"!`)
-        }
-    }
-
-    /**
      * Sets the rule set for the game in the given room.
      */
     setRuleSet(roomName: string, ruleSet: RuleSet) {
         if (this.roomExists(roomName)) {
-            this.roomGameData[roomName].gameData.setRuleSet(ruleSet)
+            this.getGameData(roomName).setRuleSet(ruleSet)
         }
         else {
             console.error(`Tried to set rule set for non-existent room "${roomName}"!`)

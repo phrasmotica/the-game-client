@@ -313,10 +313,11 @@ export class GameData implements IGameData {
                 this.deck.shuffle()
                 delete this.hands[playerName]
             }
+
+            return true
         }
-        else {
-            console.warn(`Tried to remove player ${playerName} but they were not in the game!`)
-        }
+
+        return false
     }
 
     /**
@@ -324,5 +325,100 @@ export class GameData implements IGameData {
      */
     playerIsPresent(playerName: string) {
         return this.players.includes(playerName)
+    }
+
+    /**
+     * Checks for the game being won.
+     */
+    checkForWin() {
+        let handsEmpty = true
+        for (let hand of this.enumerateHands()) {
+            if (!hand.isEmpty()) {
+                handsEmpty = false
+                break
+            }
+        }
+
+        if (this.deck.isEmpty() && handsEmpty) {
+            this.isWon = true
+
+            // TODO: the client isn't rendering this properly...
+            // - maybe it's rendering this and then rendering the "Your hand is empty/It's player x's turn." message immediately afterwards?
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * Checks for the game being lost.
+     */
+    checkForLoss() {
+        for (let pile of this.piles) {
+            pile.endTurn(this.ruleSet)
+
+            if (pile.isDestroyed(this.ruleSet)) {
+                console.log(`Pile ${pile.index} is destroyed!`)
+                this.isLost = true
+                return
+            }
+        }
+
+        let noCardsCanBePlayed = true
+        for (let hand of this.enumerateHands()) {
+            if (hand === undefined || hand.isEmpty()) {
+                continue
+            }
+
+            for (let card of hand.cards) {
+                for (let pile of this.piles) {
+                    if (pile.canBePlayed(card, this.ruleSet)) {
+                        noCardsCanBePlayed = false
+                        break
+                    }
+                }
+            }
+        }
+
+        if (!this.deck.isEmpty() && noCardsCanBePlayed) {
+            this.isLost = true
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * Replenishes the hand of the current player.
+     */
+    replenish() {
+        let currentPlayer = this.getCurrentPlayer()
+
+        if (currentPlayer !== undefined) {
+            let hand = this.getHand(currentPlayer)
+
+            if (hand !== undefined) {
+                for (let i = 0; i < this.cardsPlayedThisTurn; i++) {
+                    if (!this.deck.isEmpty()) {
+                        let newCard = this.deck.drawOne()
+                        hand.add(newCard)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Passes control to the next player.
+     */
+    nextPlayer() {
+        let players = this.players
+        let newIndex = (this.currentPlayerIndex + 1) % players.length
+        this.currentPlayerIndex = newIndex
+
+        this.cardsPlayedThisTurn = 0
+        let nextPlayer = players[newIndex]
+
+        return nextPlayer
     }
 }
