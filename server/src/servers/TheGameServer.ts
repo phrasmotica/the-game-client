@@ -19,7 +19,7 @@ import { VoteResult } from "../common/models/voting/Vote"
 /**
  * The name of the default room on the server.
  */
-const DEFAULT_ROOM_NAME = "polysomn"
+const DEFAULT_ROOM_NAME = "bababooey"
 
 /**
  * Represents a server for The Game.
