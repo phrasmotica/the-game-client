@@ -108,17 +108,7 @@ export class RoomDataManager implements IRoomDataManager {
     onTurnEnd(roomName: string) {
         if (this.roomExists(roomName)) {
             let gameData = this.getGameData(roomName)
-
             gameData.replenish()
-
-            let isWon = gameData.checkForLoss()
-            if (isWon) {
-                console.log(`Game is lost in room ${roomName}!`)
-            }
-            else {
-                console.log(`Game is not yet lost in room ${roomName}.`)
-            }
-
             let nextPlayer = gameData.nextPlayer()
             console.log(`It is now player ${nextPlayer}'s turn in room ${roomName}`)
         }
@@ -291,18 +281,6 @@ export class RoomDataManager implements IRoomDataManager {
         if (this.roomExists(roomName)) {
             let gameData = this.getGameData(roomName)
             gameData.playCard(player, card, pileIndex)
-        }
-        else {
-            console.warn(`Tried to sort hand in non-existent room ${roomName}!`)
-        }
-    }
-
-    /**
-     * Processes the game data for the given room.
-     */
-    onPlayCard(roomName: string) {
-        if (this.roomExists(roomName)) {
-            let gameData = this.getGameData(roomName)
 
             let isWon = gameData.checkForWin()
             if (isWon) {
@@ -310,6 +288,14 @@ export class RoomDataManager implements IRoomDataManager {
             }
             else {
                 console.log(`Game is not yet won in room ${roomName}.`)
+            }
+
+            let isLost = gameData.checkForLoss()
+            if (isLost) {
+                console.log(`Game is lost in room ${roomName}!`)
+            }
+            else {
+                console.log(`Game is not yet lost in room ${roomName}.`)
             }
         }
         else {
