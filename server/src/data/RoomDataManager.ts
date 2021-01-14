@@ -1,4 +1,4 @@
-import { GameData, GameStartResult } from "../common/models/GameData"
+import { GameStartResult } from "../common/models/GameData"
 import { RoomData } from "../common/models/RoomData"
 import { RuleSet } from "../common/models/RuleSet"
 import { VoteResult } from "../common/models/voting/Vote"

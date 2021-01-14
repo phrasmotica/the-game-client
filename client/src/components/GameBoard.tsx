@@ -7,7 +7,6 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../common/models/ClientMode"
-import { GameData } from "../common/models/GameData"
 import { RoomData } from "../common/models/RoomData"
 import { RoomWith } from "../common/models/RoomWith"
 
