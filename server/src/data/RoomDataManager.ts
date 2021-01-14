@@ -143,7 +143,6 @@ export class RoomDataManager implements IRoomDataManager {
      * Removes the given room.
      */
     removeRoom(roomName: string) {
-        console.log(`Removing room ${roomName}`)
         delete this.roomGameData[roomName]
         return true
     }

@@ -167,8 +167,13 @@ export class TheGameServer extends GameServer<ServerSettings> {
 
             let shouldRemoveRoom = !this.roomRetentionList.includes(roomName)
             if (shouldRemoveRoom) {
-                console.log(`Removing room ${roomName}`)
-                this.roomDataManager.removeRoom(roomName)
+                let success = this.roomDataManager.removeRoom(roomName)
+                if (success) {
+                    console.log(`Removing room ${roomName}`)
+                }
+                else {
+                    console.warn(`Failed to remove room ${roomName}`)
+                }
             }
         }
     }
