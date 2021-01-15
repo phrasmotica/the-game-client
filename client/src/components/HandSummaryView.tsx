@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Hand } from "../common/models/Hand"
+import { Hand } from "the-game-lib/dist/models/Hand"
 
 interface HandSummaryViewProps {
     /**

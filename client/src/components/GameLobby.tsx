@@ -2,8 +2,8 @@ import React from "react"
 
 import { GameOptions } from "./GameOptions"
 
-import { RoomData } from "../common/models/RoomData"
-import { RoomWith } from "../common/models/RoomWith"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
 interface GameLobbyProps {
     /**

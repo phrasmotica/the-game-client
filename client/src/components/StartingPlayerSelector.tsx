@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { RoomWith } from "../common/models/RoomWith"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
 export interface StartingPlayerSelectorProps {
     /**

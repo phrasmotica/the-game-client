@@ -6,9 +6,9 @@ import { PileView } from "./PileView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
-import { ClientMode } from "../common/models/ClientMode"
-import { RoomData } from "../common/models/RoomData"
-import { RoomWith } from "../common/models/RoomWith"
+import { ClientMode } from "the-game-lib/dist/models/ClientMode"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
 interface GameBoardProps {
     /**

@@ -2,19 +2,18 @@ import express from "express"
 import http from "http"
 import socketIo, { Socket } from "socket.io"
 
+import { GameStartResult } from "the-game-lib/dist/models/GameData"
+import { Message } from "the-game-lib/dist/models/Message"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+import { RuleSet } from "the-game-lib/dist/models/RuleSet"
+import { VoteResult } from "the-game-lib/dist/models/voting/Vote"
+
 import { GameServer } from "./GameServer"
 
 import { ServerSettings } from "../config/ServerSettings"
 
 import { SocketManager } from "../data/SocketManager"
 import { RoomDataManager } from "../data/RoomDataManager"
-
-import { GameStartResult } from "../common/models/GameData"
-import { Message } from "../common/models/Message"
-import { RoomWith } from "../common/models/RoomWith"
-import { RuleSet } from "../common/models/RuleSet"
-
-import { VoteResult } from "../common/models/voting/Vote"
 
 /**
  * The name of the default room on the server.

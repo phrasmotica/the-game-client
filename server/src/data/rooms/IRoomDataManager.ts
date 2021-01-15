@@ -1,4 +1,4 @@
-import { RoomData } from "../../common/models/RoomData"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
 
 /**
  * Interface for managing room data containing the given game data type on the server.

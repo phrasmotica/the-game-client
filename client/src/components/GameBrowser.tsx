@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react"
 
-import { Message } from "../common/models/Message"
-import { RoomData } from "../common/models/RoomData"
-import { RoomWith } from "../common/models/RoomWith"
+import { Message } from "the-game-lib/dist/models/Message"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
 interface GameBrowserProps {
     /**

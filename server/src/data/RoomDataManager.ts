@@ -1,7 +1,7 @@
-import { GameStartResult } from "../common/models/GameData"
-import { RoomData } from "../common/models/RoomData"
-import { RuleSet } from "../common/models/RuleSet"
-import { VoteResult } from "../common/models/voting/Vote"
+import { GameStartResult } from "the-game-lib/dist/models/GameData"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { RuleSet } from "the-game-lib/dist/models/RuleSet"
+import { VoteResult } from "the-game-lib/dist/models/voting/Vote"
 
 import { IRoomDataManager } from "./rooms/IRoomDataManager"
 

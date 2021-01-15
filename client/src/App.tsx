@@ -6,9 +6,9 @@ import { GameBrowser } from "./components/GameBrowser"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
 
-import { ClientMode } from "./common/models/ClientMode"
-import { Message } from "./common/models/Message"
-import { RoomData } from "./common/models/RoomData"
+import { ClientMode } from "the-game-lib/dist/models/ClientMode"
+import { Message } from "the-game-lib/dist/models/Message"
+import { RoomData } from "the-game-lib/dist/models/RoomData"
 
 import "./App.css"
 
