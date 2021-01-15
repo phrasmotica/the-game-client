@@ -70,6 +70,7 @@ function App() {
         })
 
         socket.current.on("roomData", (message: Message<RoomData>) => {
+             // can we alleviate the need for all these static .from() functions?
             let roomData = RoomData.from(message.content)
             setRoomData(roomData)
         })
