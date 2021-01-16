@@ -6,7 +6,8 @@ import { PileView } from "./PileView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
-import { ClientMode } from "the-game-lib/dist/models/ClientMode"
+import { ClientMode } from "../models/ClientMode"
+
 import { RoomData } from "the-game-lib/dist/models/RoomData"
 import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 

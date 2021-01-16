@@ -6,7 +6,8 @@ import { GameBrowser } from "./components/GameBrowser"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
 
-import { ClientMode } from "the-game-lib/dist/models/ClientMode"
+import { ClientMode } from "./models/ClientMode"
+
 import { Message } from "the-game-lib/dist/models/Message"
 import { RoomData } from "the-game-lib/dist/models/RoomData"
 
