@@ -6,6 +6,7 @@ import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
+import { PlayersView } from "./PlayersView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
@@ -234,6 +235,10 @@ export function GameBoard(props: GameBoardProps) {
         )
     }
 
+    let playersView = <PlayersView
+                        gameData={gameData}
+                        player={props.playerName} />
+
     let ruleSummary = <RuleSummary ruleSet={ruleSet} />
 
     let pileOptions = (
@@ -247,10 +252,10 @@ export function GameBoard(props: GameBoardProps) {
         </div>
     )
 
-    let turnIndicator = <span>It's your turn!</span>
+    let voteSelector = null
     if (!isInProgress()) {
         if (isPlayerClient()) {
-            turnIndicator = (
+            voteSelector = (
                 <StartingPlayerSelector
                     socket={props.socket}
                     roomName={roomData.name}
@@ -260,31 +265,24 @@ export function GameBoard(props: GameBoardProps) {
             )
         }
         else {
-            turnIndicator = <span>Starting player vote in progress...</span>
+            voteSelector = <span>Starting player vote in progress...</span>
         }
     }
     else if (isWon()) {
         if (isPlayerClient()) {
-            turnIndicator = <span>You won!</span>
+            voteSelector = <span>You won!</span>
         }
         else {
-            turnIndicator = <span>Game won!</span>
+            voteSelector = <span>Game won!</span>
         }
     }
     else if (isLost()) {
         if (isPlayerClient()) {
-            turnIndicator = <span>You lost!</span>
+            voteSelector = <span>You lost!</span>
         }
         else {
-            turnIndicator = <span>Game lost!</span>
+            voteSelector = <span>Game lost!</span>
         }
-    }
-    else if (!isMyTurn()) {
-        turnIndicator = (
-            <span>
-                It's {gameData.getCurrentPlayer()}'s turn.
-            </span>
-        )
     }
 
     let gameIsOver = isLost() || isWon()
@@ -382,10 +380,12 @@ export function GameBoard(props: GameBoardProps) {
                 {descendingPiles}
             </div>
 
+            {playersView}
+
             <div className="flex-center space-around">
                 {ruleSummary}
                 {pileOptions}
-                {turnIndicator}
+                {voteSelector}
             </div>
 
             <div className="flex-center">
