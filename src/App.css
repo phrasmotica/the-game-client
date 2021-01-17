@@ -173,6 +173,16 @@
   font-size: calc(10px + 1vmin);
 }
 
+.gap-text {
+  margin-bottom: 5px;
+  font-size: 10pt;
+}
+
+.gap-jumpback {
+  color: lawngreen;
+  font-weight: bold;
+}
+
 .start-text {
   font-size: 36px;
 }
@@ -186,6 +196,11 @@
 }
 
 .rule-summary {
+  text-align: left;
+  font-size: 10pt;
+}
+
+.checkbox-label-small {
   text-align: left;
   font-size: 10pt;
 }
