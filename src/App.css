@@ -187,14 +187,6 @@
   font-size: 36px;
 }
 
-.direction-text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 5px 0px;
-  font-size: 18px;
-}
-
 .rule-summary {
   text-align: left;
   font-size: 10pt;

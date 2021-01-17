@@ -1,4 +1,5 @@
 import React from "react"
+import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 
 import { CardView } from "./CardView"
 
@@ -63,9 +64,9 @@ interface PileViewProps {
 export function PileView(props: PileViewProps) {
     let pile = props.pile
 
-    let directionElement = <span className="direction-text">(UP)</span>
+    let directionElement = <FaArrowUp />
     if (pile.direction === Direction.Descending) {
-        directionElement = <span className="direction-text">(DOWN)</span>
+        directionElement = <FaArrowDown />
     }
 
     let top = pile.top()
