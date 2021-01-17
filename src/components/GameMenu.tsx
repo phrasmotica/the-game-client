@@ -2,9 +2,9 @@ import React, { useState } from "react"
 
 interface GameMenuProps {
     /**
-     * Joins the game with the given name.
+     * Joins the server with the given player name.
      */
-    joinGame: (playerName: string) => void
+    joinServer: (playerName: string) => void
 }
 
 /**
@@ -30,8 +30,8 @@ export function GameMenu(props: GameMenuProps) {
             <div className="flex-center margin-bottom">
                 <button
                     disabled={playerName.length <= 0}
-                    onClick={() => props.joinGame(playerName)}>
-                    Join Game
+                    onClick={() => props.joinServer(playerName)}>
+                    Join Server
                 </button>
             </div>
         </div>
