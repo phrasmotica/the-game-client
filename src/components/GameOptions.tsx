@@ -1,7 +1,8 @@
 import React from "react"
 
+import { GameMode, RuleSet } from "the-game-lib/dist/game/RuleSet"
+
 import { RoomWith } from "the-game-lib/dist/models/RoomWith"
-import { GameMode, RuleSet } from "the-game-lib/dist/models/RuleSet"
 
 interface GameOptionsProps {
     /**

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "the-game-lib/dist/models/RuleSet"
+import { RuleSet } from "the-game-lib/dist/game/RuleSet"
 
 interface RuleSummaryProps {
     /**

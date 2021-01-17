@@ -1,5 +1,8 @@
 import React from "react"
 
+import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+
 import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
@@ -7,9 +10,6 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
-
-import { RoomData } from "the-game-lib/dist/models/RoomData"
-import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
 interface GameBoardProps {
     /**
@@ -45,14 +45,14 @@ export function GameBoard(props: GameBoardProps) {
      * Returns whether the game has been won.
      */
     const isWon = () => {
-        return props.roomData.gameData.isWon
+        return props.roomData.gameData.isWon()
     }
 
     /**
      * Returns whether the game has been lost.
      */
     const isLost = () => {
-        return props.roomData.gameData.isLost
+        return props.roomData.gameData.isLost()
     }
 
     /**
