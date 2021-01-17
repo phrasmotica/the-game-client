@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import { RoomData } from "the-game-lib/dist/models/RoomData"
 import { RoomWith } from "the-game-lib/dist/models/RoomWith"
@@ -34,6 +34,8 @@ interface GameBoardProps {
 }
 
 export function GameBoard(props: GameBoardProps) {
+    const [showPileGaps, setShowPileGaps] = useState(false)
+
     /**
      * Returns whether the game is in progress.
      */
@@ -207,6 +209,7 @@ export function GameBoard(props: GameBoardProps) {
                 isMyTurn={isMyTurn()}
                 isLost={isLost()}
                 cardToPlay={gameData.cardToPlay}
+                showPileGaps={showPileGaps}
                 setCardToPlay={card => setCardToPlay(card)}
                 playCard={card => playCard(card, i)} />
         )
@@ -225,12 +228,24 @@ export function GameBoard(props: GameBoardProps) {
                 isMyTurn={isMyTurn()}
                 isLost={isLost()}
                 cardToPlay={gameData.cardToPlay}
+                showPileGaps={showPileGaps}
                 setCardToPlay={card => setCardToPlay(card)}
                 playCard={card => playCard(card, index)} />
         )
     }
 
     let ruleSummary = <RuleSummary ruleSet={ruleSet} />
+
+    let pileOptions = (
+        <div>
+            <label className="checkbox-label-small">
+                Show pile gaps
+                <input
+                    type="checkbox"
+                    onChange={e => setShowPileGaps(e.target.checked)} />
+            </label>
+        </div>
+    )
 
     let turnIndicator = <span>It's your turn!</span>
     if (!isInProgress()) {
@@ -369,6 +384,7 @@ export function GameBoard(props: GameBoardProps) {
 
             <div className="flex-center space-around">
                 {ruleSummary}
+                {pileOptions}
                 {turnIndicator}
             </div>
 

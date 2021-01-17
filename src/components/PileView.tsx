@@ -32,6 +32,11 @@ interface PileViewProps {
     cardToPlay: number | undefined
 
     /**
+     * Whether to show the gaps between the top of the pile and the card to be played.
+     */
+    showPileGaps: boolean
+
+    /**
      * Whether it is the player's turn.
      */
     isMyTurn: boolean
@@ -88,7 +93,7 @@ export function PileView(props: PileViewProps) {
 
         let gap = 0
 
-        if (props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
+        if (props.showPileGaps && props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
             switch (pile.direction) {
                 case Direction.Ascending:
                     gap = props.cardToPlay - top
