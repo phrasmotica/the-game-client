@@ -74,15 +74,54 @@ export function PileView(props: PileViewProps) {
     switch (pileState) {
         case PileState.Destroyed:
             pileClassName = "pile-destroyed"
-            break;
+            break
         case PileState.OnFire:
             pileClassName = "pile-on-fire"
-            break;
+            break
         default:
-            break;
+            break
     }
 
-    let cardToPlay = props.cardToPlay
+    const createHintElement = () => {
+        let text = "-"
+        let className = "gap-text"
+
+        let gap = 0
+
+        if (props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
+            switch (pile.direction) {
+                case Direction.Ascending:
+                    gap = props.cardToPlay - top
+                    if (gap < 0) {
+                        className += " gap-jumpback"
+                        text = `${gap}`
+                    }
+                    else {
+                        text = `+${gap}`
+                    }
+                    break
+
+                case Direction.Descending:
+                    gap = top - props.cardToPlay
+                    if (gap < 0) {
+                        className += " gap-jumpback"
+                        text = `+${-gap}`
+                    }
+                    else {
+                        text = `-${gap}`
+                    }
+                    break
+            }
+        }
+
+        return (
+            <div className={className}>
+                <span>
+                    {text}
+                </span>
+            </div>
+        )
+    }
 
     /**
      * Plays the given card on this pile.
@@ -102,6 +141,7 @@ export function PileView(props: PileViewProps) {
         return props.pile.canBePlayed(card, props.ruleSet)
     }
 
+    let cardToPlay = props.cardToPlay
     let buttonIsDisabled = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
 
     return (
@@ -117,6 +157,10 @@ export function PileView(props: PileViewProps) {
 
                 <div>
                     {topElement}
+                </div>
+
+                <div>
+                    {createHintElement()}
                 </div>
             </div>
 
