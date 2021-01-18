@@ -35,6 +35,7 @@ interface GameBoardProps {
 
 export function GameBoard(props: GameBoardProps) {
     const [showPileGaps, setShowPileGaps] = useState(false)
+    const [autoSortHand, setAutoSortHand] = useState(false)
 
     /**
      * Returns whether no cards can be played on any piles.
@@ -118,7 +119,7 @@ export function GameBoard(props: GameBoardProps) {
      * Ends the turn.
      */
     const endTurn = () => {
-        props.socket.emit("endTurn", props.roomData.name)
+        props.socket.emit("endTurn", new RoomWith(props.roomData.name, autoSortHand))
     }
 
     /**
@@ -220,14 +221,29 @@ export function GameBoard(props: GameBoardProps) {
     /**
      * Renders the pile options.
      */
-    const renderPileOptions = () => (
+    const renderClientOptions = () => (
         <div>
-            <label className="checkbox-label-small">
-                Show pile gaps
-                <input
-                    type="checkbox"
-                    onChange={e => setShowPileGaps(e.target.checked)} />
-            </label>
+            <div>
+                <span title="Show gap size when playing a card">
+                    <label className="checkbox-label-small">
+                        Show pile gaps
+                        <input
+                            type="checkbox"
+                            onChange={e => setShowPileGaps(e.target.checked)} />
+                    </label>
+                </span>
+            </div>
+
+            <div>
+                <span title="Sort hand automatically when drawing cards">
+                    <label className="checkbox-label-small">
+                        Auto-sort hand
+                        <input
+                            type="checkbox"
+                            onChange={e => setAutoSortHand(e.target.checked)} />
+                    </label>
+                </span>
+            </div>
         </div>
     )
 
@@ -419,7 +435,7 @@ export function GameBoard(props: GameBoardProps) {
 
             <div className="flex-center space-around">
                 {renderRuleSummary(gameData)}
-                {renderPileOptions()}
+                {renderClientOptions()}
             </div>
 
             <div className="flex-center">
