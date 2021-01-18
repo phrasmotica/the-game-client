@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react"
 import socketIOClient, { Socket } from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
-import { GameBrowser } from "./components/GameBrowser"
+import { GameBrowser } from "./components/browser/GameBrowser"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
 
