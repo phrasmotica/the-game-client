@@ -62,7 +62,7 @@ export function PlayersView(props: PlayersViewProps) {
                 }
 
                 return (
-                    <div className={"flex player-hand" + (isInProgress && isCurrentPlayer ? "-current" : "")}>
+                    <div className={"player-hand" + (isInProgress && isCurrentPlayer ? "-current" : "")}>
                         {nameElement}
                         {handElement}
                     </div>

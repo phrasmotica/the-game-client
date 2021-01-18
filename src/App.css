@@ -151,9 +151,10 @@
   display: block;
 }
 
-.grid-columns {
+.grid-equal-columns {
   display: grid;
   grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 }
 
 .flex {
@@ -229,6 +230,10 @@
 
 .player-hand-info {
   font-size: 10pt;
+}
+
+.end-message {
+  margin: 10px;
 }
 
 .rule-summary {

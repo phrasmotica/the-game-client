@@ -359,21 +359,37 @@ export function GameBoard(props: GameBoardProps) {
     const renderEndMessage = (gameData: GameData) => {
         if (gameData.isWon()) {
             if (isPlayerClient()) {
-                return <span>You won!</span>
+                return (
+                    <div className="end-message">
+                        <span>You won!</span>
+                    </div>
+                )
             }
 
-            return <span>Game won!</span>
+            return (
+                <div className="end-message">
+                    <span>Game won!</span>
+                </div>
+            )
         }
 
         if (gameData.isLost()) {
             if (isPlayerClient()) {
-                return <span>You lost!</span>
+                return (
+                    <div className="end-message">
+                        <span>You lost!</span>
+                    </div>
+                )
             }
 
-            return <span>Game lost!</span>
+            return (
+                <div className="end-message">
+                    <span>Game lost!</span>
+                </div>
+            )
         }
 
-        return null
+        return <div></div>
     }
 
     /**
@@ -431,9 +447,10 @@ export function GameBoard(props: GameBoardProps) {
                 {renderPiles(gameData)}
             </div>
 
-            <div className="grid-columns">
+            <div className="grid-equal-columns">
                 {renderPlayersView(gameData)}
                 {renderStartingPlayerVote(gameData)}
+                {renderEndMessage(gameData)}
             </div>
 
             <div className="flex-center space-around">
@@ -442,7 +459,6 @@ export function GameBoard(props: GameBoardProps) {
             </div>
 
             <div className="flex-center">
-                {renderEndMessage(gameData)}
                 {renderHandElement(gameData)}
             </div>
 
