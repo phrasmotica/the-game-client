@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 
-import { RoomData } from "the-game-lib/dist/models/RoomData"
-import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+import { GameData, RoomData, RoomWith } from "the-game-lib"
 
 import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
@@ -38,27 +37,6 @@ export function GameBoard(props: GameBoardProps) {
     const [showPileGaps, setShowPileGaps] = useState(false)
 
     /**
-     * Returns whether the game is in progress.
-     */
-    const isInProgress = () => {
-        return props.roomData.gameData.isInProgress()
-    }
-
-    /**
-     * Returns whether the game has been won.
-     */
-    const isWon = () => {
-        return props.roomData.gameData.isWon()
-    }
-
-    /**
-     * Returns whether the game has been lost.
-     */
-    const isLost = () => {
-        return props.roomData.gameData.isLost()
-    }
-
-    /**
      * Returns whether no cards can be played on any piles.
      */
     const noCardsCanBePlayed = () => {
@@ -78,13 +56,6 @@ export function GameBoard(props: GameBoardProps) {
         }
 
         return true
-    }
-
-    /**
-     * Returns whether it's the player's turn.
-     */
-    const isMyTurn = () => {
-        return props.roomData.gameData.getCurrentPlayer() === props.playerName
     }
 
     /**
@@ -153,8 +124,257 @@ export function GameBoard(props: GameBoardProps) {
     /**
      * Returns whether the client is in player mode.
      */
-    const isPlayerClient = () => {
-        return props.clientMode === ClientMode.Player
+    const isPlayerClient = () => props.clientMode === ClientMode.Player
+
+    /**
+     * Renders the deck info.
+     */
+    const renderDeckInfo = (gameData: GameData) => {
+        let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
+        return (
+            <div className="half-width">
+                <span className="game-info-text">{deckInfo}</span>
+            </div>
+        )
+    }
+
+    /**
+     * Renders the hand info.
+     */
+    const renderHandInfo = () => {
+        let handInfo = `Cards left to play this turn: ${getCardsLeftToPlayThisTurn()}`
+
+        return (
+            <div className="half-width">
+                <span className="game-info-text">{handInfo}</span>
+            </div>
+        )
+    }
+
+    /**
+     * Renders the piles.
+     */
+    const renderPiles = (gameData: GameData) => {
+        let piles = []
+        let ruleSet = gameData.ruleSet
+
+        let isMyTurn = gameData.getCurrentPlayer() === props.playerName
+        let isLost = gameData.isLost()
+
+        for (let i = 0; i < ruleSet.pairsOfPiles; i++) {
+            piles.push(
+                <PileView
+                    key={i}
+                    index={i}
+                    pile={gameData.piles[i]}
+                    ruleSet={ruleSet}
+                    turnsPlayed={gameData.turnsPlayed}
+                    isMyTurn={isMyTurn}
+                    isLost={isLost}
+                    cardToPlay={gameData.cardToPlay}
+                    showPileGaps={showPileGaps}
+                    setCardToPlay={card => setCardToPlay(card)}
+                    playCard={card => playCard(card, i)} />
+            )
+        }
+
+        for (let j = 0; j < ruleSet.pairsOfPiles; j++) {
+            let index = ruleSet.pairsOfPiles + j
+
+            piles.push(
+                <PileView
+                    key={index}
+                    index={index}
+                    pile={gameData.piles[index]}
+                    ruleSet={ruleSet}
+                    turnsPlayed={gameData.turnsPlayed}
+                    isMyTurn={isMyTurn}
+                    isLost={isLost}
+                    cardToPlay={gameData.cardToPlay}
+                    showPileGaps={showPileGaps}
+                    setCardToPlay={card => setCardToPlay(card)}
+                    playCard={card => playCard(card, index)} />
+            )
+        }
+
+        return piles
+    }
+
+    /**
+     * Renders the players view.
+     */
+    const renderPlayersView = (gameData: GameData) => (
+        <PlayersView
+            gameData={gameData}
+            player={props.playerName} />
+    )
+
+    /**
+     * Renders the rule summary.
+     */
+    const renderRuleSummary = (gameData: GameData) => (
+        <RuleSummary
+            ruleSet={gameData.ruleSet} />
+    )
+
+    /**
+     * Renders the pile options.
+     */
+    const renderPileOptions = () => (
+        <div>
+            <label className="checkbox-label-small">
+                Show pile gaps
+                <input
+                    type="checkbox"
+                    onChange={e => setShowPileGaps(e.target.checked)} />
+            </label>
+        </div>
+    )
+
+    /**
+     * Renders the starting player vote.
+     */
+    const renderStartingPlayerVote = (gameData: GameData) => {
+        if (isPlayerClient()) {
+            return (
+                <StartingPlayerSelector
+                    socket={props.socket}
+                    roomName={props.roomData.name}
+                    playerName={props.playerName}
+                    players={gameData.players}
+                    hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
+            )
+        }
+
+        return (
+            <span>
+                Starting player vote in progress...
+            </span>
+        )
+    }
+
+    /**
+     * Renders the hand.
+     */
+    const renderHandElement = (gameData: GameData) => {
+        let hand = getHand()
+
+        if (isPlayerClient()) {
+            let isInProgress = gameData.isInProgress()
+            let isMyTurn = gameData.getCurrentPlayer() === props.playerName
+            let isLost = gameData.isLost()
+            let hasCardToPlay = gameData.cardToPlay !== undefined
+
+            let disableButtons = !isInProgress || isLost || !isMyTurn || hasCardToPlay
+
+            return (
+                <HandView
+                    ruleSet={gameData.ruleSet}
+                    hand={hand}
+                    disableButtons={disableButtons}
+                    cardToPlay={gameData.cardToPlay}
+                    setCardToPlay={card => setCardToPlay(card)} />
+            )
+        }
+
+        let player = gameData.getCurrentPlayer()
+        if (player !== undefined) {
+            hand = gameData.getHand(player)
+        }
+
+        return (
+            <HandSummaryView
+                player={player}
+                hand={hand} />
+        )
+    }
+
+    /**
+     * Renders the action buttons.
+     */
+    const renderActionButtons = (gameData: GameData) => {
+        if (isPlayerClient()) {
+            let gameIsOver = gameData.isWon() || gameData.isLost()
+            let isMyTurn = gameData.getCurrentPlayer() === props.playerName
+            let noCardToPlay = gameData.cardToPlay === undefined
+
+            return (
+                <div className="flex-center margin-bottom">
+                    <button
+                        className="margin-right"
+                        disabled={gameIsOver || !isMyTurn || noCardToPlay}
+                        onClick={() => setCardToPlay(undefined)}>
+                        Cancel
+                    </button>
+
+                    <button
+                        className="margin-right"
+                        disabled={gameIsOver || getHand()?.isEmpty()}
+                        onClick={sortHand}>
+                        Sort hand
+                    </button>
+
+                    <button
+                        className="margin-right"
+                        disabled={gameIsOver || !isMyTurn || !areEnoughCardsPlayed()}
+                        onClick={endTurn}>
+                        End turn
+                    </button>
+
+                    <button
+                        disabled={gameIsOver || !isMyTurn || !noCardsCanBePlayed()}
+                        onClick={endTurn}>
+                        Pass
+                    </button>
+                </div>
+            )
+        }
+
+        return null
+    }
+
+    /**
+     * Renders the end message.
+     */
+    const renderEndMessage = (gameData: GameData) => {
+        if (gameData.isWon()) {
+            if (isPlayerClient()) {
+                return <span>You won!</span>
+            }
+
+            return <span>Game won!</span>
+        }
+
+        if (gameData.isLost()) {
+            if (isPlayerClient()) {
+                return <span>You lost!</span>
+            }
+
+            return <span>Game lost!</span>
+        }
+
+        return null
+    }
+
+    /**
+     * Renders the leave button.
+     */
+    const renderLeaveButton = () => {
+        if (isPlayerClient()) {
+            return (
+                <button
+                    onClick={() => leaveGame()}>
+                    Leave Game
+                </button>
+            )
+        }
+
+        return (
+            <button
+                onClick={() => leaveGame()}>
+                Stop Spectating
+            </button>
+        )
     }
 
     /**
@@ -178,224 +398,38 @@ export function GameBoard(props: GameBoardProps) {
         props.socket.emit(event, new RoomWith(props.roomData.name, props.playerName))
     }
 
-    let roomData = props.roomData
-    let gameData = roomData.gameData
-
-    let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
-    let deckInfoElement = (
-        <div className="half-width">
-            <span className="game-info-text">{deckInfo}</span>
-        </div>
-    )
-
-    let handInfo = `Cards left to play this turn: ${getCardsLeftToPlayThisTurn()}`
-    let handInfoElement = (
-        <div className="half-width">
-            <span className="game-info-text">{handInfo}</span>
-        </div>
-    )
-
-    let ruleSet = gameData.ruleSet
-    let piles = gameData.piles
-
-    let ascendingPiles = []
-    for (let i = 0; i < ruleSet.pairsOfPiles; i++) {
-        ascendingPiles.push(
-            <PileView
-                key={i}
-                index={i}
-                pile={piles[i]}
-                ruleSet={ruleSet}
-                turnsPlayed={gameData.turnsPlayed}
-                isMyTurn={isMyTurn()}
-                isLost={isLost()}
-                cardToPlay={gameData.cardToPlay}
-                showPileGaps={showPileGaps}
-                setCardToPlay={card => setCardToPlay(card)}
-                playCard={card => playCard(card, i)} />
-        )
-    }
-
-    let descendingPiles = []
-    for (let j = 0; j < ruleSet.pairsOfPiles; j++) {
-        let index = ruleSet.pairsOfPiles + j
-        descendingPiles.push(
-            <PileView
-                key={index}
-                index={index}
-                pile={piles[index]}
-                ruleSet={ruleSet}
-                turnsPlayed={gameData.turnsPlayed}
-                isMyTurn={isMyTurn()}
-                isLost={isLost()}
-                cardToPlay={gameData.cardToPlay}
-                showPileGaps={showPileGaps}
-                setCardToPlay={card => setCardToPlay(card)}
-                playCard={card => playCard(card, index)} />
-        )
-    }
-
-    let playersView = <PlayersView
-                        gameData={gameData}
-                        player={props.playerName} />
-
-    let ruleSummary = <RuleSummary ruleSet={ruleSet} />
-
-    let pileOptions = (
-        <div>
-            <label className="checkbox-label-small">
-                Show pile gaps
-                <input
-                    type="checkbox"
-                    onChange={e => setShowPileGaps(e.target.checked)} />
-            </label>
-        </div>
-    )
-
-    let voteSelector = null
-    if (!isInProgress()) {
-        if (isPlayerClient()) {
-            voteSelector = (
-                <StartingPlayerSelector
-                    socket={props.socket}
-                    roomName={roomData.name}
-                    playerName={props.playerName}
-                    players={gameData.players}
-                    hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
-            )
-        }
-        else {
-            voteSelector = <span>Starting player vote in progress...</span>
-        }
-    }
-    else if (isWon()) {
-        if (isPlayerClient()) {
-            voteSelector = <span>You won!</span>
-        }
-        else {
-            voteSelector = <span>Game won!</span>
-        }
-    }
-    else if (isLost()) {
-        if (isPlayerClient()) {
-            voteSelector = <span>You lost!</span>
-        }
-        else {
-            voteSelector = <span>Game lost!</span>
-        }
-    }
-
-    let gameIsOver = isLost() || isWon()
-
-    let hand = getHand()
-
-    let handElement = null
-    if (isPlayerClient()) {
-        let disableButtons = !isInProgress() || isLost() || !isMyTurn() || gameData.cardToPlay !== undefined
-        handElement = (
-            <HandView
-                ruleSet={ruleSet}
-                hand={hand}
-                disableButtons={disableButtons}
-                cardToPlay={gameData.cardToPlay}
-                setCardToPlay={card => setCardToPlay(card)} />
-        )
-    }
-    else {
-        let player = gameData.getCurrentPlayer()
-
-        let hand = undefined
-        if (player !== undefined) {
-            hand = gameData.getHand(player)
-        }
-
-        handElement = (
-            <HandSummaryView
-                player={player}
-                hand={hand} />
-        )
-    }
-
-    let actionButtonsElement = null
-    if (isPlayerClient()) {
-        actionButtonsElement = (
-            <div className="flex-center margin-bottom">
-                <button
-                    className="margin-right"
-                    disabled={gameIsOver || !isMyTurn() || gameData.cardToPlay === undefined}
-                    onClick={() => setCardToPlay(undefined)}>
-                    Cancel
-                </button>
-
-                <button
-                    className="margin-right"
-                    disabled={gameIsOver || hand?.isEmpty()}
-                    onClick={sortHand}>
-                    Sort hand
-                </button>
-
-                <button
-                    className="margin-right"
-                    disabled={gameIsOver || !isMyTurn() || !areEnoughCardsPlayed()}
-                    onClick={endTurn}>
-                    End turn
-                </button>
-
-                <button
-                    disabled={gameIsOver || !isMyTurn() || !noCardsCanBePlayed()}
-                    onClick={endTurn}>
-                    Pass
-                </button>
-            </div>
-        )
-    }
-
-    let leaveButtonElement = null
-    if (isPlayerClient()) {
-        leaveButtonElement = (
-            <button
-                onClick={() => leaveGame()}>
-                Leave Game
-            </button>
-        )
-    }
-    else {
-        leaveButtonElement = (
-            <button
-                onClick={() => leaveGame()}>
-                Stop Spectating
-            </button>
-        )
-    }
+    let gameData = props.roomData.gameData
+    let isInProgress = gameData.isInProgress()
+    let gameIsOver = gameData.isWon() || gameData.isLost()
 
     return (
         <div className="game-board">
             <div className="flex-center margin-bottom">
-                {deckInfoElement}
-                {handInfoElement}
+                {renderDeckInfo(gameData)}
+                {renderHandInfo()}
             </div>
 
             <div className="flex-center space-around">
-                {ascendingPiles}
-                {descendingPiles}
+                {renderPiles(gameData)}
             </div>
 
-            {playersView}
+            <div className="flex-center space-around">
+                {isInProgress ? renderPlayersView(gameData) : renderStartingPlayerVote(gameData)}
+            </div>
 
             <div className="flex-center space-around">
-                {ruleSummary}
-                {pileOptions}
-                {voteSelector}
+                {renderRuleSummary(gameData)}
+                {renderPileOptions()}
             </div>
 
             <div className="flex-center">
-                {handElement}
+                {gameIsOver ? renderEndMessage(gameData) : renderHandElement(gameData)}
             </div>
 
-            {actionButtonsElement}
+            {renderActionButtons(gameData)}
 
             <div className="flex-center margin-bottom">
-                {leaveButtonElement}
+                {renderLeaveButton()}
             </div>
         </div>
     )

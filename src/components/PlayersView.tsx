@@ -21,7 +21,7 @@ export function PlayersView(props: PlayersViewProps) {
     let gameData = props.gameData
 
     return (
-        <div className="flex-center space-evenly">
+        <div>
             {gameData.players.map(p => {
                 let isInProgress = gameData.isInProgress()
                 let isCurrentPlayer = gameData.getCurrentPlayer() === p
@@ -29,20 +29,20 @@ export function PlayersView(props: PlayersViewProps) {
 
                 let showCardValues = isThisPlayer || gameData.isWon() || gameData.isLost()
 
-                let nameElement = (
-                    <span className="player-name">
-                        {p}
-                    </span>
-                )
+                let nameText = p
+                if (isThisPlayer) {
+                    nameText += " (you)"
+                }
 
-                let handElement = (
-                    <div className="flex-center">
-                        <span className="player-card-text">
-                            (you)
+                let nameElement = (
+                    <div>
+                        <span className="player-name">
+                            {nameText}
                         </span>
                     </div>
                 )
 
+                let handElement = null
                 if (!isThisPlayer) {
                     let baseClassName = "hidden-card"
                     if (isInProgress && isCurrentPlayer) {
@@ -62,14 +62,9 @@ export function PlayersView(props: PlayersViewProps) {
                 }
 
                 return (
-                    <div className={"player-hand" + (isInProgress && isCurrentPlayer ? "-current" : "")}>
-                        <div>
-                            {nameElement}
-                        </div>
-
-                        <div>
-                            {handElement}
-                        </div>
+                    <div className={"flex player-hand" + (isInProgress && isCurrentPlayer ? "-current" : "")}>
+                        {nameElement}
+                        {handElement}
                     </div>
                 )
             })}
