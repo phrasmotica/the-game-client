@@ -251,22 +251,26 @@ export function GameBoard(props: GameBoardProps) {
      * Renders the starting player vote.
      */
     const renderStartingPlayerVote = (gameData: GameData) => {
-        if (isPlayerClient()) {
+        if (gameData.players.length > 1) {
+            if (isPlayerClient()) {
+                return (
+                    <StartingPlayerSelector
+                        socket={props.socket}
+                        roomName={props.roomData.name}
+                        playerName={props.playerName}
+                        players={gameData.players}
+                        hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
+                )
+            }
+
             return (
-                <StartingPlayerSelector
-                    socket={props.socket}
-                    roomName={props.roomData.name}
-                    playerName={props.playerName}
-                    players={gameData.players}
-                    hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
+                <span>
+                    Starting player vote in progress...
+                </span>
             )
         }
 
-        return (
-            <span>
-                Starting player vote in progress...
-            </span>
-        )
+        return null
     }
 
     /**
@@ -415,8 +419,6 @@ export function GameBoard(props: GameBoardProps) {
     }
 
     let gameData = props.roomData.gameData
-    let isInProgress = gameData.isInProgress()
-    let gameIsOver = gameData.isWon() || gameData.isLost()
 
     return (
         <div className="game-board">
@@ -429,8 +431,9 @@ export function GameBoard(props: GameBoardProps) {
                 {renderPiles(gameData)}
             </div>
 
-            <div className="flex-center space-around">
-                {isInProgress ? renderPlayersView(gameData) : renderStartingPlayerVote(gameData)}
+            <div className="grid-columns">
+                {renderPlayersView(gameData)}
+                {renderStartingPlayerVote(gameData)}
             </div>
 
             <div className="flex-center space-around">
