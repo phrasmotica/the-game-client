@@ -151,6 +151,12 @@
   display: block;
 }
 
+.grid-equal-columns {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
 .flex {
   display: flex;
 }
@@ -163,6 +169,10 @@
 
 .space-around {
   justify-content: space-around;
+}
+
+.space-evenly {
+  justify-content: space-evenly;
 }
 
 .half-width {
@@ -185,6 +195,45 @@
 
 .start-text {
   font-size: 36px;
+}
+
+.player-hand {
+  margin: 10px;
+}
+
+.player-hand-current {
+  margin: 10px;
+  color: yellow;
+}
+
+.player-name {
+  font-size: 12pt;
+}
+
+.hidden-card {
+  margin: 2px;
+  min-width: 20px;
+  border: 1px solid white;
+}
+
+.player-card-text {
+  font-size: 10pt;
+}
+
+.hidden-card-current {
+  margin: 2px;
+  min-width: 20px;
+  border: 1px solid yellow;
+  color: yellow;
+  font-size: 10pt;
+}
+
+.player-hand-info {
+  font-size: 10pt;
+}
+
+.end-message {
+  margin: 10px;
 }
 
 .rule-summary {
