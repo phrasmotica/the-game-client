@@ -439,7 +439,8 @@ export function GameBoard(props: GameBoardProps) {
             </div>
 
             <div className="flex-center">
-                {gameIsOver ? renderEndMessage(gameData) : renderHandElement(gameData)}
+                {renderEndMessage(gameData)}
+                {renderHandElement(gameData)}
             </div>
 
             {renderActionButtons(gameData)}
