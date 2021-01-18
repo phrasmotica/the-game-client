@@ -114,13 +114,6 @@ export function GameOptions(props: GameOptionsProps) {
         <div className="flex-center">
             <div className="align-centre margin-right">
                 <div>
-                    <button className="option-button"
-                        onClick={() => resetOptions()}>
-                        Reset
-                    </button>
-                </div>
-
-                <div>
                     <label className="option-label-above" htmlFor="gameModeSelect">
                         Game mode
                     </label>
@@ -220,9 +213,24 @@ export function GameOptions(props: GameOptionsProps) {
         </div>
     )
 
+    let lowerButtons = (
+        <div className="flex-center">
+            <button className="option-button"
+                onClick={() => resetOptions()}>
+                Reset
+            </button>
+        </div>
+    )
+
     return (
         <div className="margin-bottom">
-            {options}
+            <div className="margin-bottom">
+                {options}
+            </div>
+
+            <div>
+                {lowerButtons}
+            </div>
         </div>
     )
 }
