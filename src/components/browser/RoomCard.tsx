@@ -29,7 +29,7 @@ export function RoomCard(props: RoomCardProps) {
 
     return (
         <div
-            className="flex"
+            className="flex-end"
             key={room.name}>
             <div className="grid-equal-rows margin-right">
                 <div className="grid room-name">

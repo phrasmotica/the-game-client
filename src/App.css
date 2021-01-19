@@ -59,6 +59,10 @@
   margin-right: 10px;
 }
 
+.margin-right-small {
+  margin-right: 5px;
+}
+
 .margin-bottom {
   margin-bottom: 10px;
 }
@@ -192,6 +196,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .space-around {
