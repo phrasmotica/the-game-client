@@ -4,6 +4,8 @@ import { Message } from "the-game-lib/dist/models/Message"
 import { RoomData } from "the-game-lib/dist/models/RoomData"
 import { RoomWith } from "the-game-lib/dist/models/RoomWith"
 
+import { RoomCard } from "./RoomCard"
+
 interface GameBrowserProps {
     /**
      * The socket for server communication.
@@ -146,49 +148,16 @@ export function GameBrowser(props: GameBrowserProps) {
                 </div>
             </div>
 
-            <div>
-                {allRoomData.map(room => {
-                    let inProgress = room.gameData.isInProgress()
-
-                    let inProgressElement = null
-                    if (inProgress) {
-                        inProgressElement = (
-                            <div className="in-progress-message">
-                                <span>
-                                    Game in progress.
-                                </span>
-                            </div>
-                        )
-                    }
-
-                    return (
-                        <div key={room.name}>
-                            <div className="flex-center margin-bottom">
-                                <div className="margin-right">
-                                    <span>{room.name}</span>
-                                </div>
-
-                                <div className="flex margin-right">
-                                    <button
-                                        disabled={inProgress}
-                                        onClick={() => joinRoom(room.name, props.playerName)}>
-                                        Join
-                                    </button>
-                                </div>
-
-                                <div className="flex">
-                                    <button
-                                        disabled={inProgress}
-                                        onClick={() => spectateRoom(room.name, props.playerName)}>
-                                        Spectate
-                                    </button>
-                                </div>
-                            </div>
-
-                            {inProgressElement}
-                        </div>
-                    )
-                })}
+            <div className="flex-center">
+                {allRoomData.map(room => (
+                    <div className="margin-bottom">
+                        <RoomCard
+                            roomData={room}
+                            playerName={props.playerName}
+                            joinRoom={joinRoom}
+                            spectateRoom={spectateRoom} />
+                    </div>
+                ))}
             </div>
         </div>
     )

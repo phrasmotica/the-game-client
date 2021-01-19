@@ -63,8 +63,21 @@
   margin-bottom: 10px;
 }
 
+.room-name {
+  text-align: right;
+  align-items: center;
+}
+
+.player-count {
+  font-size: 10pt;
+  text-align: right;
+  align-items: center;
+}
+
 .in-progress-message {
-  font-size: 12pt;
+  font-size: 10pt;
+  text-align: right;
+  align-items: center;
 }
 
 .option-button {
@@ -151,10 +164,24 @@
   display: block;
 }
 
+.grid {
+  display: grid;
+}
+
 .grid-equal-columns {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
+}
+
+.grid-equal-rows {
+  display: grid;
+  grid-auto-flow: row;
+  grid-auto-rows: 1fr;
+}
+
+.grid-row-gap {
+  row-gap: 5px;
 }
 
 .flex {
