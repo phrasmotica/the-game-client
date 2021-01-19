@@ -134,7 +134,7 @@ export function RoomList(props: RoomListProps) {
                     {allRoomData.map((room, index) => {
                         let className = ""
                         if (index < allRoomData.length - 1) {
-                            className += "margin-bottom"
+                            className += "margin-bottom-small"
                         }
 
                         return (

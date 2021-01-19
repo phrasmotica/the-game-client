@@ -67,29 +67,51 @@
   margin-bottom: 10px;
 }
 
+.margin-bottom-small {
+  margin-bottom: 5px;
+}
+
 .truncate {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
+.scroll-vert {
+  overflow-y: scroll;
+}
+
+.player-list {
+  max-height: 70vh;
+  align-items: baseline;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: lightskyblue;
+}
+
+.player-card {
+  display: flex;
+  justify-content: flex-end;
+  background-color: cornflowerblue;
+  padding: 5px;
+  border-radius: 10px;
+  min-width: 200px;
+}
+
 .room-list {
   max-height: 70vh;
   align-items: baseline;
-}
-
-.scroll-vert {
-  overflow-y: scroll;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: lightskyblue;
 }
 
 .room-card {
   display: flex;
   justify-content: flex-end;
   background-color: darkcyan;
-  padding: 10px;
-  border: 3px solid white;
+  padding: 5px;
   border-radius: 10px;
-  margin-right: 10px;
   min-width: 400px;
 }
 
@@ -97,11 +119,9 @@
   display: flex;
   justify-content: flex-end;
   background-color: firebrick;
-  padding: 10px;
-  border: 3px solid white;
+  padding: 5px;
   border-radius: 10px;
   min-width: 400px;
-  max-width: 400px;
 }
 
 .text-align-left {
@@ -111,6 +131,10 @@
 .text-center-right {
   text-align: right;
   align-items: center;
+}
+
+.player-name {
+  font-size: 12pt;
 }
 
 .room-name {
@@ -241,6 +265,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.flex-top {
+  display: flex;
+  align-items: flex-start;
 }
 
 .flex-bottom {
