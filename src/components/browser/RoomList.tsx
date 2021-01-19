@@ -93,53 +93,60 @@ export function RoomList(props: RoomListProps) {
 
     return (
         <div>
-            <div className="flex-center margin-bottom">
-                <div className="margin-right-small">
-                    <input
-                        type="text"
-                        className="flex-center name-field"
-                        placeholder="new room name here"
-                        value={createRoomName}
-                        onChange={e => setCreateRoomName(e.target.value)} />
-                </div>
-
-                <div>
-                    <button
-                        className="flex-center"
-                        disabled={!canCreateRoom}
-                        onClick={() => createRoom(createRoomName)}>
-                        <FaPlus />
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex-center margin-bottom">
-                <div className="margin-right">
-                    <span>
-                        Rooms
+            <div className="grid-equal-columns margin-bottom">
+                <div className="grid margin-right-small">
+                    <span className="text-align-left">
+                        Rooms ({allRoomData.length})
                     </span>
                 </div>
 
-                <div>
-                    <button
-                        className="flex-center"
-                        onClick={refreshRoomList}>
-                        <FaRedo />
-                    </button>
+                <div className="grid">
+                    <div className="flex">
+                        <div className="margin-right-small">
+                            <input
+                                type="text"
+                                className="name-field"
+                                placeholder="new room name here"
+                                value={createRoomName}
+                                onChange={e => setCreateRoomName(e.target.value)} />
+                        </div>
+
+                        <div className="margin-right-small">
+                            <button
+                                disabled={!canCreateRoom}
+                                onClick={() => createRoom(createRoomName)}>
+                                <FaPlus />
+                            </button>
+                        </div>
+
+                        <div>
+                            <button
+                                onClick={refreshRoomList}>
+                                <FaRedo />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex-center">
+            <div className="room-list scroll-vert">
                 <div>
-                    {allRoomData.map(room => (
-                        <div className="margin-bottom">
-                            <RoomCard
-                                roomData={room}
-                                playerName={props.playerName}
-                                joinRoom={joinRoom}
-                                spectateRoom={spectateRoom} />
-                        </div>
-                    ))}
+                    {allRoomData.map((room, index) => {
+                        let className = ""
+                        if (index < allRoomData.length - 1) {
+                            className += "margin-bottom"
+                        }
+
+                        return (
+                            <div className={className}>
+                                <RoomCard
+                                    roomData={room}
+                                    playerName={props.playerName}
+                                    joinRoom={joinRoom}
+                                    spectateRoom={spectateRoom} />
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div>
