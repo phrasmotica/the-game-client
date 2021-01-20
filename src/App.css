@@ -78,7 +78,7 @@
 }
 
 .scroll-vert {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .player-list {
