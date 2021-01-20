@@ -23,7 +23,7 @@ interface GameLobbyProps {
 }
 
 /**
- * Renders the game browser.
+ * Renders the game lobby.
  */
 export function GameLobby(props: GameLobbyProps) {
     let isPlayer = props.roomData.players.includes(props.playerName)

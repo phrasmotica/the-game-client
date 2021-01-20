@@ -3,7 +3,7 @@ import React from "react"
 import { PlayerList } from "./PlayerList"
 import { RoomList } from "./RoomList"
 
-interface GameBrowserProps {
+interface ServerHomeProps {
     /**
      * The socket for server communication.
      */
@@ -21,9 +21,9 @@ interface GameBrowserProps {
 }
 
 /**
- * Renders the game browser.
+ * Renders the server home page.
  */
-export function GameBrowser(props: GameBrowserProps) {
+export function ServerHome(props: ServerHomeProps) {
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">

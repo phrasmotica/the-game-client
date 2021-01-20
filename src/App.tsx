@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react"
 import socketIOClient, { Socket } from "socket.io-client"
 
 import { GameBoard } from "./components/GameBoard"
-import { GameBrowser } from "./components/browser/GameBrowser"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
+
+import { ServerHome } from "./components/server-home/ServerHome"
 
 import { ClientMode } from "./models/ClientMode"
 
@@ -18,7 +19,7 @@ import "./App.css"
  */
 enum AppState {
     Menu,
-    Browse,
+    ServerHome,
     Lobby,
     Game
 }
@@ -47,7 +48,7 @@ function App() {
 
         socket.current.on("joinServerResult", (success: boolean) => {
             if (success) {
-                setState(AppState.Browse)
+                setState(AppState.ServerHome)
             }
         })
 
@@ -79,20 +80,20 @@ function App() {
         socket.current.on("kick", () => {
             let roomData = RoomData.empty()
             setRoomData(roomData)
-            setState(AppState.Browse)
+            setState(AppState.ServerHome)
         })
 
         socket.current.on("leaveGameResult", (success: boolean) => {
             if (success) {
                 setRoomData(RoomData.empty())
-                setState(AppState.Browse)
+                setState(AppState.ServerHome)
             }
         })
 
         socket.current.on("leaveRoomResult", (success: boolean) => {
             if (success) {
                 setRoomData(RoomData.empty())
-                setState(AppState.Browse)
+                setState(AppState.ServerHome)
             }
         })
     }
@@ -114,9 +115,9 @@ function App() {
                     joinServer={joinServer} />
             )
             break
-        case AppState.Browse:
+        case AppState.ServerHome:
             contents = (
-                <GameBrowser
+                <ServerHome
                     socket={socket.current}
                     playerName={playerName}
                     leaveServer={leaveServer} />
