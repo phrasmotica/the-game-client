@@ -20,11 +20,11 @@ export function RoomList(props: RoomListProps) {
     const [createRoomName, setCreateRoomName] = useState("")
     const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
 
-    props.socket.on("allLobbyData", (newAllRoomData: RoomData[]) => {
+    props.socket.on("allRoomData", (newAllRoomData: RoomData[]) => {
         setAllRoomData(newAllRoomData.map(RoomData.from))
     })
 
-    props.socket.on("lobbyData", (message: Message<RoomData>) => {
+    props.socket.on("roomData", (message: Message<RoomData>) => {
         let newAllRoomData = [...allRoomData]
 
         let roomData = RoomData.from(message.content)
@@ -39,7 +39,7 @@ export function RoomList(props: RoomListProps) {
         setAllRoomData(newAllRoomData)
     })
 
-    props.socket.on("removeLobbyData", (roomName: string) => {
+    props.socket.on("removeRoomData", (roomName: string) => {
         let newAllRoomData = [...allRoomData]
 
         let index = newAllRoomData.findIndex(r => r.name === roomName)
@@ -80,7 +80,7 @@ export function RoomList(props: RoomListProps) {
      * Refreshes the room list.
      */
     const refreshRoomList = useCallback(() => {
-        props.socket.emit("allLobbyData", props.playerName)
+        props.socket.emit("allRoomData", props.playerName)
     }, [props.playerName, props.socket])
 
     // effect for refreshing the room list after first render
