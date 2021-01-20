@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { FaRedo } from "react-icons/fa"
 
 import { PlayerCard } from "./PlayerCard"
@@ -25,9 +25,15 @@ export function PlayerList(props: PlayerListProps) {
     /**
      * Refreshes the player list.
      */
-    const refreshPlayerList = () => {
+    const refreshPlayerList = useCallback(() => {
         props.socket.emit("allPlayersData", props.playerName)
-    }
+    }, [props.playerName, props.socket])
+
+    // effect for refreshing the room list after first render
+    useEffect(() => {
+        refreshPlayerList()
+        return () => setAllPlayerData([])
+    }, [refreshPlayerList])
 
     return (
         <div>
