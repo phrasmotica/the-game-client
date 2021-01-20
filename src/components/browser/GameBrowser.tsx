@@ -38,7 +38,7 @@ export function GameBrowser(props: GameBrowserProps) {
             </div>
 
             <div className="flex-top">
-                <div className="margin-right">
+                <div className="margin-right-large">
                     <PlayerList
                         socket={props.socket}
                         playerName={props.playerName} />
