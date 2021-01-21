@@ -94,7 +94,9 @@ export function PileView(props: PileViewProps) {
 
         let gap = 0
 
-        if (props.showPileGaps && props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
+        let shouldShow = props.isMyTurn && props.showPileGaps
+
+        if (shouldShow && props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
             switch (pile.direction) {
                 case Direction.Ascending:
                     gap = props.cardToPlay - top
