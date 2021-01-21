@@ -1,8 +1,9 @@
 import React from "react"
 
+import { PlayerList } from "./PlayerList"
 import { RoomList } from "./RoomList"
 
-interface GameBrowserProps {
+interface ServerHomeProps {
     /**
      * The socket for server communication.
      */
@@ -20,9 +21,9 @@ interface GameBrowserProps {
 }
 
 /**
- * Renders the game browser.
+ * Renders the server home page.
  */
-export function GameBrowser(props: GameBrowserProps) {
+export function ServerHome(props: ServerHomeProps) {
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">
@@ -36,10 +37,18 @@ export function GameBrowser(props: GameBrowserProps) {
                 </button>
             </div>
 
-            <div className="flex-center">
-                <RoomList
-                    socket={props.socket}
-                    playerName={props.playerName} />
+            <div className="flex-top">
+                <div className="margin-right-large">
+                    <PlayerList
+                        socket={props.socket}
+                        playerName={props.playerName} />
+                </div>
+
+                <div>
+                    <RoomList
+                        socket={props.socket}
+                        playerName={props.playerName} />
+                </div>
             </div>
         </div>
     )
