@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { FaRedo } from "react-icons/fa"
 
+import { PlayerData } from "game-server-lib"
+
 import { PlayerCard } from "./PlayerCard"
 
 interface PlayerListProps {
@@ -16,9 +18,9 @@ interface PlayerListProps {
 }
 
 export function PlayerList(props: PlayerListProps) {
-    const [allPlayerData, setAllPlayerData] = useState<string[]>([])
+    const [allPlayerData, setAllPlayerData] = useState<PlayerData[]>([])
 
-    props.socket.on("allPlayersData", (newAllPlayerData: string[]) => {
+    props.socket.on("allPlayersData", (newAllPlayerData: PlayerData[]) => {
         setAllPlayerData(newAllPlayerData)
     })
 
@@ -58,7 +60,7 @@ export function PlayerList(props: PlayerListProps) {
 
             <div className="player-list scroll-vert">
                 <div>
-                    {allPlayerData.map((player, index) => {
+                    {allPlayerData.map((playerData, index) => {
                         let className = ""
                         if (index < allPlayerData.length - 1) {
                             className += "margin-bottom-small"
@@ -67,7 +69,7 @@ export function PlayerList(props: PlayerListProps) {
                         return (
                             <div className={className}>
                                 <PlayerCard
-                                    playerData={player}
+                                    playerData={playerData}
                                     playerName={props.playerName} />
                             </div>
                         )
