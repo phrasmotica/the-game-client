@@ -3,7 +3,6 @@ import React, { useState } from "react"
 import { RoomData, RoomWith } from "game-server-lib"
 import { Card, GameData } from "the-game-lib"
 
-import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
 import { PlayersView } from "./PlayersView"
@@ -144,6 +143,11 @@ export function GameBoard(props: GameBoardProps) {
     const isPlayerClient = () => props.clientMode === ClientMode.Player
 
     /**
+     * Returns whether the client is in spectator mode.
+     */
+    const isSpectatorClient = () => props.clientMode === ClientMode.Spectator
+
+    /**
      * Renders the deck info.
      */
     const renderDeckInfo = (gameData: GameData) => {
@@ -254,33 +258,39 @@ export function GameBoard(props: GameBoardProps) {
     )
 
     /**
-     * Renders the pile options.
+     * Renders the player options.
      */
-    const renderClientOptions = () => (
-        <div>
-            <div>
-                <span title="Show gap size when playing a card">
-                    <label className="checkbox-label-small">
-                        Show pile gaps
-                        <input
-                            type="checkbox"
-                            onChange={e => setShowPileGaps(e.target.checked)} />
-                    </label>
-                </span>
-            </div>
+    const renderPlayerOptions = () => {
+        if (isSpectatorClient()) {
+            return null
+        }
 
+        return (
             <div>
-                <span title="Sort hand automatically when drawing cards">
-                    <label className="checkbox-label-small">
-                        Auto-sort hand
-                        <input
-                            type="checkbox"
-                            onChange={e => setAutoSortHand(e.target.checked)} />
-                    </label>
-                </span>
+                <div>
+                    <span title="Show gap size when playing a card">
+                        <label className="checkbox-label-small">
+                            Show pile gaps
+                            <input
+                                type="checkbox"
+                                onChange={e => setShowPileGaps(e.target.checked)} />
+                        </label>
+                    </span>
+                </div>
+
+                <div>
+                    <span title="Sort hand automatically when drawing cards">
+                        <label className="checkbox-label-small">
+                            Auto-sort hand
+                            <input
+                                type="checkbox"
+                                onChange={e => setAutoSortHand(e.target.checked)} />
+                        </label>
+                    </span>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 
     /**
      * Renders the starting player vote.
@@ -313,34 +323,28 @@ export function GameBoard(props: GameBoardProps) {
      */
     const renderHandElement = (gameData: GameData) => {
         let hand = getHand()
+        let currentPlayer = gameData.getCurrentPlayer()
 
-        if (isPlayerClient()) {
-            let isInProgress = gameData.isInProgress()
-            let isMyTurn = gameData.getCurrentPlayer() === props.playerName
-            let isLost = gameData.isLost()
-            let hasCardToPlay = gameData.cardToPlay !== undefined
+        if (isSpectatorClient()) {
+            hand = gameData.getHand(currentPlayer!)
+        }
 
-            let disableButtons = !isInProgress || isLost || !isMyTurn || hasCardToPlay
+        let isInProgress = gameData.isInProgress()
+        let isMyTurn = currentPlayer === props.playerName
+        let isLost = gameData.isLost()
+        let hasCardToPlay = gameData.cardToPlay !== undefined
 
-            return (
+        let disableButtons = !isInProgress || isLost || !isMyTurn || hasCardToPlay
+
+        return (
+            <div className="flex-center margin-bottom">
                 <HandView
                     ruleSet={gameData.ruleSet}
                     hand={hand}
                     disableButtons={disableButtons}
                     cardToPlay={gameData.cardToPlay}
                     setCardToPlay={card => setCardToPlay(card)} />
-            )
-        }
-
-        let player = gameData.getCurrentPlayer()
-        if (player !== undefined) {
-            hand = gameData.getHand(player)
-        }
-
-        return (
-            <HandSummaryView
-                player={player}
-                hand={hand} />
+            </div>
         )
     }
 
@@ -348,44 +352,44 @@ export function GameBoard(props: GameBoardProps) {
      * Renders the action buttons.
      */
     const renderActionButtons = (gameData: GameData) => {
-        if (isPlayerClient()) {
-            let gameIsOver = gameData.isWon() || gameData.isLost()
-            let isMyTurn = gameData.getCurrentPlayer() === props.playerName
-            let noCardToPlay = gameData.cardToPlay === undefined
-
-            return (
-                <div className="flex-center margin-bottom">
-                    <button
-                        className="margin-right"
-                        disabled={gameIsOver || !isMyTurn || noCardToPlay}
-                        onClick={() => setCardToPlay(undefined)}>
-                        Cancel
-                    </button>
-
-                    <button
-                        className="margin-right"
-                        disabled={gameIsOver || getHand()?.isEmpty()}
-                        onClick={sortHand}>
-                        Sort hand
-                    </button>
-
-                    <button
-                        className="margin-right"
-                        disabled={gameIsOver || !isMyTurn || !areEnoughCardsPlayed()}
-                        onClick={endTurn}>
-                        End turn
-                    </button>
-
-                    <button
-                        disabled={gameIsOver || !isMyTurn || !noCardsCanBePlayed()}
-                        onClick={endTurn}>
-                        Pass
-                    </button>
-                </div>
-            )
+        if (isSpectatorClient()) {
+            return null
         }
 
-        return null
+        let gameIsOver = gameData.isWon() || gameData.isLost()
+        let isMyTurn = gameData.getCurrentPlayer() === props.playerName
+        let noCardToPlay = gameData.cardToPlay === undefined
+
+        return (
+            <div className="flex-center margin-bottom">
+                <button
+                    className="margin-right"
+                    disabled={gameIsOver || !isMyTurn || noCardToPlay}
+                    onClick={() => setCardToPlay(undefined)}>
+                    Cancel
+                </button>
+
+                <button
+                    className="margin-right"
+                    disabled={gameIsOver || getHand()?.isEmpty()}
+                    onClick={sortHand}>
+                    Sort hand
+                </button>
+
+                <button
+                    className="margin-right"
+                    disabled={gameIsOver || !isMyTurn || !areEnoughCardsPlayed()}
+                    onClick={endTurn}>
+                    End turn
+                </button>
+
+                <button
+                    disabled={gameIsOver || !isMyTurn || !noCardsCanBePlayed()}
+                    onClick={endTurn}>
+                    Pass
+                </button>
+            </div>
+        )
     }
 
     /**
@@ -489,18 +493,16 @@ export function GameBoard(props: GameBoardProps) {
                 {renderEndMessage(gameData)}
             </div>
 
-            <div className="flex-center space-around">
+            <div className="flex-center space-around margin-bottom">
                 {renderRuleSummary(gameData)}
-                {renderClientOptions()}
+                {renderPlayerOptions()}
             </div>
 
-            <div className="flex-center">
-                {renderHandElement(gameData)}
-            </div>
+            {renderHandElement(gameData)}
 
             {renderActionButtons(gameData)}
 
-            <div className="flex-center margin-bottom">
+            <div className="flex-center">
                 {renderLeaveButton()}
             </div>
         </div>

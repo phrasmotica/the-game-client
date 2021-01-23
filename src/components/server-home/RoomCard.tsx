@@ -47,7 +47,7 @@ export function RoomCard(props: RoomCardProps) {
 
                 <div className="grid">
                     <span className="player-count">
-                        {room.players.length} player(s)
+                        {room.players.length} player(s), {room.spectators.length} spectator(s)
                     </span>
                 </div>
 
