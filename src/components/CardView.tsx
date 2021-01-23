@@ -30,15 +30,18 @@ interface CardViewProps {
 export function CardView(props: CardViewProps) {
     let card = props.card
 
-    let cardIsOnFire = card !== undefined && props.ruleSet.cardIsOnFire(card)
-    let className = props.ruleSet.isOnFire() && cardIsOnFire ? "card-on-fire" : "card"
+    let cardIsOnFire = card !== undefined
+                    && props.ruleSet.isOnFire()
+                    && props.ruleSet.cardIsOnFire(card)
+
+    let className = cardIsOnFire ? "card-on-fire" : "card"
 
     if (props.isSelected) {
         className += " card-selected"
     }
 
     if (props.isJustPlayed) {
-        className += " card-just-played"
+        className += "-just-played"
     }
 
     return (

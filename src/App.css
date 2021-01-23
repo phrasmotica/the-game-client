@@ -391,9 +391,12 @@
   font-size: 24px;
 }
 
-.card-selected {
-  border: 1px solid yellow;
-  color: yellow;
+.card-just-played {
+  margin: 5px;
+  min-width: 60px;
+  border: 1px solid white;
+  font-size: 24px;
+  background-color: lawngreen;
 }
 
 .card-on-fire {
@@ -404,8 +407,18 @@
   background-color: dodgerblue;
 }
 
-.card-just-played {
+.card-on-fire-just-played {
+  margin: 5px;
+  min-width: 60px;
+  border: 1px solid white;
+  font-size: 24px;
   background-color: lawngreen;
+  background-image: -webkit-linear-gradient(65deg, lawngreen 50%, dodgerblue 50%);
+}
+
+.card-selected {
+  border: 1px solid yellow;
+  color: yellow;
 }
 
 .card-button {
