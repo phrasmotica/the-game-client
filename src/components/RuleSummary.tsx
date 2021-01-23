@@ -35,6 +35,7 @@ export function RuleSummary(props: RuleSummaryProps) {
         <div className="rule-summary flex-center">
             <div className="margin-right">
                 {renderSpan(`Game mode: ${ruleSet.gameMode}`)}
+                {renderSpan(`Mulligan limit: ${ruleSet.mulliganLimit}`)}
                 {renderSpan(`Pairs of piles: ${ruleSet.pairsOfPiles}`)}
                 {renderSpan(`Jump back size: ${ruleSet.jumpBackSize}`)}
             </div>

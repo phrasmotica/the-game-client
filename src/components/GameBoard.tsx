@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 
-import { GameData, RoomData, RoomWith } from "the-game-lib"
+import { RoomData, RoomWith } from "game-server-lib"
+import { Card, GameData } from "the-game-lib"
 
 import { HandSummaryView } from "./HandSummaryView"
 import { HandView } from "./HandView"
@@ -25,7 +26,7 @@ interface GameBoardProps {
     /**
      * The room data.
      */
-    roomData: RoomData
+    roomData: RoomData<GameData>
 
     /**
      * The client mode.
@@ -62,15 +63,15 @@ export function GameBoard(props: GameBoardProps) {
     /**
      * Sets the card to play.
      */
-    const setCardToPlay = (card: number | undefined) => {
+    const setCardToPlay = (card: Card | undefined) => {
         props.socket.emit("setCardToPlay", new RoomWith(props.roomData.name, card))
     }
 
     /**
      * Plays the given card from the player's hand.
      */
-    const playCard = (card: number, pileIndex: number) => {
-        let data: [string, number, number] = [props.playerName, card, pileIndex]
+    const playCard = (card: Card, pileIndex: number) => {
+        let data: [string, Card, number] = [props.playerName, card, pileIndex]
         props.socket.emit("playCard", new RoomWith(props.roomData.name, data))
     }
 
@@ -99,6 +100,21 @@ export function GameBoard(props: GameBoardProps) {
      */
     const getCardsLeftToPlayThisTurn = () => {
         return Math.max(getCardsToPlay() - props.roomData.gameData.cardsPlayedThisTurn, 0)
+    }
+
+    /**
+     * Takes a mulligan on the pile with the given index.
+     */
+    const mulligan = (pileIndex: number) => {
+        let data: [number, string, boolean] = [pileIndex, props.playerName, autoSortHand]
+        props.socket.emit("mulligan", new RoomWith(props.roomData.name, data))
+    }
+
+    /**
+     * Returns the remaining number of mulligans.
+     */
+    const getMulligans = () => {
+        return gameData.ruleSet.mulliganLimit - gameData.cardsMulliganed
     }
 
     /**
@@ -153,6 +169,19 @@ export function GameBoard(props: GameBoardProps) {
     }
 
     /**
+     * Renders the mulligan count.
+     */
+    const renderMulliganCount = () => {
+        let mulliganInfo = `Mulligans: ${getMulligans()}`
+
+        return (
+            <div className="half-width">
+                <span className="game-info-text">{mulliganInfo}</span>
+            </div>
+        )
+    }
+
+    /**
      * Renders the piles.
      */
     const renderPiles = (gameData: GameData) => {
@@ -168,14 +197,17 @@ export function GameBoard(props: GameBoardProps) {
                     key={i}
                     index={i}
                     pile={gameData.piles[i]}
+                    playerName={props.playerName}
                     ruleSet={ruleSet}
                     turnsPlayed={gameData.turnsPlayed}
                     isMyTurn={isMyTurn}
+                    isWithinMulliganLimit={gameData.canMulligan()}
                     isLost={isLost}
                     cardToPlay={gameData.cardToPlay}
                     showPileGaps={showPileGaps}
                     setCardToPlay={card => setCardToPlay(card)}
-                    playCard={card => playCard(card, i)} />
+                    playCard={card => playCard(card, i)}
+                    mulligan={pileIndex => mulligan(pileIndex)} />
             )
         }
 
@@ -187,14 +219,17 @@ export function GameBoard(props: GameBoardProps) {
                     key={index}
                     index={index}
                     pile={gameData.piles[index]}
+                    playerName={props.playerName}
                     ruleSet={ruleSet}
                     turnsPlayed={gameData.turnsPlayed}
                     isMyTurn={isMyTurn}
+                    isWithinMulliganLimit={gameData.canMulligan()}
                     isLost={isLost}
                     cardToPlay={gameData.cardToPlay}
                     showPileGaps={showPileGaps}
                     setCardToPlay={card => setCardToPlay(card)}
-                    playCard={card => playCard(card, index)} />
+                    playCard={card => playCard(card, index)}
+                    mulligan={pileIndex => mulligan(pileIndex)} />
             )
         }
 
@@ -441,6 +476,7 @@ export function GameBoard(props: GameBoardProps) {
             <div className="flex-center margin-bottom">
                 {renderDeckInfo(gameData)}
                 {renderHandInfo()}
+                {renderMulliganCount()}
             </div>
 
             <div className="flex-center space-around">

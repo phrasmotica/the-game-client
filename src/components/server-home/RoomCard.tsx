@@ -1,11 +1,13 @@
 import React from "react"
-import { RoomData } from "the-game-lib"
+
+import { RoomData } from "game-server-lib"
+import { GameData } from "the-game-lib"
 
 interface RoomCardProps {
     /**
      * The room data.
      */
-    roomData: RoomData
+    roomData: RoomData<GameData>
 
     /**
      * The player's name.

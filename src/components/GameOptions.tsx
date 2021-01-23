@@ -103,6 +103,15 @@ export function GameOptions(props: GameOptionsProps) {
         setRuleSet(newRuleSet)
     }
 
+    /**
+     * Sets the given mulligan limit in the rule set.
+     */
+    const setMulliganLimit = (mulliganLimit: number) => {
+        let newRuleSet = props.ruleSet
+        newRuleSet.mulliganLimit = mulliganLimit
+        setRuleSet(newRuleSet)
+    }
+
     let gameModeOptions = []
     for (let mode of Object.values(GameMode)) {
         gameModeOptions.push(
@@ -113,6 +122,19 @@ export function GameOptions(props: GameOptionsProps) {
     let options = (
         <div className="flex-center">
             <div className="align-centre margin-right">
+                <div className="margin-bottom-small">
+                    <label className="option-label">
+                        Mulligan limit
+                        <input
+                            className="ruleset-input"
+                            type="number"
+                            min={0}
+                            max={10}
+                            onChange={e => setMulliganLimit(Number(e.target.value))}
+                            value={props.ruleSet.mulliganLimit} />
+                    </label>
+                </div>
+
                 <div>
                     <label className="option-label-above" htmlFor="gameModeSelect">
                         Game mode
