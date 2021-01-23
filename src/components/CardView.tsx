@@ -14,9 +14,14 @@ interface CardViewProps {
     card?: Card
 
     /**
-     * Whether the card should be rendered as selected.
+     * Whether the card is selected.
      */
     isSelected?: boolean
+
+    /**
+     * Whether the card was just played.
+     */
+    isJustPlayed?: boolean
 }
 
 /**
@@ -30,6 +35,10 @@ export function CardView(props: CardViewProps) {
 
     if (props.isSelected) {
         className += " card-selected"
+    }
+
+    if (props.isJustPlayed) {
+        className += " card-just-played"
     }
 
     return (

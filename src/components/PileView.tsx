@@ -83,10 +83,16 @@ export function PileView(props: PileViewProps) {
         directionElement = <FaArrowDown />
     }
 
-    let top = pile.topCard()
-    let topElement = <CardView ruleSet={props.ruleSet} card={top} />
-    if (top.value === pile.start) {
-        topElement = <CardView ruleSet={props.ruleSet} />
+    let topCard = pile.topCard()
+    let topElement = <CardView ruleSet={props.ruleSet} />
+
+    if (pile.cards.length > 0) {
+        let isJustPlayed = pile.topCardInfo()!.turnPlayed === props.turnCounter
+
+        topElement = <CardView
+                        ruleSet={props.ruleSet}
+                        card={topCard}
+                        isJustPlayed={isJustPlayed} />
     }
 
     let pileClassName = "pile"
@@ -113,7 +119,7 @@ export function PileView(props: PileViewProps) {
         if (shouldShow && props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
             switch (pile.direction) {
                 case Direction.Ascending:
-                    gap = props.cardToPlay.value - top.value
+                    gap = props.cardToPlay.value - topCard.value
                     if (gap < 0) {
                         className += " gap-jumpback"
                         text = `${gap}`
@@ -124,7 +130,7 @@ export function PileView(props: PileViewProps) {
                     break
 
                 case Direction.Descending:
-                    gap = top.value - props.cardToPlay.value
+                    gap = topCard.value - props.cardToPlay.value
                     if (gap < 0) {
                         className += " gap-jumpback"
                         text = `+${-gap}`

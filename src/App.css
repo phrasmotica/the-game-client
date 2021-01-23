@@ -404,6 +404,10 @@
   background-color: dodgerblue;
 }
 
+.card-just-played {
+  background-color: lawngreen;
+}
+
 .card-button {
   display: block;
 }
