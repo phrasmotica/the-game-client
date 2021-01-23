@@ -1,10 +1,9 @@
 import React from "react"
-import { FaArrowDown, FaArrowUp } from "react-icons/fa"
+import { FaArrowDown, FaArrowUp, FaUndo } from "react-icons/fa"
+
+import { Card, Direction, RuleSet, Pile, PileState } from "the-game-lib"
 
 import { CardView } from "./CardView"
-
-import { Direction, Pile, PileState } from "the-game-lib/dist/game/Pile"
-import { RuleSet } from "the-game-lib/dist/game/RuleSet"
 
 interface PileViewProps {
     /**
@@ -18,19 +17,24 @@ interface PileViewProps {
     pile: Pile
 
     /**
+     * The name of the player.
+     */
+    playerName: string
+
+    /**
      * The rule set.
      */
     ruleSet: RuleSet
 
     /**
-     * The number of turns played.
+     * The turn counter.
      */
-    turnsPlayed: number
+    turnCounter: number
 
     /**
      * The card to play.
      */
-    cardToPlay: number | undefined
+    cardToPlay: Card | undefined
 
     /**
      * Whether to show the gaps between the top of the pile and the card to be played.
@@ -43,6 +47,11 @@ interface PileViewProps {
     isMyTurn: boolean
 
     /**
+     * Whether the game is below the mulligan limit.
+     */
+    isWithinMulliganLimit: boolean
+
+    /**
      * Whether the game is lost.
      */
     isLost: boolean
@@ -50,12 +59,17 @@ interface PileViewProps {
     /**
      * Sets the card to be played.
      */
-    setCardToPlay: (card: number | undefined) => void
+    setCardToPlay: (card: Card | undefined) => void
 
     /**
      * Removes the given card from the player's hand.
      */
-    playCard: (card: number) => void
+    playCard: (card: Card) => void
+
+    /**
+     * Takes a mulligan on the pile with the given index.
+     */
+    mulligan: (pileIndex: number) => void
 }
 
 /**
@@ -69,9 +83,9 @@ export function PileView(props: PileViewProps) {
         directionElement = <FaArrowDown />
     }
 
-    let top = pile.top()
+    let top = pile.topCard()
     let topElement = <CardView ruleSet={props.ruleSet} card={top} />
-    if (top === pile.start) {
+    if (top.value === pile.start) {
         topElement = <CardView ruleSet={props.ruleSet} />
     }
 
@@ -99,7 +113,7 @@ export function PileView(props: PileViewProps) {
         if (shouldShow && props.cardToPlay !== undefined && canPlayCard(props.cardToPlay)) {
             switch (pile.direction) {
                 case Direction.Ascending:
-                    gap = props.cardToPlay - top
+                    gap = props.cardToPlay.value - top.value
                     if (gap < 0) {
                         className += " gap-jumpback"
                         text = `${gap}`
@@ -110,7 +124,7 @@ export function PileView(props: PileViewProps) {
                     break
 
                 case Direction.Descending:
-                    gap = top - props.cardToPlay
+                    gap = top.value - props.cardToPlay.value
                     if (gap < 0) {
                         className += " gap-jumpback"
                         text = `+${-gap}`
@@ -134,7 +148,7 @@ export function PileView(props: PileViewProps) {
     /**
      * Plays the given card on this pile.
      */
-    const playCard = (card: number | undefined) => {
+    const playCard = (card: Card | undefined) => {
         if (card) {
             props.playCard(card)
         }
@@ -145,12 +159,13 @@ export function PileView(props: PileViewProps) {
     /**
      * Returns whether the given card can be played on this pile.
      */
-    const canPlayCard = (card: number) => {
+    const canPlayCard = (card: Card) => {
         return props.pile.canBePlayed(card, props.ruleSet)
     }
 
     let cardToPlay = props.cardToPlay
-    let buttonIsDisabled = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
+    let cannotPlay = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
+    let canMulligan = props.isWithinMulliganLimit && props.pile.canMulligan(props.playerName, props.turnCounter)
 
     return (
         <div className="pile-set">
@@ -172,13 +187,24 @@ export function PileView(props: PileViewProps) {
                 </div>
             </div>
 
-            <div>
-                <button
-                    className="pile-button"
-                    disabled={buttonIsDisabled}
-                    onClick={() => playCard(cardToPlay)}>
-                    Play
-                </button>
+            <div className="flex-center space-between">
+                <div>
+                    <button
+                        className="pile-button"
+                        disabled={cannotPlay}
+                        onClick={() => playCard(cardToPlay)}>
+                        Play
+                    </button>
+                </div>
+
+                <div>
+                    <button
+                        className="mulligan-button"
+                        disabled={!canMulligan}
+                        onClick={() => props.mulligan(props.index)}>
+                        <FaUndo />
+                    </button>
+                </div>
             </div>
         </div>
     )

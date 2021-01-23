@@ -1,9 +1,8 @@
 import React from "react"
 
-import { CardView } from "./CardView"
+import { Card, Hand, RuleSet } from "the-game-lib"
 
-import { Hand } from "the-game-lib/dist/game/Hand"
-import { RuleSet } from "the-game-lib/dist/game/RuleSet"
+import { CardView } from "./CardView"
 
 interface HandProps {
     /**
@@ -19,7 +18,7 @@ interface HandProps {
     /**
      * The card to play.
      */
-    cardToPlay: number | undefined
+    cardToPlay: Card | undefined
 
     /**
      * Whether the buttons should be disabled.
@@ -29,7 +28,7 @@ interface HandProps {
     /**
      * Sets the card to be played.
      */
-    setCardToPlay: (card: number | undefined) => void
+    setCardToPlay: (card: Card | undefined) => void
 }
 
 /**

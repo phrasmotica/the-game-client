@@ -1,6 +1,9 @@
 import React, { useState, useRef } from "react"
 import socketIOClient, { Socket } from "socket.io-client"
 
+import { Message, RoomData } from "game-server-lib"
+import { GameData } from "the-game-lib"
+
 import { GameBoard } from "./components/GameBoard"
 import { GameLobby } from "./components/GameLobby"
 import { GameMenu } from "./components/GameMenu"
@@ -9,8 +12,7 @@ import { ServerHome } from "./components/server-home/ServerHome"
 
 import { ClientMode } from "./models/ClientMode"
 
-import { Message } from "the-game-lib/dist/models/Message"
-import { RoomData } from "the-game-lib/dist/models/RoomData"
+import { createRoomData } from "./util/Convert"
 
 import "./App.css"
 
@@ -24,9 +26,11 @@ enum AppState {
     Game
 }
 
+const defaultRoomData = () => new RoomData("", [], [], GameData.default())
+
 function App() {
     const [state, setState] = useState(AppState.Menu)
-    const [roomData, setRoomData] = useState(RoomData.empty())
+    const [roomData, setRoomData] = useState(defaultRoomData())
     const [playerName, setPlayerName] = useState("")
     const [clientMode, setClientMode] = useState(ClientMode.Player)
 
@@ -66,33 +70,32 @@ function App() {
             }
         })
 
-        socket.current.on("gameStarted", (message: Message<RoomData>) => {
+        socket.current.on("gameStarted", (message: Message<RoomData<GameData>>) => {
             setState(AppState.Game)
-            setRoomData(RoomData.from(message.content))
+            setRoomData(createRoomData(message.content))
         })
 
-        socket.current.on("roomData", (message: Message<RoomData>) => {
-             // can we alleviate the need for all these static .from() functions?
-            let roomData = RoomData.from(message.content)
+        socket.current.on("roomData", (message: Message<RoomData<GameData>>) => {
+            // can we alleviate the need for all these static .from() functions?
+            let roomData = createRoomData(message.content)
             setRoomData(roomData)
         })
 
         socket.current.on("kick", () => {
-            let roomData = RoomData.empty()
-            setRoomData(roomData)
+            setRoomData(defaultRoomData())
             setState(AppState.ServerHome)
         })
 
         socket.current.on("leaveGameResult", (success: boolean) => {
             if (success) {
-                setRoomData(RoomData.empty())
+                setRoomData(defaultRoomData())
                 setState(AppState.ServerHome)
             }
         })
 
         socket.current.on("leaveRoomResult", (success: boolean) => {
             if (success) {
-                setRoomData(RoomData.empty())
+                setRoomData(defaultRoomData())
                 setState(AppState.ServerHome)
             }
         })

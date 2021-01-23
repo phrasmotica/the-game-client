@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { FaPlus, FaRedo } from "react-icons/fa"
-import { Message, RoomData, RoomWith } from "the-game-lib"
+
+import { Message, RoomData, RoomWith } from "game-server-lib"
+import { GameData } from "the-game-lib"
 
 import { RoomCard } from "./RoomCard"
+import { createRoomData } from "../../util/Convert"
 
 interface RoomListProps {
     /**
@@ -18,16 +21,16 @@ interface RoomListProps {
 
 export function RoomList(props: RoomListProps) {
     const [createRoomName, setCreateRoomName] = useState("")
-    const [allRoomData, setAllRoomData] = useState<RoomData[]>([])
+    const [allRoomData, setAllRoomData] = useState<RoomData<GameData>[]>([])
 
-    props.socket.on("allRoomData", (newAllRoomData: RoomData[]) => {
-        setAllRoomData(newAllRoomData.map(RoomData.from))
+    props.socket.on("allRoomData", (newAllRoomData: RoomData<GameData>[]) => {
+        setAllRoomData(newAllRoomData.map(createRoomData))
     })
 
-    props.socket.on("roomData", (message: Message<RoomData>) => {
+    props.socket.on("roomData", (message: Message<RoomData<GameData>>) => {
         let newAllRoomData = [...allRoomData]
 
-        let roomData = RoomData.from(message.content)
+        let roomData = createRoomData(message.content)
         let index = newAllRoomData.findIndex(r => r.name === roomData.name)
         if (index >= 0) {
             newAllRoomData[index] = roomData

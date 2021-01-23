@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "the-game-lib/dist/game/RuleSet"
+import { Card, RuleSet } from "the-game-lib"
 
 interface CardViewProps {
     /**
@@ -11,7 +11,7 @@ interface CardViewProps {
     /**
      * The card to render.
      */
-    card?: number
+    card?: Card
 
     /**
      * Whether the card should be rendered as selected.
@@ -34,7 +34,7 @@ export function CardView(props: CardViewProps) {
 
     return (
         <div className={className}>
-            <span>{card ?? "-"}</span>
+            <span>{card?.value ?? "-"}</span>
         </div>
     )
 }

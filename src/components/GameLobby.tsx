@@ -1,9 +1,9 @@
 import React from "react"
 
-import { GameOptions } from "./GameOptions"
+import { RoomData, RoomWith } from "game-server-lib"
+import { GameData } from "the-game-lib"
 
-import { RoomData } from "the-game-lib/dist/models/RoomData"
-import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+import { GameOptions } from "./GameOptions"
 
 interface GameLobbyProps {
     /**
@@ -19,7 +19,7 @@ interface GameLobbyProps {
     /**
      * The room data.
      */
-    roomData: RoomData
+    roomData: RoomData<GameData>
 }
 
 /**
