@@ -5,6 +5,8 @@ import { GameData } from "the-game-lib"
 
 import { GameOptions } from "./GameOptions"
 
+import { ClientMode } from "../models/ClientMode"
+
 interface GameLobbyProps {
     /**
      * The socket for server communication.
@@ -15,6 +17,11 @@ interface GameLobbyProps {
      * The player name.
      */
     playerName: string
+
+    /**
+     * The client mode.
+     */
+    clientMode: ClientMode
 
     /**
      * The room data.
@@ -68,6 +75,7 @@ export function GameLobby(props: GameLobbyProps) {
 
             <GameOptions
                 socket={props.socket}
+                clientMode={props.clientMode}
                 roomName={props.roomData.name}
                 ruleSet={props.roomData.gameData.ruleSet} />
 

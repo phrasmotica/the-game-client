@@ -131,6 +131,7 @@ function App() {
                 <GameLobby
                     socket={socket.current}
                     playerName={playerName}
+                    clientMode={clientMode}
                     roomData={roomData} />
             )
             break

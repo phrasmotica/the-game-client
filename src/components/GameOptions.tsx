@@ -1,14 +1,20 @@
 import React from "react"
 
-import { GameMode, RuleSet } from "the-game-lib/dist/game/RuleSet"
+import { RoomWith } from "game-server-lib"
+import { GameMode, RuleSet } from "the-game-lib"
 
-import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+import { ClientMode } from "../models/ClientMode"
 
 interface GameOptionsProps {
     /**
      * The socket for server communication.
      */
     socket: SocketIOClient.Socket
+
+    /**
+     * The client mode.
+     */
+    clientMode: ClientMode
 
     /**
      * The room name.
@@ -119,6 +125,8 @@ export function GameOptions(props: GameOptionsProps) {
         )
     }
 
+    let isSpectatorMode = props.clientMode === ClientMode.Spectator
+
     let options = (
         <div className="flex-center">
             <div className="align-centre margin-right">
@@ -128,6 +136,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={0}
                             max={10}
                             onChange={e => setMulliganLimit(Number(e.target.value))}
@@ -143,6 +152,7 @@ export function GameOptions(props: GameOptionsProps) {
                     <select
                         id="gameModeSelect"
                         className="ruleset-select"
+                        disabled={isSpectatorMode}
                         onChange={e => setGameMode(e.target.value as GameMode)}
                         value={props.ruleSet.gameMode}>
                         {gameModeOptions}
@@ -157,6 +167,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={1}
                             max={2}
                             onChange={e => setPairsOfPiles(Number(e.target.value))}
@@ -170,6 +181,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={2}
                             max={20}
                             onChange={e => setJumpBackSize(Number(e.target.value))}
@@ -183,6 +195,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={10}
                             max={200}
                             step={10}
@@ -199,6 +212,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={5}
                             max={8}
                             onChange={e => setHandSize(Number(e.target.value))}
@@ -212,6 +226,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={1}
                             max={4}
                             onChange={e => setCardsPerTurn(Number(e.target.value))}
@@ -225,6 +240,7 @@ export function GameOptions(props: GameOptionsProps) {
                         <input
                             className="ruleset-input"
                             type="number"
+                            disabled={isSpectatorMode}
                             min={1}
                             max={4}
                             onChange={e => setCardsPerTurnInEndgame(Number(e.target.value))}
@@ -237,7 +253,9 @@ export function GameOptions(props: GameOptionsProps) {
 
     let lowerButtons = (
         <div className="flex-center">
-            <button className="option-button"
+            <button
+                className="option-button"
+                disabled={isSpectatorMode}
                 onClick={() => resetOptions()}>
                 Reset
             </button>
