@@ -27,9 +27,9 @@ interface PileViewProps {
     ruleSet: RuleSet
 
     /**
-     * The number of turns played.
+     * The turn counter.
      */
-    turnsPlayed: number
+    turnCounter: number
 
     /**
      * The card to play.
@@ -83,7 +83,7 @@ export function PileView(props: PileViewProps) {
         directionElement = <FaArrowDown />
     }
 
-    let top = pile.top()
+    let top = pile.topCard()
     let topElement = <CardView ruleSet={props.ruleSet} card={top} />
     if (top.value === pile.start) {
         topElement = <CardView ruleSet={props.ruleSet} />
@@ -165,7 +165,7 @@ export function PileView(props: PileViewProps) {
 
     let cardToPlay = props.cardToPlay
     let cannotPlay = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
-    let canMulligan = props.isWithinMulliganLimit && props.pile.canMulligan(props.playerName)
+    let canMulligan = props.isWithinMulliganLimit && props.pile.canMulligan(props.playerName, props.turnCounter)
 
     return (
         <div className="pile-set">

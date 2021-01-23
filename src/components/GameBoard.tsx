@@ -199,7 +199,7 @@ export function GameBoard(props: GameBoardProps) {
                     pile={gameData.piles[i]}
                     playerName={props.playerName}
                     ruleSet={ruleSet}
-                    turnsPlayed={gameData.turnsPlayed}
+                    turnCounter={gameData.turnCounter}
                     isMyTurn={isMyTurn}
                     isWithinMulliganLimit={gameData.canMulligan()}
                     isLost={isLost}
@@ -221,7 +221,7 @@ export function GameBoard(props: GameBoardProps) {
                     pile={gameData.piles[index]}
                     playerName={props.playerName}
                     ruleSet={ruleSet}
-                    turnsPlayed={gameData.turnsPlayed}
+                    turnCounter={gameData.turnCounter}
                     isMyTurn={isMyTurn}
                     isWithinMulliganLimit={gameData.canMulligan()}
                     isLost={isLost}
