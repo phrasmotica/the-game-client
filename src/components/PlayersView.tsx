@@ -54,7 +54,7 @@ export function PlayersView(props: PlayersViewProps) {
                         <div className="flex-center">
                             {hand?.cards.map(c => (
                                 <div className={`${baseClassName} player-card-text`}>
-                                    {showCardValues ? c : "?"}
+                                    {showCardValues || c.revealed ? c.value : "?"}
                                 </div>
                             ))}
                         </div>
