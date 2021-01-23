@@ -33,7 +33,7 @@ interface GameBoardProps {
     clientMode: ClientMode
 }
 
-export function GameBoard(props: GameBoardProps) {
+export const GameBoard = (props: GameBoardProps) => {
     const [showPileGaps, setShowPileGaps] = useState(false)
     const [autoSortHand, setAutoSortHand] = useState(false)
 
@@ -322,16 +322,13 @@ export function GameBoard(props: GameBoardProps) {
      * Renders the hand.
      */
     const renderHandElement = (gameData: GameData) => {
-        let hand = getHand()
-        let currentPlayer = gameData.getCurrentPlayer()
-
         if (isSpectatorClient()) {
-            hand = gameData.getHand(currentPlayer!)
+            return null
         }
 
         let isInProgress = gameData.isInProgress()
-        let isMyTurn = currentPlayer === props.playerName
         let isLost = gameData.isLost()
+        let isMyTurn = gameData.getCurrentPlayer() === props.playerName
         let hasCardToPlay = gameData.cardToPlay !== undefined
 
         let disableButtons = !isInProgress || isLost || !isMyTurn || hasCardToPlay
@@ -340,7 +337,7 @@ export function GameBoard(props: GameBoardProps) {
             <div className="flex-center margin-bottom">
                 <HandView
                     ruleSet={gameData.ruleSet}
-                    hand={hand}
+                    hand={getHand()}
                     disableButtons={disableButtons}
                     cardToPlay={gameData.cardToPlay}
                     setCardToPlay={card => setCardToPlay(card)} />
