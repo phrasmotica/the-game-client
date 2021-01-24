@@ -6,7 +6,7 @@ import { GameData } from "the-game-lib"
 
 import { GameBoard } from "./components/GameBoard"
 import { GameLobby } from "./components/GameLobby"
-import { GameMenu } from "./components/GameMenu"
+import { ServerBrowser } from "./components/server-browser/ServerBrowser"
 
 import { ServerHome } from "./components/server-home/ServerHome"
 
@@ -20,7 +20,7 @@ import "./App.css"
  * The states the app can adopt.
  */
 enum AppState {
-    Menu,
+    ServerBrowser,
     ServerHome,
     Lobby,
     Game
@@ -29,7 +29,7 @@ enum AppState {
 const defaultRoomData = () => new RoomData("", [], [], GameData.default())
 
 function App() {
-    const [state, setState] = useState(AppState.Menu)
+    const [state, setState] = useState(AppState.ServerBrowser)
     const [isConnecting, setIsConnecting] = useState(false)
     const [roomData, setRoomData] = useState(defaultRoomData())
     const [playerName, setPlayerName] = useState("")
@@ -111,14 +111,14 @@ function App() {
     const leaveServer = () => {
         socket.current.disconnect()
         setPlayerName("")
-        setState(AppState.Menu)
+        setState(AppState.ServerBrowser)
     }
 
     let contents = null
     switch (state) {
-        case AppState.Menu:
+        case AppState.ServerBrowser:
             contents = (
-                <GameMenu
+                <ServerBrowser
                     alreadyConnecting={isConnecting}
                     joinServer={joinServer} />
             )

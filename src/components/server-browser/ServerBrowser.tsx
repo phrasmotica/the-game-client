@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-interface GameMenuProps {
+interface ServerBrowserProps {
     /**
      * Whether we are already connecting to the server.
      */
@@ -13,9 +13,9 @@ interface GameMenuProps {
 }
 
 /**
- * Renders the game menu.
+ * Renders the server browser.
  */
-export function GameMenu(props: GameMenuProps) {
+export const ServerBrowser = (props: ServerBrowserProps) => {
     const [playerName, setPlayerName] = useState("")
 
     let canJoinServer = playerName.length > 0 && !props.alreadyConnecting
@@ -23,7 +23,7 @@ export function GameMenu(props: GameMenuProps) {
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">
-                Welcome to The Game!
+                Welcome!
             </div>
 
             <div className="flex-center margin-bottom">
