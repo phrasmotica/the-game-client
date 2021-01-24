@@ -241,6 +241,21 @@
   display: block;
 }
 
+.history-button {
+  display: block;
+}
+
+.history-container {
+  padding: 0px 5px;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+.history-text {
+  font-size: 10pt;
+}
+
 .grid {
   display: grid;
 }

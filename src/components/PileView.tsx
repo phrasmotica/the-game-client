@@ -1,5 +1,5 @@
-import React from "react"
-import { FaArrowDown, FaArrowUp, FaUndo } from "react-icons/fa"
+import React, { useState } from "react"
+import { FaArrowDown, FaArrowUp, FaHistory, FaUndo } from "react-icons/fa"
 
 import { Card, Direction, RuleSet, Pile, PileState } from "the-game-lib"
 
@@ -75,7 +75,9 @@ interface PileViewProps {
 /**
  * Renders a pile.
  */
-export function PileView(props: PileViewProps) {
+export const PileView = (props: PileViewProps) => {
+    const [showHistory, setShowHistory] = useState(false)
+
     let pile = props.pile
 
     let directionElement = <FaArrowUp />
@@ -151,6 +153,20 @@ export function PileView(props: PileViewProps) {
         )
     }
 
+    const createHistoryElement = () => {
+        if (!showHistory) {
+            return null
+        }
+
+        return (
+            <div className="history-container">
+                <span className="history-text">
+                    {props.pile.cards.map(c => c[0].value).join(", ")}
+                </span>
+            </div>
+        )
+    }
+
     /**
      * Plays the given card on this pile.
      */
@@ -191,6 +207,8 @@ export function PileView(props: PileViewProps) {
                 <div>
                     {createHintElement()}
                 </div>
+
+                {createHistoryElement()}
             </div>
 
             <div className="flex-center space-between">
@@ -209,6 +227,15 @@ export function PileView(props: PileViewProps) {
                         disabled={!canMulligan}
                         onClick={() => props.mulligan(props.index)}>
                         <FaUndo />
+                    </button>
+                </div>
+
+                <div>
+                    <button
+                        className="history-button"
+                        disabled={false}
+                        onClick={() => setShowHistory(!showHistory)}>
+                        <FaHistory />
                     </button>
                 </div>
             </div>
