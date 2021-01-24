@@ -2,6 +2,11 @@ import React, { useState } from "react"
 
 interface GameMenuProps {
     /**
+     * Whether we are already connecting to the server.
+     */
+    alreadyConnecting: boolean
+
+    /**
      * Joins the server with the given player name.
      */
     joinServer: (playerName: string) => void
@@ -12,6 +17,8 @@ interface GameMenuProps {
  */
 export function GameMenu(props: GameMenuProps) {
     const [playerName, setPlayerName] = useState("")
+
+    let canJoinServer = playerName.length > 0 && !props.alreadyConnecting
 
     return (
         <div className="game-menu">
@@ -29,7 +36,7 @@ export function GameMenu(props: GameMenuProps) {
 
             <div className="flex-center margin-bottom">
                 <button
-                    disabled={playerName.length <= 0}
+                    disabled={!canJoinServer}
                     onClick={() => props.joinServer(playerName)}>
                     Join Server
                 </button>

@@ -30,6 +30,7 @@ const defaultRoomData = () => new RoomData("", [], [], GameData.default())
 
 function App() {
     const [state, setState] = useState(AppState.Menu)
+    const [isConnecting, setIsConnecting] = useState(false)
     const [roomData, setRoomData] = useState(defaultRoomData())
     const [playerName, setPlayerName] = useState("")
     const [clientMode, setClientMode] = useState(ClientMode.Player)
@@ -49,11 +50,14 @@ function App() {
         setPlayerName(playerName)
 
         socket.current.emit("joinServer", playerName)
+        setIsConnecting(true)
 
         socket.current.on("joinServerResult", (success: boolean) => {
             if (success) {
                 setState(AppState.ServerHome)
             }
+
+            setIsConnecting(false)
         })
 
         socket.current.on("joinRoomResult", (success: boolean) => {
@@ -115,6 +119,7 @@ function App() {
         case AppState.Menu:
             contents = (
                 <GameMenu
+                    alreadyConnecting={isConnecting}
                     joinServer={joinServer} />
             )
             break
