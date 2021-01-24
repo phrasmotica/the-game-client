@@ -233,7 +233,7 @@ export const PileView = (props: PileViewProps) => {
                 <div>
                     <button
                         className="history-button"
-                        disabled={false}
+                        disabled={!props.ruleSet.canViewPileHistory}
                         onClick={() => setShowHistory(!showHistory)}>
                         <FaHistory />
                     </button>

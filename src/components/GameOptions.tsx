@@ -112,6 +112,15 @@ export function GameOptions(props: GameOptionsProps) {
     /**
      * Sets the given mulligan limit in the rule set.
      */
+    const setCanViewPileHistory = (canViewPileHistory: boolean) => {
+        let newRuleSet = props.ruleSet
+        newRuleSet.canViewPileHistory = canViewPileHistory
+        setRuleSet(newRuleSet)
+    }
+
+    /**
+     * Sets the given mulligan limit in the rule set.
+     */
     const setMulliganLimit = (mulliganLimit: number) => {
         let newRuleSet = props.ruleSet
         newRuleSet.mulliganLimit = mulliganLimit
@@ -130,6 +139,18 @@ export function GameOptions(props: GameOptionsProps) {
     let options = (
         <div className="flex-center">
             <div className="align-centre margin-right">
+                <div className="margin-bottom-small">
+                    <label className="option-label">
+                        Can view pile history
+                        <input
+                            className="ruleset-input"
+                            type="checkbox"
+                            disabled={isSpectatorMode}
+                            onChange={e => setCanViewPileHistory(e.target.checked)}
+                            checked={props.ruleSet.canViewPileHistory} />
+                    </label>
+                </div>
+
                 <div className="margin-bottom-small">
                     <label className="option-label">
                         Mulligan limit
