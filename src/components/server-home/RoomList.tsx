@@ -141,7 +141,9 @@ export function RoomList(props: RoomListProps) {
                         }
 
                         return (
-                            <div className={className}>
+                            <div
+                                key={room.name}
+                                className={className}>
                                 <RoomCard
                                     roomData={room}
                                     playerName={props.playerName}

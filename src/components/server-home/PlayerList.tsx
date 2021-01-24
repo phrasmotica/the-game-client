@@ -67,7 +67,9 @@ export function PlayerList(props: PlayerListProps) {
                         }
 
                         return (
-                            <div className={className}>
+                            <div
+                                key={playerData.name}
+                                className={className}>
                                 <PlayerCard
                                     playerData={playerData}
                                     playerName={props.playerName} />
