@@ -133,8 +133,8 @@ export const GameBoard = (props: GameBoardProps) => {
     /**
      * Ends the turn.
      */
-    const endTurn = () => {
-        props.socket.emit("endTurn", new RoomWith(props.roomData.name, autoSortHand))
+    const endTurn = (passTurn: boolean) => {
+        props.socket.emit("endTurn", new RoomWith(props.roomData.name, [passTurn, autoSortHand]))
     }
 
     /**
@@ -376,13 +376,13 @@ export const GameBoard = (props: GameBoardProps) => {
                 <button
                     className="margin-right"
                     disabled={gameIsOver || !isMyTurn || !areEnoughCardsPlayed()}
-                    onClick={endTurn}>
+                    onClick={() => endTurn(false)}>
                     End turn
                 </button>
 
                 <button
                     disabled={gameIsOver || !isMyTurn || !noCardsCanBePlayed()}
-                    onClick={endTurn}>
+                    onClick={() => endTurn(true)}>
                     Pass
                 </button>
             </div>
@@ -393,6 +393,8 @@ export const GameBoard = (props: GameBoardProps) => {
      * Renders the end message.
      */
     const renderEndMessage = (gameData: GameData) => {
+        console.log(gameData.isLost())
+
         if (gameData.isWon()) {
             if (isPlayerClient()) {
                 return (
