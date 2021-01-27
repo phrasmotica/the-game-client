@@ -16,6 +16,9 @@ import { createRoomData } from "./util/Convert"
 
 import "./App.css"
 
+// TODO: this should really be outside of /src
+import configData from "./config.json"
+
 /**
  * The states the app can adopt.
  */
@@ -24,6 +27,11 @@ enum AppState {
     ServerHome,
     Lobby,
     Game
+}
+
+export type ServerInfo = {
+    name: string
+    url: string
 }
 
 const defaultRoomData = () => new RoomData("", [], [], GameData.default())
@@ -37,16 +45,13 @@ function App() {
 
     const socket = useRef(Socket)
 
+    const servers: ServerInfo[] = configData.servers
+
     /**
      * Connects to the server and sets up event listeners for the socket.
      */
-    const joinServer = (playerName: string) => {
-        let endpoint = process.env.REACT_APP_SERVER_ENDPOINT
-        if (endpoint === undefined) {
-            throw new Error("No server endpoint found!")
-        }
-
-        socket.current = socketIOClient(endpoint)
+    const joinServer = (serverUrl: string, playerName: string) => {
+        socket.current = socketIOClient(serverUrl)
         setPlayerName(playerName)
 
         socket.current.emit("joinServer", playerName)
@@ -119,6 +124,7 @@ function App() {
         case AppState.ServerBrowser:
             contents = (
                 <ServerBrowser
+                    servers={servers}
                     alreadyConnecting={isConnecting}
                     joinServer={joinServer} />
             )

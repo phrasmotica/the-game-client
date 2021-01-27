@@ -26,3 +26,6 @@ yarn-error.log*
 .deployment
 
 /src/common
+
+# config
+config.json
