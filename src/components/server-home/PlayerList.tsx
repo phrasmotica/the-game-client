@@ -70,9 +70,7 @@ export function PlayerList(props: PlayerListProps) {
                             <div
                                 key={playerData.name}
                                 className={className}>
-                                <PlayerCard
-                                    playerData={playerData}
-                                    playerName={props.playerName} />
+                                <PlayerCard playerData={playerData} />
                             </div>
                         )
                     })}

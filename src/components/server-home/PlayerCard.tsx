@@ -8,11 +8,6 @@ interface PlayerCardProps {
      * The player data.
      */
     playerData: PlayerData
-
-    /**
-     * The player's name.
-     */
-    playerName: string
 }
 
 export function PlayerCard(props: PlayerCardProps) {
