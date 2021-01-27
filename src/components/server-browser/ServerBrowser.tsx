@@ -1,15 +1,24 @@
 import React, { useState } from "react"
+import { Input } from "semantic-ui-react"
+
+import { ServerInfo } from "../../App"
+import { ServerList } from "./ServerList"
 
 interface ServerBrowserProps {
     /**
-     * Whether we are already connecting to the server.
+     * The list of servers.
+     */
+    servers: ServerInfo[]
+
+    /**
+     * Whether we are already connecting to a server.
      */
     alreadyConnecting: boolean
 
     /**
-     * Joins the server with the given player name.
+     * Joins the given server with the given player name.
      */
-    joinServer: (playerName: string) => void
+    joinServer: (serverUrl: string, playerName: string) => void
 }
 
 /**
@@ -18,8 +27,6 @@ interface ServerBrowserProps {
 export const ServerBrowser = (props: ServerBrowserProps) => {
     const [playerName, setPlayerName] = useState("")
 
-    let canJoinServer = playerName.length > 0 && !props.alreadyConnecting
-
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">
@@ -27,20 +34,17 @@ export const ServerBrowser = (props: ServerBrowserProps) => {
             </div>
 
             <div className="flex-center margin-bottom">
-                <input
-                    type="text"
+                <Input
                     className="name-field"
                     placeholder="enter your name"
                     onChange={e => setPlayerName(e.target.value)} />
             </div>
 
-            <div className="flex-center margin-bottom">
-                <button
-                    disabled={!canJoinServer}
-                    onClick={() => props.joinServer(playerName)}>
-                    Join Server
-                </button>
-            </div>
+            <ServerList
+                servers={props.servers}
+                playerName={playerName}
+                alreadyConnecting={props.alreadyConnecting}
+                joinServer={url => props.joinServer(url, playerName)} />
         </div>
     )
 }
