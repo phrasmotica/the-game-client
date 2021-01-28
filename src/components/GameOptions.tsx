@@ -4,6 +4,7 @@ import { RoomWith } from "game-server-lib"
 import { GameMode, RuleSet } from "the-game-lib"
 
 import { ClientMode } from "../models/ClientMode"
+import { Button, Input } from "semantic-ui-react"
 
 interface GameOptionsProps {
     /**
@@ -127,170 +128,235 @@ export function GameOptions(props: GameOptionsProps) {
         setRuleSet(newRuleSet)
     }
 
-    let gameModeOptions = []
-    for (let mode of Object.values(GameMode)) {
-        gameModeOptions.push(
-            <option key={mode} value={mode}>{mode}</option>
-        )
-    }
-
     let isSpectatorMode = props.clientMode === ClientMode.Spectator
 
-    let options = (
-        <div className="flex-center">
-            <div className="align-centre margin-right">
-                <div className="margin-bottom-small">
-                    <label className="option-label">
-                        Can view pile history
-                        <input
-                            className="ruleset-input"
-                            type="checkbox"
-                            disabled={isSpectatorMode}
-                            onChange={e => setCanViewPileHistory(e.target.checked)}
-                            checked={props.ruleSet.canViewPileHistory} />
-                    </label>
-                </div>
+    let gameModeOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Game mode
+                </span>
+            </div>
 
-                <div className="margin-bottom-small">
-                    <label className="option-label">
-                        Mulligan limit
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={0}
-                            max={10}
-                            onChange={e => setMulliganLimit(Number(e.target.value))}
-                            value={props.ruleSet.mulliganLimit} />
-                    </label>
-                </div>
-
-                <div>
-                    <label className="option-label-above" htmlFor="gameModeSelect">
-                        Game mode
-                    </label>
-
-                    <select
-                        id="gameModeSelect"
-                        className="ruleset-select"
+            <div>
+                <Button.Group>
+                    <Button
                         disabled={isSpectatorMode}
-                        onChange={e => setGameMode(e.target.value as GameMode)}
-                        value={props.ruleSet.gameMode}>
-                        {gameModeOptions}
-                    </select>
-                </div>
-            </div>
+                        primary={props.ruleSet.gameMode === GameMode.Regular}
+                        onClick={() => setGameMode(GameMode.Regular)}>
+                        Regular
+                    </Button>
 
-            <div className="align-right margin-right">
-                <div>
-                    <label className="option-label">
-                        Pairs of piles
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={1}
-                            max={2}
-                            onChange={e => setPairsOfPiles(Number(e.target.value))}
-                            value={props.ruleSet.pairsOfPiles} />
-                    </label>
-                </div>
+                    <Button.Or className="flex-or" />
 
-                <div>
-                    <label className="option-label">
-                        Jump back size
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={2}
-                            max={20}
-                            onChange={e => setJumpBackSize(Number(e.target.value))}
-                            value={props.ruleSet.jumpBackSize} />
-                    </label>
-                </div>
-
-                <div>
-                    <label className="option-label">
-                        Top limit
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={10}
-                            max={200}
-                            step={10}
-                            onChange={e => setTopLimit(Number(e.target.value))}
-                            value={props.ruleSet.topLimit} />
-                    </label>
-                </div>
-            </div>
-
-            <div className="align-right">
-                <div>
-                    <label className="option-label">
-                        Hand size
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={5}
-                            max={8}
-                            onChange={e => setHandSize(Number(e.target.value))}
-                            value={props.ruleSet.handSize} />
-                    </label>
-                </div>
-
-                <div>
-                    <label className="option-label">
-                        Cards per turn
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={1}
-                            max={4}
-                            onChange={e => setCardsPerTurn(Number(e.target.value))}
-                            value={props.ruleSet.cardsPerTurn} />
-                    </label>
-                </div>
-
-                <div>
-                    <label className="option-label">
-                        Cards per turn in endgame
-                        <input
-                            className="ruleset-input"
-                            type="number"
-                            disabled={isSpectatorMode}
-                            min={1}
-                            max={4}
-                            onChange={e => setCardsPerTurnInEndgame(Number(e.target.value))}
-                            value={props.ruleSet.cardsPerTurnInEndgame} />
-                    </label>
-                </div>
+                    <Button
+                        disabled={isSpectatorMode}
+                        color={props.ruleSet.gameMode === GameMode.OnFire ? "orange" : undefined}
+                        onClick={() => setGameMode(GameMode.OnFire)}>
+                        On Fire
+                    </Button>
+                </Button.Group>
             </div>
         </div>
     )
 
-    let lowerButtons = (
-        <div className="flex-center">
-            <button
-                className="option-button"
-                disabled={isSpectatorMode}
-                onClick={() => resetOptions()}>
-                Reset
-            </button>
+    let pairsOfPilesOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Pairs of piles
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={1}
+                    max={2}
+                    onChange={e => setPairsOfPiles(Number(e.target.value))}
+                    value={props.ruleSet.pairsOfPiles} />
+            </div>
+        </div>
+    )
+
+    let jumpBackSizeOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Jump back size
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={2}
+                    max={20}
+                    onChange={e => setJumpBackSize(Number(e.target.value))}
+                    value={props.ruleSet.jumpBackSize} />
+            </div>
+        </div>
+    )
+
+    let topLimitOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Top limit
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={10}
+                    max={200}
+                    step={10}
+                    onChange={e => setTopLimit(Number(e.target.value))}
+                    value={props.ruleSet.topLimit} />
+            </div>
+        </div>
+    )
+
+    let handSizeOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Hand size
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={5}
+                    max={8}
+                    onChange={e => setHandSize(Number(e.target.value))}
+                    value={props.ruleSet.handSize} />
+            </div>
+        </div>
+    )
+
+    let cardsPerTurnOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Cards per turn
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={1}
+                    max={4}
+                    onChange={e => setCardsPerTurn(Number(e.target.value))}
+                    value={props.ruleSet.cardsPerTurn} />
+            </div>
+        </div>
+    )
+
+    let cardsPerTurnInEndgameOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Cards per turn in endgame
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={1}
+                    max={4}
+                    onChange={e => setCardsPerTurnInEndgame(Number(e.target.value))}
+                    value={props.ruleSet.cardsPerTurnInEndgame} />
+            </div>
+        </div>
+    )
+
+    let mulliganLimitOption = (
+        <div className="option-container margin-bottom-small">
+            <div>
+                <span className="option-label">
+                    Mulligan limit
+                </span>
+            </div>
+
+            <div>
+                <Input
+                    className="ruleset-input"
+                    type="number"
+                    disabled={isSpectatorMode}
+                    min={0}
+                    max={10}
+                    onChange={e => setMulliganLimit(Number(e.target.value))}
+                    value={props.ruleSet.mulliganLimit} />
+            </div>
+        </div>
+    )
+
+    let canViewPileHistoryOption = (
+        <div className="option-container">
+            <div>
+                <span className="option-label">
+                    Can view pile history
+                </span>
+            </div>
+
+            <div>
+                <input
+                    className="ruleset-input"
+                    type="checkbox"
+                    disabled={isSpectatorMode}
+                    onChange={e => setCanViewPileHistory(e.target.checked)}
+                    checked={props.ruleSet.canViewPileHistory} />
+            </div>
         </div>
     )
 
     return (
         <div className="margin-bottom">
-            <div className="margin-bottom">
-                {options}
+            <div className="flex space-between margin-bottom">
+                <div className="rules-header">
+                    <span>
+                        Rules
+                    </span>
+                </div>
+
+                <div>
+                    <Button
+                        color="yellow"
+                        className="no-margin option-button"
+                        disabled={isSpectatorMode}
+                        onClick={() => resetOptions()}>
+                        Reset
+                    </Button>
+                </div>
             </div>
 
-            <div>
-                {lowerButtons}
+            <div className="margin-bottom">
+                {gameModeOption}
+                {pairsOfPilesOption}
+                {jumpBackSizeOption}
+                {topLimitOption}
+                {handSizeOption}
+                {cardsPerTurnOption}
+                {cardsPerTurnInEndgameOption}
+                {mulliganLimitOption}
+                {canViewPileHistoryOption}
             </div>
         </div>
     )

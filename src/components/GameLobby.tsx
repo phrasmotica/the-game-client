@@ -6,6 +6,7 @@ import { GameData } from "the-game-lib"
 import { GameOptions } from "./GameOptions"
 
 import { ClientMode } from "../models/ClientMode"
+import { Button } from "semantic-ui-react"
 
 interface GameLobbyProps {
     /**
@@ -54,7 +55,7 @@ export function GameLobby(props: GameLobbyProps) {
             <div className="flex-center margin-bottom">
                 <div>
                     <div>
-                        <span>
+                        <span className="room-name-header">
                             Room ID: {props.roomData.name ?? "-"}
                         </span>
                     </div>
@@ -81,19 +82,22 @@ export function GameLobby(props: GameLobbyProps) {
 
             <div className="flex-center">
                 <div className="margin-right">
-                    <button
-                        className="option-button"
+                    <Button
+                        positive
+                        className="no-margin option-button"
                         disabled={!isPlayer}
                         onClick={() => startGame(props.roomData.name)}>
                         Start Game
-                    </button>
+                    </Button>
                 </div>
 
                 <div>
-                    <button className="option-button"
+                    <Button
+                        negative
+                        className="no-margin option-button"
                         onClick={leaveRoom}>
                         Leave Room
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

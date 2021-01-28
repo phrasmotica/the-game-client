@@ -25,7 +25,6 @@
 
 .elements {
   margin: 5vh 5vw 0vh 5vw;
-  min-width: 600px;
   min-height: 95vh;
   display: flex;
   flex-direction: column;
@@ -204,17 +203,6 @@
   min-width: 100px;
 }
 
-.option-label {
-  display: block;
-  font-size: 13.3333px;
-}
-
-.option-label-above {
-  display: block;
-  font-size: 13.3333px;
-  margin-bottom: 5px;
-}
-
 .align-centre {
   display: flex;
   flex-direction: column;
@@ -227,13 +215,32 @@
   align-items: flex-end;
 }
 
-.ruleset-select {
-  display: block;
+.room-name-header {
+  font-size: 14pt;
 }
 
-.ruleset-input {
-  max-width: 40px;
-  margin-left: 5px;
+.option-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  min-height: 40px;
+}
+
+.rules-header {
+  display: flex;
+  align-items: center;
+  font-size: 20pt;
+}
+
+.option-label {
+  display: block;
+  font-size: 12pt;
+}
+
+.ruleset-input > input {
+  font-size: 12pt;
+  width: 80px;
 }
 
 .pile-set {
