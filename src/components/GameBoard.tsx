@@ -485,7 +485,7 @@ export const GameBoard = (props: GameBoardProps) => {
                 {renderMulliganCount()}
             </div>
 
-            <div className="flex-center space-around">
+            <div className="flex-center margin-bottom">
                 {renderPiles(gameData)}
             </div>
 
@@ -495,9 +495,14 @@ export const GameBoard = (props: GameBoardProps) => {
                 {renderEndMessage(gameData)}
             </div>
 
-            <div className="flex-center space-around margin-bottom">
-                {renderRuleSummary(gameData)}
-                {renderPlayerOptions()}
+            <div className="flex-center margin-bottom">
+                <div className="margin-right">
+                    {renderRuleSummary(gameData)}
+                </div>
+
+                <div>
+                    {renderPlayerOptions()}
+                </div>
             </div>
 
             {renderHandElement(gameData)}

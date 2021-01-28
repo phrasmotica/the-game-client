@@ -1,9 +1,8 @@
 import React from "react"
-import { Button } from "semantic-ui-react"
 
 import { Card, Hand, RuleSet } from "the-game-lib"
 
-import { CardView } from "./CardView"
+import { CardButton } from "./CardButton"
 
 interface HandProps {
     /**
@@ -54,20 +53,13 @@ export const HandView = (props: HandProps) => {
         <div className="hand">
             <div className="flex-center">
                 {props.hand.cards.map((c, i) => {
-                    let isSelected = props.cardToPlay === c
-
                     return (
                         <div key={i} className="card-set">
-                            <CardView ruleSet={props.ruleSet} card={c} isSelected={isSelected} />
-
-                            <div>
-                                <Button
-                                    className="card-button no-margin"
-                                    disabled={props.disableButtons}
-                                    onClick={() => props.setCardToPlay(c)}>
-                                    Select
-                                </Button>
-                            </div>
+                            <CardButton
+                                ruleSet={props.ruleSet}
+                                card={c}
+                                isSelected={props.cardToPlay?.value === c.value}
+                                setCardToPlay={() => props.setCardToPlay(c)} />
                         </div>
                     )
                 })}

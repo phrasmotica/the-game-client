@@ -102,10 +102,10 @@ export const PileView = (props: PileViewProps) => {
     let pileState = pile.getState(props.ruleSet)
     switch (pileState) {
         case PileState.Destroyed:
-            pileClassName = "pile-destroyed"
+            pileClassName += " destroyed"
             break
         case PileState.OnFire:
-            pileClassName = "pile-on-fire"
+            pileClassName += " on-fire"
             break
         default:
             break
@@ -193,8 +193,8 @@ export const PileView = (props: PileViewProps) => {
     return (
         <div className="pile-set">
             <div className={pileClassName}>
-                <div>
-                    <span className="start-text">{pile.start}</span>
+                <div className="start-text">
+                    <span>{pile.start}</span>
                 </div>
 
                 <div>
