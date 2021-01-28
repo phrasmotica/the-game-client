@@ -98,7 +98,7 @@
   max-height: 70vh;
   align-items: baseline;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   background-color: lightskyblue;
 }
 
@@ -107,7 +107,7 @@
   justify-content: space-between;
   background-color: cornflowerblue;
   padding: 5px 5px 5px 10px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   min-width: 200px;
 }
 
@@ -124,7 +124,7 @@
   max-height: 70vh;
   align-items: baseline;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   background-color: lightskyblue;
 }
 
@@ -133,7 +133,7 @@
   justify-content: flex-end;
   background-color: cornflowerblue;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   min-width: 300px;
 }
 
@@ -150,7 +150,7 @@
   max-height: 70vh;
   align-items: baseline;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   background-color: lightskyblue;
 }
 
@@ -159,7 +159,7 @@
   justify-content: flex-end;
   background-color: darkcyan;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   min-width: 200px;
 }
 
@@ -168,7 +168,7 @@
   justify-content: flex-end;
   background-color: firebrick;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: .28571429rem;
   min-width: 200px;
 }
 
