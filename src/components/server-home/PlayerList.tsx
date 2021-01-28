@@ -4,6 +4,7 @@ import { FaRedo } from "react-icons/fa"
 import { PlayerData } from "game-server-lib"
 
 import { PlayerCard } from "./PlayerCard"
+import { Button } from "semantic-ui-react"
 
 interface PlayerListProps {
     /**
@@ -41,7 +42,7 @@ export function PlayerList(props: PlayerListProps) {
         <div>
             <div className="grid-equal-columns margin-bottom">
                 <div className="grid margin-right-small">
-                    <span className="text-align-left">
+                    <span className="players-header">
                         Players ({allPlayerData.length})
                     </span>
                 </div>
@@ -49,10 +50,11 @@ export function PlayerList(props: PlayerListProps) {
                 <div className="grid">
                     <div className="flex-end">
                         <div>
-                            <button
+                            <Button
+                                className="no-margin"
                                 onClick={refreshPlayerList}>
                                 <FaRedo />
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

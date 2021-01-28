@@ -2,6 +2,7 @@ import React from "react"
 
 import { RoomData } from "game-server-lib"
 import { GameData } from "the-game-lib"
+import { Button } from "semantic-ui-react"
 
 interface RoomCardProps {
     /**
@@ -58,21 +59,23 @@ export function RoomCard(props: RoomCardProps) {
                 </div>
             </div>
 
-            <div className="grid-equal-columns grid-column-gap">
-                <div className="grid">
-                    <button
+            <div className="flex">
+                <Button.Group>
+                    <Button
+                        primary
                         disabled={isInProgress}
                         onClick={() => props.joinRoom(room.name, props.playerName)}>
                         Join
-                    </button>
-                </div>
+                    </Button>
 
-                <div className="grid">
-                    <button
+                    <Button.Or className="flex-or" />
+
+                    <Button
+                        secondary
                         onClick={() => props.spectateRoom(room.name, props.playerName)}>
                         Spectate
-                    </button>
-                </div>
+                    </Button>
+                </Button.Group>
             </div>
         </div>
     )

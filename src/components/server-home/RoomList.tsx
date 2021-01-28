@@ -6,6 +6,7 @@ import { GameData } from "the-game-lib"
 
 import { RoomCard } from "./RoomCard"
 import { createRoomData } from "../../util/Convert"
+import { Button, Input } from "semantic-ui-react"
 
 interface RoomListProps {
     /**
@@ -106,8 +107,7 @@ export function RoomList(props: RoomListProps) {
                 <div className="grid">
                     <div className="flex">
                         <div className="margin-right-small">
-                            <input
-                                type="text"
+                            <Input
                                 className="name-field"
                                 placeholder="new room name here"
                                 value={createRoomName}
@@ -115,18 +115,20 @@ export function RoomList(props: RoomListProps) {
                         </div>
 
                         <div className="margin-right-small">
-                            <button
+                            <Button
+                                className="no-margin"
                                 disabled={!canCreateRoom}
                                 onClick={() => createRoom(createRoomName)}>
                                 <FaPlus />
-                            </button>
+                            </Button>
                         </div>
 
                         <div>
-                            <button
+                            <Button
+                                className="no-margin"
                                 onClick={refreshRoomList}>
                                 <FaRedo />
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

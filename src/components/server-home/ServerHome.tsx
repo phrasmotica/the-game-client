@@ -1,4 +1,5 @@
 import React from "react"
+import { Button } from "semantic-ui-react"
 
 import { PlayerList } from "./PlayerList"
 import { RoomList } from "./RoomList"
@@ -31,10 +32,11 @@ export function ServerHome(props: ServerHomeProps) {
             </div>
 
             <div className="flex-center margin-bottom">
-                <button
+                <Button
+                    negative
                     onClick={props.leaveServer}>
                     Leave Server
-                </button>
+                </Button>
             </div>
 
             <div className="flex-top">
