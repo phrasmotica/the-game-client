@@ -1,4 +1,5 @@
 import React from "react"
+import { Button } from "semantic-ui-react"
 
 import { Card, Hand, RuleSet } from "the-game-lib"
 
@@ -34,7 +35,7 @@ interface HandProps {
 /**
  * Renders a hand.
  */
-export function HandView(props: HandProps) {
+export const HandView = (props: HandProps) => {
     if (props.hand === undefined) {
         return null
     }
@@ -60,12 +61,12 @@ export function HandView(props: HandProps) {
                             <CardView ruleSet={props.ruleSet} card={c} isSelected={isSelected} />
 
                             <div>
-                                <button
-                                    className="card-button"
+                                <Button
+                                    className="card-button no-margin"
                                     disabled={props.disableButtons}
                                     onClick={() => props.setCardToPlay(c)}>
                                     Select
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )

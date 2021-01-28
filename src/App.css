@@ -282,16 +282,19 @@
   background-color: darkred;
 }
 
-.pile-button {
+.ui.button.pile-button {
   display: block;
+  padding: 0.5em;
 }
 
-.mulligan-button {
+.ui.button.mulligan-button {
   display: block;
+  padding: 0.5em;
 }
 
-.history-button {
+.ui.button.history-button {
   display: block;
+  padding: 0.5em;
 }
 
 .history-container {
@@ -490,8 +493,9 @@
   color: yellow;
 }
 
-.card-button {
+.ui.button.card-button {
   display: block;
+  padding: 0.5em;
 }
 
 .card-set {

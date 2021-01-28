@@ -10,6 +10,7 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
+import { Button } from "semantic-ui-react"
 
 interface GameBoardProps {
     /**
@@ -359,32 +360,32 @@ export const GameBoard = (props: GameBoardProps) => {
 
         return (
             <div className="flex-center margin-bottom">
-                <button
+                <Button
                     className="margin-right"
                     disabled={gameIsOver || !isMyTurn || noCardToPlay}
                     onClick={() => setCardToPlay(undefined)}>
                     Cancel
-                </button>
+                </Button>
 
-                <button
+                <Button
                     className="margin-right"
                     disabled={gameIsOver || getHand()?.isEmpty()}
                     onClick={sortHand}>
                     Sort hand
-                </button>
+                </Button>
 
-                <button
+                <Button
                     className="margin-right"
                     disabled={gameIsOver || !isMyTurn || !areEnoughCardsPlayed()}
                     onClick={() => endTurn(false)}>
                     End turn
-                </button>
+                </Button>
 
-                <button
+                <Button
                     disabled={gameIsOver || !isMyTurn || !noCardsCanBePlayed()}
                     onClick={() => endTurn(true)}>
                     Pass
-                </button>
+                </Button>
             </div>
         )
     }
@@ -436,18 +437,20 @@ export const GameBoard = (props: GameBoardProps) => {
     const renderLeaveButton = () => {
         if (isPlayerClient()) {
             return (
-                <button
+                <Button
+                    negative
                     onClick={() => leaveGame()}>
                     Leave Game
-                </button>
+                </Button>
             )
         }
 
         return (
-            <button
+            <Button
+                negative
                 onClick={() => leaveGame()}>
                 Stop Spectating
-            </button>
+            </Button>
         )
     }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { FaArrowDown, FaArrowUp, FaHistory, FaUndo } from "react-icons/fa"
+import { Button } from "semantic-ui-react"
 
 import { Card, Direction, RuleSet, Pile, PileState } from "the-game-lib"
 
@@ -212,31 +213,32 @@ export const PileView = (props: PileViewProps) => {
             </div>
 
             <div className="flex-center space-between">
-                <div>
-                    <button
-                        className="pile-button"
+                <div className="margin-right-small">
+                    <Button
+                        positive
+                        className="pile-button no-margin"
                         disabled={cannotPlay}
                         onClick={() => playCard(cardToPlay)}>
                         Play
-                    </button>
+                    </Button>
                 </div>
 
-                <div>
-                    <button
-                        className="mulligan-button"
+                <div className="margin-right-small">
+                    <Button
+                        className="mulligan-button no-margin"
                         disabled={!canMulligan}
                         onClick={() => props.mulligan(props.index)}>
                         <FaUndo />
-                    </button>
+                    </Button>
                 </div>
 
                 <div>
-                    <button
-                        className="history-button"
+                    <Button
+                        className="history-button no-margin"
                         disabled={!props.ruleSet.canViewPileHistory}
                         onClick={() => setShowHistory(!showHistory)}>
                         <FaHistory />
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

@@ -161,6 +161,8 @@ function App() {
 
     let gameLink = "https://boardgamegeek.com/boardgame/173090/game"
 
+    // TODO: only show footer in The Game-specific components
+
     return (
         <div className="App">
             <header className="App-header">
