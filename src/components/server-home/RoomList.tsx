@@ -99,7 +99,7 @@ export function RoomList(props: RoomListProps) {
         <div>
             <div className="grid-equal-columns margin-bottom">
                 <div className="grid margin-right-small">
-                    <span className="text-align-left">
+                    <span className="rooms-header">
                         Rooms ({allRoomData.length})
                     </span>
                 </div>
