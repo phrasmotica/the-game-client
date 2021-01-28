@@ -5,7 +5,7 @@ import { GameData } from "the-game-lib"
 
 import { GameOptions } from "./GameOptions"
 
-import { ClientMode } from "../models/ClientMode"
+import { ClientMode } from "../../models/ClientMode"
 import { Button } from "semantic-ui-react"
 
 interface GameLobbyProps {

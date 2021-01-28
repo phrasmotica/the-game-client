@@ -5,7 +5,7 @@ import { Message, RoomData } from "game-server-lib"
 import { GameData } from "the-game-lib"
 
 import { GameBoard } from "./components/GameBoard"
-import { GameLobby } from "./components/GameLobby"
+import { GameLobby } from "./components/room-lobby/GameLobby"
 import { ServerBrowser } from "./components/server-browser/ServerBrowser"
 
 import { ServerHome } from "./components/server-home/ServerHome"

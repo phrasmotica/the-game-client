@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from "react"
 import { FaRedo } from "react-icons/fa"
 
 import { PlayerData } from "game-server-lib"
-
-import { PlayerCard } from "./PlayerCard"
 import { Button } from "semantic-ui-react"
 
-interface PlayerListProps {
+import { PlayerList } from "../players/PlayerList"
+
+interface ServerPlayerListProps {
     /**
      * The socket for server communication.
      */
@@ -16,17 +16,12 @@ interface PlayerListProps {
      * The player's name.
      */
     playerName: string
-
-    /**
-     * Whether to only display the players' names.
-     */
-    namesOnly: boolean
 }
 
-// TODO: move the player data into a component called ServerPlayerList, which then consumes this
-// component in order to display them
-
-export function PlayerList(props: PlayerListProps) {
+/**
+ * Renders the players on the server.
+ */
+export const ServerPlayerList = (props: ServerPlayerListProps) => {
     const [allPlayerData, setAllPlayerData] = useState<PlayerData[]>([])
 
     props.socket.on("allPlayersData", (newAllPlayerData: PlayerData[]) => {
@@ -34,17 +29,17 @@ export function PlayerList(props: PlayerListProps) {
     })
 
     /**
-     * Refreshes the player list.
+     * Refreshes the players.
      */
-    const refreshPlayerList = useCallback(() => {
+    const refreshPlayers = useCallback(() => {
         props.socket.emit("allPlayersData", props.playerName)
     }, [props.playerName, props.socket])
 
-    // effect for refreshing the room list after first render
+    // effect for refreshing after first render
     useEffect(() => {
-        refreshPlayerList()
+        refreshPlayers()
         return () => setAllPlayerData([])
-    }, [refreshPlayerList])
+    }, [refreshPlayers])
 
     return (
         <div>
@@ -60,7 +55,7 @@ export function PlayerList(props: PlayerListProps) {
                         <div>
                             <Button
                                 className="no-margin"
-                                onClick={refreshPlayerList}>
+                                onClick={refreshPlayers}>
                                 <FaRedo />
                             </Button>
                         </div>
@@ -68,26 +63,9 @@ export function PlayerList(props: PlayerListProps) {
                 </div>
             </div>
 
-            <div className="player-list scroll-vert">
-                <div>
-                    {allPlayerData.map((playerData, index) => {
-                        let className = ""
-                        if (index < allPlayerData.length - 1) {
-                            className += "margin-bottom-small"
-                        }
-
-                        return (
-                            <div
-                                key={playerData.name}
-                                className={className}>
-                                <PlayerCard
-                                    playerData={playerData}
-                                    nameOnly={props.namesOnly} />
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
+            <PlayerList
+                playersData={allPlayerData}
+                namesOnly={false} />
         </div>
     )
 }

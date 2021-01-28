@@ -1,7 +1,7 @@
 import React from "react"
 import { Button } from "semantic-ui-react"
 
-import { PlayerList } from "./PlayerList"
+import { ServerPlayerList } from "./ServerPlayerList"
 import { RoomList } from "./RoomList"
 
 interface ServerHomeProps {
@@ -41,10 +41,9 @@ export function ServerHome(props: ServerHomeProps) {
 
             <div className="flex-top">
                 <div className="margin-right-large">
-                    <PlayerList
+                    <ServerPlayerList
                         socket={props.socket}
-                        playerName={props.playerName}
-                        namesOnly={false} />
+                        playerName={props.playerName} />
                 </div>
 
                 <div>

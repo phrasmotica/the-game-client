@@ -3,7 +3,7 @@ import React from "react"
 import { RoomWith } from "game-server-lib"
 import { GameMode, RuleSet } from "the-game-lib"
 
-import { ClientMode } from "../models/ClientMode"
+import { ClientMode } from "../../models/ClientMode"
 import { Button, Input } from "semantic-ui-react"
 
 interface GameOptionsProps {
