@@ -8,14 +8,25 @@ interface PlayerCardProps {
      * The player data.
      */
     playerData: PlayerData
+
+    /**
+     * Whether to only display the player's name.
+     */
+    nameOnly: boolean
 }
 
 export function PlayerCard(props: PlayerCardProps) {
     let className = "player-card"
 
-    let lastLoginTime = props.playerData.lastLoginTime
-    let loginDuration = duration(moment().diff(lastLoginTime))
-    let loginDurationStr = loginDuration.humanize()
+    let text = props.playerData.name
+
+    if (!props.nameOnly) {
+        let lastLoginTime = props.playerData.lastLoginTime
+        let loginDuration = duration(moment().diff(lastLoginTime))
+        let loginDurationStr = loginDuration.humanize()
+
+        text += ` - online for ${loginDurationStr}`
+    }
 
     return (
         <div
@@ -24,7 +35,7 @@ export function PlayerCard(props: PlayerCardProps) {
             <div className="grid-equal-rows text-center-right">
                 <div className="grid">
                     <span className="truncate player-name">
-                        {props.playerData.name} - online for {loginDurationStr}
+                        {text}
                     </span>
                 </div>
             </div>

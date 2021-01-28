@@ -16,7 +16,15 @@ interface PlayerListProps {
      * The player's name.
      */
     playerName: string
+
+    /**
+     * Whether to only display the players' names.
+     */
+    namesOnly: boolean
 }
+
+// TODO: move the player data into a component called ServerPlayerList, which then consumes this
+// component in order to display them
 
 export function PlayerList(props: PlayerListProps) {
     const [allPlayerData, setAllPlayerData] = useState<PlayerData[]>([])
@@ -72,7 +80,9 @@ export function PlayerList(props: PlayerListProps) {
                             <div
                                 key={playerData.name}
                                 className={className}>
-                                <PlayerCard playerData={playerData} />
+                                <PlayerCard
+                                    playerData={playerData}
+                                    nameOnly={props.namesOnly} />
                             </div>
                         )
                     })}

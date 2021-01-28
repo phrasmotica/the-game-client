@@ -43,7 +43,8 @@ export function ServerHome(props: ServerHomeProps) {
                 <div className="margin-right-large">
                     <PlayerList
                         socket={props.socket}
-                        playerName={props.playerName} />
+                        playerName={props.playerName}
+                        namesOnly={false} />
                 </div>
 
                 <div>
