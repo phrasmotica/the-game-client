@@ -34,14 +34,18 @@ export function CardView(props: CardViewProps) {
                     && props.ruleSet.isOnFire()
                     && props.ruleSet.cardIsOnFire(card)
 
-    let className = cardIsOnFire ? "card-on-fire" : "card"
+    let className = "card"
+
+    if (cardIsOnFire) {
+        className += " on-fire"
+    }
 
     if (props.isSelected) {
-        className += " card-selected"
+        className += " selected"
     }
 
     if (props.isJustPlayed) {
-        className += "-just-played"
+        className += " just-played"
     }
 
     return (

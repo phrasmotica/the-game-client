@@ -191,7 +191,7 @@ export const PileView = (props: PileViewProps) => {
     let canMulligan = props.isWithinMulliganLimit && props.pile.canMulligan(props.playerName, props.turnCounter)
 
     return (
-        <div className="pile-set">
+        <div className="pile-container">
             <div className={pileClassName}>
                 <div className="start-text">
                     <span>{pile.start}</span>
@@ -201,7 +201,7 @@ export const PileView = (props: PileViewProps) => {
                     {directionElement}
                 </div>
 
-                <div>
+                <div className="top-container">
                     {topElement}
                 </div>
 

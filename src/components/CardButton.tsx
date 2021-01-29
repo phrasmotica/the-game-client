@@ -3,6 +3,8 @@ import { Button } from "semantic-ui-react"
 
 import { Card, RuleSet } from "the-game-lib"
 
+import { CardView } from "./CardView"
+
 interface CardButtonProps {
     /**
      * The rule set.
@@ -28,25 +30,16 @@ interface CardButtonProps {
 /**
  * Renders a card.
  */
-export function CardButton(props: CardButtonProps) {
-    let card = props.card
-
-    let cardIsOnFire = card !== undefined
-                    && props.ruleSet.isOnFire()
-                    && props.ruleSet.cardIsOnFire(card)
-
-    let className = "card-button"
-    if (cardIsOnFire) {
-        className += " on-fire"
-    }
-
+export const CardButton = (props: CardButtonProps) => {
     return (
-        <div className={className}>
+        <div className="card-button">
             <Button
                 className="no-margin"
-                color={props.isSelected ? "yellow" : undefined}
                 onClick={props.setCardToPlay}>
-                {card?.value ?? "-"}
+                <CardView
+                    card={props.card}
+                    ruleSet={props.ruleSet}
+                    isSelected={props.isSelected} />
             </Button>
         </div>
     )

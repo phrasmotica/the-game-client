@@ -54,7 +54,7 @@ export const HandView = (props: HandProps) => {
             <div className="flex-center">
                 {props.hand.cards.map((c, i) => {
                     return (
-                        <div key={i} className="card-set">
+                        <div key={i} className="card-button-container">
                             <CardButton
                                 ruleSet={props.ruleSet}
                                 card={c}
