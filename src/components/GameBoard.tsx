@@ -67,7 +67,12 @@ export const GameBoard = (props: GameBoardProps) => {
      * Sets the card to play.
      */
     const setCardToPlay = (card: Card | undefined) => {
-        props.socket.emit("setCardToPlay", new RoomWith(props.roomData.name, card))
+        let newCardToPlay = card
+        if (card?.value === gameData.cardToPlay?.value) {
+            newCardToPlay = undefined
+        }
+
+        props.socket.emit("setCardToPlay", new RoomWith(props.roomData.name, newCardToPlay))
     }
 
     /**
