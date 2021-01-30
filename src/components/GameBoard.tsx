@@ -11,6 +11,9 @@ import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
 import { Button } from "semantic-ui-react"
+import { CardView } from "./CardView"
+import { isNullishCoalesce } from "typescript"
+import { FaArrowRight } from "react-icons/fa"
 
 interface GameBoardProps {
     /**
@@ -35,6 +38,7 @@ interface GameBoardProps {
 }
 
 export const GameBoard = (props: GameBoardProps) => {
+    const [pileHistoryIndex, setPileHistoryIndex] = useState<number | undefined>()
     const [showPileGaps, setShowPileGaps] = useState(false)
     const [autoSortHand, setAutoSortHand] = useState(false)
 
@@ -212,7 +216,9 @@ export const GameBoard = (props: GameBoardProps) => {
                     showPileGaps={showPileGaps}
                     setCardToPlay={card => setCardToPlay(card)}
                     playCard={card => playCard(card, i)}
-                    mulligan={pileIndex => mulligan(pileIndex)} />
+                    mulligan={pileIndex => mulligan(pileIndex)}
+                    showingHistory={pileHistoryIndex === i}
+                    setPileHistoryIndex={pileIndex => setPileHistoryIndex(pileIndex)} />
             )
         }
 
@@ -234,11 +240,59 @@ export const GameBoard = (props: GameBoardProps) => {
                     showPileGaps={showPileGaps}
                     setCardToPlay={card => setCardToPlay(card)}
                     playCard={card => playCard(card, index)}
-                    mulligan={pileIndex => mulligan(pileIndex)} />
+                    mulligan={pileIndex => mulligan(pileIndex)}
+                    showingHistory={pileHistoryIndex === index}
+                    setPileHistoryIndex={pileIndex => setPileHistoryIndex(pileIndex)} />
             )
         }
 
         return piles
+    }
+
+    /**
+     * Renders the pile history.
+     */
+    const renderPileHistory = (gameData: GameData) => {
+        let cards: (Card | undefined)[] = [undefined]
+
+        if (pileHistoryIndex !== undefined) {
+            let pile = gameData.piles[pileHistoryIndex]
+
+            if (pile.cards.length > 0) {
+                cards = pile.cards.map(c => c[0])
+            }
+        }
+
+        return (
+            <div className="history-container">
+                <div className="history-cards">
+                    {cards.map((c, i) => {
+                        let mainClassName = "history-card-container"
+                        let className = ""
+                        let arrow = null
+                        if (i < cards.length - 1) {
+                            mainClassName += " margin-right-small"
+                            className = "margin-right-small"
+                            arrow = (
+                                <FaArrowRight />
+                            )
+                        }
+
+                        return (
+                            <div className={mainClassName}>
+                                <div className={className}>
+                                    <CardView
+                                        ruleSet={gameData.ruleSet}
+                                        card={c} />
+                                </div>
+
+                                {arrow}
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+        )
     }
 
     /**
@@ -485,8 +539,12 @@ export const GameBoard = (props: GameBoardProps) => {
                 {renderMulliganCount()}
             </div>
 
-            <div className="flex-center margin-bottom">
+            <div className="piles-container margin-bottom">
                 {renderPiles(gameData)}
+            </div>
+
+            <div className="flex-center margin-bottom">
+                {renderPileHistory(gameData)}
             </div>
 
             <div className="grid-equal-columns">

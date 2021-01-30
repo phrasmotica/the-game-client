@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { FaArrowDown, FaArrowUp, FaHistory, FaUndo } from "react-icons/fa"
-import { Button } from "semantic-ui-react"
+import { Button, Progress } from "semantic-ui-react"
 
 import { Card, Direction, RuleSet, Pile, PileState } from "the-game-lib"
 
@@ -71,7 +71,19 @@ interface PileViewProps {
      * Takes a mulligan on the pile with the given index.
      */
     mulligan: (pileIndex: number) => void
+
+    /**
+     * Whether the history of this pile is being shown.
+     */
+    showingHistory: boolean
+
+    /**
+     * Sets the game board to show the history of the pile with the given index.
+     */
+    setPileHistoryIndex: (pileIndex: number | undefined) => void
 }
+
+type ProgressColour = "blue" | "yellow" | "red"
 
 /**
  * Renders a pile.
@@ -154,20 +166,6 @@ export const PileView = (props: PileViewProps) => {
         )
     }
 
-    const createHistoryElement = () => {
-        if (!showHistory) {
-            return null
-        }
-
-        return (
-            <div className="history-container">
-                <span className="history-text">
-                    {props.pile.cards.map(c => c[0].value).join(", ")}
-                </span>
-            </div>
-        )
-    }
-
     /**
      * Plays the given card on this pile.
      */
@@ -186,15 +184,40 @@ export const PileView = (props: PileViewProps) => {
         return props.pile.canBePlayed(card, props.ruleSet)
     }
 
+    /**
+     * Sets the pile history index in the parent component.
+     */
+    const setPileHistoryIndex = () => {
+        props.setPileHistoryIndex(props.showingHistory ? undefined : props.index)
+    }
+
     let cardToPlay = props.cardToPlay
     let cannotPlay = props.isLost || !props.isMyTurn || cardToPlay === undefined || !canPlayCard(cardToPlay)
     let canMulligan = props.isWithinMulliganLimit && props.pile.canMulligan(props.playerName, props.turnCounter)
+
+    let progress = Math.abs(topCard.value - props.pile.start) / (props.ruleSet.topLimit - 2)
+    let colour: ProgressColour = "blue"
+    if (progress > 0.85) {
+        colour = "red"
+    }
+    else if (progress > 0.5) {
+        colour = "yellow"
+    }
+
+    let progressBarElement = (
+        <Progress
+            color={colour}
+            attached="bottom"
+            percent={100 * progress} />
+    )
 
     return (
         <div className="pile-container">
             <div className={pileClassName}>
                 <div className="start-text">
-                    <span>{pile.start}</span>
+                    <span>
+                        {pile.start}
+                    </span>
                 </div>
 
                 <div>
@@ -209,11 +232,11 @@ export const PileView = (props: PileViewProps) => {
                     {createHintElement()}
                 </div>
 
-                {createHistoryElement()}
+                {progressBarElement}
             </div>
 
-            <div className="flex-center space-between">
-                <div className="margin-right-small">
+            <div className="pile-buttons-container">
+                <div className="flex margin-right-small">
                     <Button
                         positive
                         className="pile-button no-margin"
@@ -223,22 +246,25 @@ export const PileView = (props: PileViewProps) => {
                     </Button>
                 </div>
 
-                <div className="margin-right-small">
-                    <Button
-                        className="mulligan-button no-margin"
-                        disabled={!canMulligan}
-                        onClick={() => props.mulligan(props.index)}>
-                        <FaUndo />
-                    </Button>
-                </div>
-
                 <div>
-                    <Button
-                        className="history-button no-margin"
-                        disabled={!props.ruleSet.canViewPileHistory}
-                        onClick={() => setShowHistory(!showHistory)}>
-                        <FaHistory />
-                    </Button>
+                    <div className="margin-bottom-small">
+                        <Button
+                            className="mulligan-button no-margin"
+                            disabled={!canMulligan}
+                            onClick={() => props.mulligan(props.index)}>
+                            <FaUndo />
+                        </Button>
+                    </div>
+
+                    <div>
+                        <Button
+                            primary={props.showingHistory}
+                            className="history-button no-margin"
+                            disabled={!props.ruleSet.canViewPileHistory}
+                            onClick={setPileHistoryIndex}>
+                            <FaHistory />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
