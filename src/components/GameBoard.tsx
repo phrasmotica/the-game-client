@@ -1,8 +1,11 @@
 import React, { useState } from "react"
+import { FaArrowRight } from "react-icons/fa"
+import { Button } from "semantic-ui-react"
 
 import { RoomData, RoomWith } from "game-server-lib"
 import { Card, GameData } from "the-game-lib"
 
+import { CardView } from "./CardView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
 import { PlayersView } from "./PlayersView"
@@ -10,10 +13,6 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
-import { Button } from "semantic-ui-react"
-import { CardView } from "./CardView"
-import { isNullishCoalesce } from "typescript"
-import { FaArrowRight } from "react-icons/fa"
 
 interface GameBoardProps {
     /**

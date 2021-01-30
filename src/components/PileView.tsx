@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { FaArrowDown, FaArrowUp, FaHistory, FaUndo } from "react-icons/fa"
 import { Button, Progress } from "semantic-ui-react"
 
@@ -89,8 +89,6 @@ type ProgressColour = "blue" | "yellow" | "red"
  * Renders a pile.
  */
 export const PileView = (props: PileViewProps) => {
-    const [showHistory, setShowHistory] = useState(false)
-
     let pile = props.pile
 
     let directionElement = <FaArrowUp />
