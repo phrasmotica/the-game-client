@@ -252,6 +252,10 @@ export const GameBoard = (props: GameBoardProps) => {
      * Renders the pile history.
      */
     const renderPileHistory = (gameData: GameData) => {
+        if (!gameData.ruleSet.canViewPileHistory) {
+            return null
+        }
+
         let cards: (Card | undefined)[] = [undefined]
 
         if (pileHistoryIndex !== undefined) {
