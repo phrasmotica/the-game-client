@@ -321,8 +321,7 @@ export const GameBoard = (props: GameBoardProps) => {
                             className="player-option-checkbox"
                             label="Show pile gaps"
                             lab
-                            onChange={() => setShowPileGaps(!showPileGaps)}
-                            checked={showPileGaps} />
+                            onChange={(_, data) => setShowPileGaps(data.checked ?? false)} />
                     </span>
                 </div>
 
@@ -331,8 +330,7 @@ export const GameBoard = (props: GameBoardProps) => {
                         <Checkbox
                             className="player-option-checkbox"
                             label="Auto-sort hand"
-                            onChange={() => setAutoSortHand(!autoSortHand)}
-                            checked={autoSortHand} />
+                            onChange={(_, data) => setAutoSortHand(data.checked ?? false)} />
                     </span>
                 </div>
             </div>
