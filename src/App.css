@@ -511,6 +511,10 @@
   padding: unset;
 }
 
+.card-button .card:hover {
+  background-color: #ffeeba;
+}
+
 .card-button > .ui.button > .selected {
   color: cornsilk;
   background-color: #fbbd08;
