@@ -399,10 +399,6 @@
   justify-content: space-between;
 }
 
-.half-width {
-  width: 50%
-}
-
 .game-info-text {
   text-align: left;
 }
@@ -484,10 +480,18 @@
 }
 
 .rule-summary {
-  text-align: left;
+  border-radius: calc(2rem / 7);
+  background-color: seagreen;
+  padding: 5px;
 }
 
-.rule-summary span {
+.rule-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rule-container span {
   font-size: 14pt;
   line-height: initial;
 }

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "the-game-lib"
+import { GameMode, RuleSet } from "the-game-lib"
 
 interface RuleSummaryProps {
     /**
@@ -15,40 +15,64 @@ interface RuleSummaryProps {
 export function RuleSummary(props: RuleSummaryProps) {
     let ruleSet = props.ruleSet
 
-    /**
-     * Renders the given text in an span.
-     */
-    const renderSpan = (text: string) => <div><span>{text}</span></div>
+    const renderRule = (text: string, value?: number | string | GameMode) => {
+        let valueElement = null
+        if (value !== undefined) {
+            valueElement = (
+                <div>
+                    <span>{value}</span>
+                </div>
+            )
+        }
 
-    let cardsPerTurnElement = (
-        <div>
-            <span>
-                Cards per turn: {ruleSet.cardsPerTurn}&nbsp;
-                <abbr title="during endgame">
-                    ({ruleSet.cardsPerTurnInEndgame})
-                </abbr>
-            </span>
-        </div>
-    )
+        return (
+            <div className="rule-container">
+                <div>
+                    <span>{text}</span>
+                </div>
 
-    let canViewPileHistoryElement = (
-        <div>
-            <span>
-                {ruleSet.canViewPileHistory ? "Can" : "Cannot"} view pile history
-            </span>
-        </div>
-    )
+                {valueElement}
+            </div>
+        )
+    }
 
     return (
         <div className="rule-summary">
-            {renderSpan(`Game mode: ${ruleSet.gameMode}`)}
-            {renderSpan(`Pairs of piles: ${ruleSet.pairsOfPiles}`)}
-            {renderSpan(`Jump back size: ${ruleSet.jumpBackSize}`)}
-            {renderSpan(`Top limit: ${ruleSet.topLimit}`)}
-            {renderSpan(`Hand size: ${ruleSet.handSize}`)}
-            {cardsPerTurnElement}
-            {renderSpan(`Mulligan limit: ${ruleSet.mulliganLimit}`)}
-            {canViewPileHistoryElement}
+            <div className="margin-bottom-small">
+                {renderRule("Game mode", ruleSet.gameMode)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Pairs of piles", ruleSet.pairsOfPiles)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Jump back size", ruleSet.jumpBackSize)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Top limit", ruleSet.topLimit)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Hand size", ruleSet.handSize)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Cards per turn", ruleSet.cardsPerTurn)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Cards per turn in endgame", ruleSet.cardsPerTurnInEndgame)}
+            </div>
+
+            <div className="margin-bottom-small">
+                {renderRule("Mulligan limit", ruleSet.mulliganLimit)}
+            </div>
+
+            <div>
+                {renderRule(`Can view pile history`, ruleSet.canViewPileHistory ? "Yes" : "No")}
+            </div>
         </div>
     )
 }

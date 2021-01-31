@@ -8,7 +8,6 @@ import { Card, GameData } from "the-game-lib"
 import { CardView } from "./CardView"
 import { HandView } from "./HandView"
 import { PileView } from "./PileView"
-import { PlayersView } from "./PlayersView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
@@ -554,13 +553,7 @@ export const GameBoard = (props: GameBoardProps) => {
 
             <div>
                 <div className="margin-bottom">
-                    <div className="margin-bottom-small">
-                        <span className="players-header">
-                            Players ({playersData.length})
-                        </span>
-                    </div>
-
-                    {/* TODO: show the players' hand sizes and who's turn it is */}
+                    {/* TODO: show the players' hand sizes and whose turn it is */}
                     <PlayerList
                         playersData={playersData}
                         playerName={props.playerName}
