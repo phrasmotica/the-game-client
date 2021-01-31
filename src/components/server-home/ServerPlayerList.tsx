@@ -65,6 +65,7 @@ export const ServerPlayerList = (props: ServerPlayerListProps) => {
 
             <PlayerList
                 playersData={allPlayerData}
+                playerName={props.playerName}
                 namesOnly={false} />
         </div>
     )

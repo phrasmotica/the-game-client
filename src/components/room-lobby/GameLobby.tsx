@@ -1,12 +1,13 @@
 import React from "react"
 
-import { RoomData, RoomWith } from "game-server-lib"
+import { PlayerData, RoomData, RoomWith } from "game-server-lib"
 import { GameData } from "the-game-lib"
 
 import { GameOptions } from "./GameOptions"
 
 import { ClientMode } from "../../models/ClientMode"
 import { Button } from "semantic-ui-react"
+import { PlayerList } from "../players/PlayerList"
 
 interface GameLobbyProps {
     /**
@@ -50,35 +51,56 @@ export function GameLobby(props: GameLobbyProps) {
         props.socket.emit("leaveRoom", new RoomWith(props.roomData.name, props.playerName))
     }
 
+    let playersData = props.roomData.players.map(p => ({ name: p } as PlayerData))
+    let spectatorsData = props.roomData.spectators.map(p => ({ name: p } as PlayerData))
+
     return (
         <div className="game-menu">
             <div className="flex-center margin-bottom">
-                <div>
-                    <div>
-                        <span className="room-name-header">
-                            Room ID: {props.roomData.name ?? "-"}
-                        </span>
-                    </div>
-
-                    <div>
-                        <span>
-                            Players: {props.roomData.players.join(", ")}
-                        </span>
-                    </div>
-
-                    <div>
-                        <span>
-                            Spectators: {props.roomData.spectators.join(", ")}
-                        </span>
-                    </div>
-                </div>
+                <span className="room-name-header">
+                    Room ID: {props.roomData.name ?? "-"}
+                </span>
             </div>
 
-            <GameOptions
-                socket={props.socket}
-                clientMode={props.clientMode}
-                roomName={props.roomData.name}
-                ruleSet={props.roomData.gameData.ruleSet} />
+            <div className="flex">
+                <div className="margin-right">
+                    <div className="margin-bottom">
+                        <div className="margin-bottom-small">
+                            <span className="players-header">
+                                Players ({playersData.length})
+                            </span>
+                        </div>
+
+                        <PlayerList
+                            playersData={playersData}
+                            playerName={props.playerName}
+                            namesOnly={true}
+                            placeholderCount={5} />
+                    </div>
+
+                    <div>
+                        <div className="margin-bottom-small">
+                            <span className="players-header">
+                                Spectators ({spectatorsData.length})
+                            </span>
+                        </div>
+
+                        <PlayerList
+                            playersData={spectatorsData}
+                            playerName={props.playerName}
+                            namesOnly={true}
+                            placeholderCount={5} />
+                    </div>
+                </div>
+
+                <div>
+                    <GameOptions
+                        socket={props.socket}
+                        clientMode={props.clientMode}
+                        roomName={props.roomData.name}
+                        ruleSet={props.roomData.gameData.ruleSet} />
+                </div>
+            </div>
 
             <div className="flex-center">
                 <div className="margin-right">

@@ -118,6 +118,7 @@
 .players-header {
   font-size: 18pt;
   text-align: left;
+  line-height: initial;
 }
 
 .player-list {
@@ -131,10 +132,18 @@
 .player-card {
   display: flex;
   justify-content: flex-end;
-  background-color: cornflowerblue;
+  background-color: deepskyblue;
   padding: 5px;
   border-radius: calc(2rem / 7);
   min-width: 300px;
+}
+
+.player-card.placeholder {
+  background-color: rgb(110, 131, 170);
+}
+
+.player-card.you {
+  background-color: blue;
 }
 
 .player-name {
@@ -144,6 +153,7 @@
 .rooms-header {
   font-size: 18pt;
   text-align: left;
+  line-height: initial;
 }
 
 .room-list {
@@ -216,7 +226,7 @@
 }
 
 .room-name-header {
-  font-size: 14pt;
+  font-size: 20pt;
 }
 
 .option-container {
@@ -230,7 +240,7 @@
 .rules-header {
   display: flex;
   align-items: center;
-  font-size: 20pt;
+  font-size: 18pt;
 }
 
 .option-label {

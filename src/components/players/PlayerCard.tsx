@@ -10,13 +10,29 @@ interface PlayerCardProps {
     playerData: PlayerData
 
     /**
+     * The name of the current player.
+     */
+    playerName: string
+
+    /**
      * Whether to only display the player's name.
      */
     nameOnly: boolean
+
+    /**
+     * Whether to display the player as a placeholder.
+     */
+    isPlaceholder: boolean
 }
 
 export function PlayerCard(props: PlayerCardProps) {
     let className = "player-card"
+    if (props.isPlaceholder) {
+        className += " placeholder"
+    }
+    else if (props.playerName === props.playerData.name) {
+        className += " you"
+    }
 
     let text = props.playerData.name
 
