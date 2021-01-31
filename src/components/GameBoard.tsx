@@ -533,18 +533,14 @@ export const GameBoard = (props: GameBoardProps) => {
     return (
         <div className="game-board">
             <div className="margin-right">
-                <div className="piles-container margin-bottom">
-                    {renderPiles(gameData)}
-                </div>
+                <div className="margin-bottom">
+                    <div className="piles-container margin-bottom">
+                        {renderPiles(gameData)}
+                    </div>
 
-                <div className="flex-center margin-bottom">
-                    {renderPileHistory(gameData)}
-                </div>
-
-                <div className="grid-equal-columns">
-
-                    {/* TODO: move end message to sidebar (or other way of showing it?) */}
-                    {renderEndMessage(gameData)}
+                    <div className="flex-center">
+                        {renderPileHistory(gameData)}
+                    </div>
                 </div>
 
                 {renderHandElement(gameData)}
@@ -573,6 +569,10 @@ export const GameBoard = (props: GameBoardProps) => {
 
                 <div className="margin-bottom">
                     {renderStartingPlayerVote(gameData)}
+                </div>
+
+                <div className="margin-bottom">
+                    {renderEndMessage(gameData)}
                 </div>
 
                 <div className="margin-bottom">
