@@ -253,13 +253,17 @@
   width: 80px;
 }
 
+.game-board {
+  display: flex;
+}
+
 .piles-container {
   display: flex;
   justify-content: center;
 }
 
 .pile-container {
-  margin: 5px;
+  margin: 0px 5px;
 }
 
 .pile {
@@ -400,7 +404,21 @@
 }
 
 .game-info-text {
-  font-size: calc(10px + 1vmin);
+  text-align: left;
+}
+
+.game-info-text > span {
+  font-size: 14pt;
+  line-height: initial;
+}
+
+.player-options-container {
+  text-align: left;
+}
+
+.ui.checkbox.player-option-checkbox > label {
+  font-size: 14pt;
+  color: white;
 }
 
 .gap-text {
@@ -467,7 +485,11 @@
 
 .rule-summary {
   text-align: left;
-  font-size: 10pt;
+}
+
+.rule-summary span {
+  font-size: 14pt;
+  line-height: initial;
 }
 
 .checkbox-label-small {

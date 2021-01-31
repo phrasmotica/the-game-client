@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { FaArrowRight } from "react-icons/fa"
-import { Button } from "semantic-ui-react"
+import { Button, Checkbox } from "semantic-ui-react"
 
-import { RoomData, RoomWith } from "game-server-lib"
+import { PlayerData, RoomData, RoomWith } from "game-server-lib"
 import { Card, GameData } from "the-game-lib"
 
 import { CardView } from "./CardView"
@@ -13,6 +13,7 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
+import { PlayerList } from "./players/PlayerList"
 
 interface GameBoardProps {
     /**
@@ -162,9 +163,7 @@ export const GameBoard = (props: GameBoardProps) => {
     const renderDeckInfo = (gameData: GameData) => {
         let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
         return (
-            <div className="half-width">
-                <span className="game-info-text">{deckInfo}</span>
-            </div>
+            <span>{deckInfo}</span>
         )
     }
 
@@ -175,9 +174,7 @@ export const GameBoard = (props: GameBoardProps) => {
         let handInfo = `Cards left to play this turn: ${getCardsLeftToPlayThisTurn()}`
 
         return (
-            <div className="half-width">
-                <span className="game-info-text">{handInfo}</span>
-            </div>
+            <span>{handInfo}</span>
         )
     }
 
@@ -188,9 +185,7 @@ export const GameBoard = (props: GameBoardProps) => {
         let mulliganInfo = `Mulligans: ${getMulligans()}`
 
         return (
-            <div className="half-width">
-                <span className="game-info-text">{mulliganInfo}</span>
-            </div>
+            <span>{mulliganInfo}</span>
         )
     }
 
@@ -304,15 +299,6 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     /**
-     * Renders the players view.
-     */
-    const renderPlayersView = (gameData: GameData) => (
-        <PlayersView
-            gameData={gameData}
-            player={props.playerName} />
-    )
-
-    /**
      * Renders the rule summary.
      */
     const renderRuleSummary = (gameData: GameData) => (
@@ -329,26 +315,25 @@ export const GameBoard = (props: GameBoardProps) => {
         }
 
         return (
-            <div>
+            <div className="player-options-container">
                 <div>
                     <span title="Show gap size when playing a card">
-                        <label className="checkbox-label-small">
-                            Show pile gaps
-                            <input
-                                type="checkbox"
-                                onChange={e => setShowPileGaps(e.target.checked)} />
-                        </label>
+                        <Checkbox
+                            className="player-option-checkbox"
+                            label="Show pile gaps"
+                            lab
+                            onChange={() => setShowPileGaps(!showPileGaps)}
+                            checked={showPileGaps} />
                     </span>
                 </div>
 
                 <div>
                     <span title="Sort hand automatically when drawing cards">
-                        <label className="checkbox-label-small">
-                            Auto-sort hand
-                            <input
-                                type="checkbox"
-                                onChange={e => setAutoSortHand(e.target.checked)} />
-                        </label>
+                        <Checkbox
+                            className="player-option-checkbox"
+                            label="Auto-sort hand"
+                            onChange={() => setAutoSortHand(!autoSortHand)}
+                            checked={autoSortHand} />
                     </span>
                 </div>
             </div>
@@ -538,45 +523,72 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     let gameData = props.roomData.gameData
+    let playersData = gameData.players.map(p => ({ name: p } as PlayerData))
 
     return (
         <div className="game-board">
-            <div className="flex-center margin-bottom">
-                {renderDeckInfo(gameData)}
-                {renderHandInfo()}
-                {renderMulliganCount()}
+            <div className="margin-right">
+                <div className="piles-container margin-bottom">
+                    {renderPiles(gameData)}
+                </div>
+
+                <div className="flex-center margin-bottom">
+                    {renderPileHistory(gameData)}
+                </div>
+
+                <div className="grid-equal-columns">
+                    {/* TODO: move starting player vote to sidebar */}
+                    {renderStartingPlayerVote(gameData)}
+
+                    {/* TODO: move end message to sidebar (or other way of showing it?) */}
+                    {renderEndMessage(gameData)}
+                </div>
+
+                {renderHandElement(gameData)}
+
+                {renderActionButtons(gameData)}
+
+                <div className="flex-center">
+                    {renderLeaveButton()}
+                </div>
             </div>
 
-            <div className="piles-container margin-bottom">
-                {renderPiles(gameData)}
-            </div>
+            <div>
+                <div className="margin-bottom">
+                    <div className="margin-bottom-small">
+                        <span className="players-header">
+                            Players ({playersData.length})
+                        </span>
+                    </div>
 
-            <div className="flex-center margin-bottom">
-                {renderPileHistory(gameData)}
-            </div>
+                    {/* TODO: show the players' hand sizes and who's turn it is */}
+                    <PlayerList
+                        playersData={playersData}
+                        playerName={props.playerName}
+                        namesOnly={true} />
+                </div>
 
-            <div className="grid-equal-columns">
-                {renderPlayersView(gameData)}
-                {renderStartingPlayerVote(gameData)}
-                {renderEndMessage(gameData)}
-            </div>
-
-            <div className="flex-center margin-bottom">
-                <div className="margin-right">
+                <div className="margin-bottom">
                     {renderRuleSummary(gameData)}
                 </div>
 
-                <div>
+                <div className="margin-bottom">
+                    <div className="game-info-text">
+                        {renderDeckInfo(gameData)}
+                    </div>
+
+                    <div className="game-info-text">
+                        {renderHandInfo()}
+                    </div>
+
+                    <div className="game-info-text">
+                        {renderMulliganCount()}
+                    </div>
+                </div>
+
+                <div className="margin-bottom">
                     {renderPlayerOptions()}
                 </div>
-            </div>
-
-            {renderHandElement(gameData)}
-
-            {renderActionButtons(gameData)}
-
-            <div className="flex-center">
-                {renderLeaveButton()}
             </div>
         </div>
     )

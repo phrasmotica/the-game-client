@@ -1,6 +1,6 @@
 import React from "react"
 
-import { RuleSet } from "the-game-lib/dist/game/RuleSet"
+import { RuleSet } from "the-game-lib"
 
 interface RuleSummaryProps {
     /**
@@ -31,20 +31,24 @@ export function RuleSummary(props: RuleSummaryProps) {
         </div>
     )
 
-    return (
-        <div className="rule-summary flex-center">
-            <div className="margin-right">
-                {renderSpan(`Game mode: ${ruleSet.gameMode}`)}
-                {renderSpan(`Mulligan limit: ${ruleSet.mulliganLimit}`)}
-                {renderSpan(`Pairs of piles: ${ruleSet.pairsOfPiles}`)}
-                {renderSpan(`Jump back size: ${ruleSet.jumpBackSize}`)}
-            </div>
+    let canViewPileHistoryElement = (
+        <div>
+            <span>
+                {ruleSet.canViewPileHistory ? "Can" : "Cannot"} view pile history
+            </span>
+        </div>
+    )
 
-            <div>
-                {renderSpan(`Top limit: ${ruleSet.topLimit}`)}
-                {renderSpan(`Hand size: ${ruleSet.handSize}`)}
-                {cardsPerTurnElement}
-            </div>
+    return (
+        <div className="rule-summary">
+            {renderSpan(`Game mode: ${ruleSet.gameMode}`)}
+            {renderSpan(`Pairs of piles: ${ruleSet.pairsOfPiles}`)}
+            {renderSpan(`Jump back size: ${ruleSet.jumpBackSize}`)}
+            {renderSpan(`Top limit: ${ruleSet.topLimit}`)}
+            {renderSpan(`Hand size: ${ruleSet.handSize}`)}
+            {cardsPerTurnElement}
+            {renderSpan(`Mulligan limit: ${ruleSet.mulliganLimit}`)}
+            {canViewPileHistoryElement}
         </div>
     )
 }
