@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import { RoomWith } from "the-game-lib/dist/models/RoomWith"
+import { PlayerData, RoomWith } from "game-server-lib"
 
 export interface StartingPlayerSelectorProps {
     /**
@@ -14,14 +14,14 @@ export interface StartingPlayerSelectorProps {
     roomName: string
 
     /**
+     * The players to select from.
+     */
+    playersData: PlayerData[]
+
+    /**
      * The player name.
      */
     playerName: string
-
-    /**
-     * The players to select from.
-     */
-    players: string[]
 
     /**
      * Whether the player has voted for a starting player.
@@ -39,7 +39,7 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
      * Adds the given player's starting player vote in the given room.
      */
     const addVoteForStartingPlayer = () => {
-        let startingPlayer = props.players[selectedPlayerIndex]
+        let startingPlayer = props.playersData[selectedPlayerIndex].name
         let data: [string, string] = [props.playerName, startingPlayer]
         let req = new RoomWith(props.roomName, data)
         props.socket.emit("addVoteForStartingPlayer", req)
@@ -66,14 +66,14 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
                     <select
                         disabled={props.hasVoted}
                         onChange={e => setSelectedPlayerIndex(e.target.selectedIndex)}>
-                        {props.players.map(p => {
-                            let text = p
-                            if (p === props.playerName) {
+                        {props.playersData.map((p, i) => {
+                            let text = p.name
+                            if (p.name === props.playerName) {
                                 text += " (you)"
                             }
 
                             return (
-                                <option key={p}>{text}</option>
+                                <option key={i}>{text}</option>
                             )
                         })}
                     </select>

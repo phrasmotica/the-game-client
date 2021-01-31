@@ -344,26 +344,31 @@ export const GameBoard = (props: GameBoardProps) => {
      * Renders the starting player vote.
      */
     const renderStartingPlayerVote = (gameData: GameData) => {
-        if (gameData.players.length > 1) {
-            if (isPlayerClient()) {
-                return (
-                    <StartingPlayerSelector
-                        socket={props.socket}
-                        roomName={props.roomData.name}
-                        playerName={props.playerName}
-                        players={gameData.players}
-                        hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
-                )
-            }
+        if (gameData.isInProgress()) {
+            return null
+        }
 
+        let playersData = gameData.players.map(p => ({ name: p } as PlayerData))
+        if (playersData.length <= 0) {
+            return null
+        }
+
+        if (isPlayerClient()) {
             return (
-                <span>
-                    Starting player vote in progress...
-                </span>
+                <StartingPlayerSelector
+                    socket={props.socket}
+                    roomName={props.roomData.name}
+                    playersData={playersData}
+                    playerName={props.playerName}
+                    hasVoted={gameData.startingPlayerVote.hasVoted(props.playerName)} />
             )
         }
 
-        return null
+        return (
+            <span>
+                Starting player vote in progress...
+            </span>
+        )
     }
 
     /**
@@ -537,8 +542,6 @@ export const GameBoard = (props: GameBoardProps) => {
                 </div>
 
                 <div className="grid-equal-columns">
-                    {/* TODO: move starting player vote to sidebar */}
-                    {renderStartingPlayerVote(gameData)}
 
                     {/* TODO: move end message to sidebar (or other way of showing it?) */}
                     {renderEndMessage(gameData)}
@@ -566,6 +569,10 @@ export const GameBoard = (props: GameBoardProps) => {
                         playersData={playersData}
                         playerName={props.playerName}
                         namesOnly={true} />
+                </div>
+
+                <div className="margin-bottom">
+                    {renderStartingPlayerVote(gameData)}
                 </div>
 
                 <div className="margin-bottom">
