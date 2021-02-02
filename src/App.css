@@ -139,7 +139,6 @@
   background-color: deepskyblue;
   padding: 5px;
   border-radius: calc(2rem / 7);
-  min-width: 300px;
 }
 
 .player-card.placeholder {
@@ -259,6 +258,14 @@
 
 .game-board {
   display: flex;
+}
+
+.main-board {
+  width: 600px;
+}
+
+.sidebar {
+  width: 300px;
 }
 
 .piles-container {
@@ -412,13 +419,10 @@
   line-height: initial;
 }
 
-.player-options-container {
-  text-align: left;
-}
-
 .ui.checkbox.player-option-checkbox > label {
   font-size: 14pt;
   color: white;
+  padding-left: 1.3em;
 }
 
 .gap-text {
@@ -502,6 +506,23 @@
 .rule-container span {
   font-size: 14pt;
   line-height: initial;
+}
+
+.turn-summary-panel {
+  border-radius: calc(2rem / 7);
+  background-color: limegreen;
+  padding: 5px;
+}
+
+.player-options-panel {
+  text-align: left;
+  border-radius: calc(2rem / 7);
+  background-color: lightseagreen;
+  padding: 5px;
+}
+
+.player-options-panel label {
+  /* line-height: initial; */
 }
 
 .checkbox-label-small {

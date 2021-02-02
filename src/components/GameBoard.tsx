@@ -328,6 +328,27 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     /**
+     * Renders the turn summary.
+     */
+    const renderTurnSummary = (gameData: GameData) => {
+        return (
+            <div className="turn-summary-panel">
+                <div className="game-info-text">
+                    {renderDeckInfo(gameData)}
+                </div>
+
+                <div className="game-info-text">
+                    {renderHandInfo()}
+                </div>
+
+                <div className="game-info-text">
+                    {renderMulliganCount()}
+                </div>
+            </div>
+        )
+    }
+
+    /**
      * Renders the player options.
      */
     const renderPlayerOptions = () => {
@@ -336,7 +357,7 @@ export const GameBoard = (props: GameBoardProps) => {
         }
 
         return (
-            <div className="player-options-container">
+            <div className="player-options-panel">
                 <div>
                     <span title="Show gap size when playing a card">
                         <Checkbox
@@ -551,7 +572,7 @@ export const GameBoard = (props: GameBoardProps) => {
 
     return (
         <div className="game-board">
-            <div className="margin-right">
+            <div className="main-board margin-right">
                 <div className="margin-bottom">
                     <div className="piles-container margin-bottom">
                         {renderPiles(gameData)}
@@ -571,8 +592,8 @@ export const GameBoard = (props: GameBoardProps) => {
                 </div>
             </div>
 
-            <div>
-                <div className="margin-bottom">
+            <div className="sidebar">
+                <div className="margin-bottom-small">
                     {/* TODO: show the players' hand sizes and whose turn it is */}
                     <PlayerList
                         playersData={playersData}
@@ -580,33 +601,23 @@ export const GameBoard = (props: GameBoardProps) => {
                         namesOnly={true} />
                 </div>
 
-                <div className="margin-bottom">
+                <div className="margin-bottom-small">
                     {renderStartingPlayerVote(gameData)}
                 </div>
 
-                <div className="margin-bottom">
+                <div className="margin-bottom-small">
                     {renderEndMessage(gameData)}
                 </div>
 
-                <div className="margin-bottom">
+                <div className="margin-bottom-small">
                     {renderRuleSummary(gameData)}
                 </div>
 
-                <div className="margin-bottom">
-                    <div className="game-info-text">
-                        {renderDeckInfo(gameData)}
-                    </div>
-
-                    <div className="game-info-text">
-                        {renderHandInfo()}
-                    </div>
-
-                    <div className="game-info-text">
-                        {renderMulliganCount()}
-                    </div>
+                <div className="margin-bottom-small">
+                    {renderTurnSummary(gameData)}
                 </div>
 
-                <div className="margin-bottom">
+                <div>
                     {renderPlayerOptions()}
                 </div>
             </div>
