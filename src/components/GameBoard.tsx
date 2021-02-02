@@ -38,6 +38,7 @@ interface GameBoardProps {
 
 export const GameBoard = (props: GameBoardProps) => {
     const [pileHistoryIndex, setPileHistoryIndex] = useState<number | undefined>()
+    const [showRuleSummary, setShowRuleSummary] = useState(false)
     const [showPileGaps, setShowPileGaps] = useState(false)
     const [autoSortHand, setAutoSortHand] = useState(false)
 
@@ -300,10 +301,31 @@ export const GameBoard = (props: GameBoardProps) => {
     /**
      * Renders the rule summary.
      */
-    const renderRuleSummary = (gameData: GameData) => (
-        <RuleSummary
-            ruleSet={gameData.ruleSet} />
-    )
+    const renderRuleSummary = (gameData: GameData) => {
+        let summaryElement = null
+        if (showRuleSummary) {
+            summaryElement = (
+                <div className="margin-top-small">
+                    <RuleSummary
+                        ruleSet={gameData.ruleSet} />
+                </div>
+            )
+        }
+
+        return (
+            <div className="rule-summary-panel">
+                <div>
+                    <Button
+                        className="sidebar-button no-margin"
+                        onClick={() => setShowRuleSummary(!showRuleSummary)}>
+                        {showRuleSummary ? "Hide" : "Show"} rule summary
+                    </Button>
+                </div>
+
+                {summaryElement}
+            </div>
+        )
+    }
 
     /**
      * Renders the player options.

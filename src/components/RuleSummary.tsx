@@ -37,7 +37,7 @@ export function RuleSummary(props: RuleSummaryProps) {
     }
 
     return (
-        <div className="rule-summary">
+        <div>
             <div className="margin-bottom-small">
                 {renderRule("Game mode", ruleSet.gameMode)}
             </div>

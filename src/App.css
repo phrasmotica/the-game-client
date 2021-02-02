@@ -59,6 +59,10 @@
   font-size: 1rem;
 }
 
+.margin-top-small {
+  margin-top: 5px;
+}
+
 .margin-right {
   margin-right: 10px;
 }
@@ -479,10 +483,14 @@
   margin: 10px;
 }
 
-.rule-summary {
+.rule-summary-panel {
   border-radius: calc(2rem / 7);
   background-color: seagreen;
   padding: 5px;
+}
+
+.ui.button.sidebar-button {
+  width: 100%;
 }
 
 .rule-container {
