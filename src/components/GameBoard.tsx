@@ -610,15 +610,15 @@ export const GameBoard = (props: GameBoardProps) => {
                 </div>
 
                 <div className="margin-bottom-small">
-                    {renderRuleSummary(gameData)}
-                </div>
-
-                <div className="margin-bottom-small">
                     {renderTurnSummary(gameData)}
                 </div>
 
-                <div>
+                <div className="margin-bottom-small">
                     {renderPlayerOptions()}
+                </div>
+
+                <div>
+                    {renderRuleSummary(gameData)}
                 </div>
             </div>
         </div>
