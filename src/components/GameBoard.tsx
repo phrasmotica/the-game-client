@@ -13,6 +13,7 @@ import { StartingPlayerSelector } from "./StartingPlayerSelector"
 
 import { ClientMode } from "../models/ClientMode"
 import { PlayerList } from "./players/PlayerList"
+import { TurnSummary } from "./TurnSummary"
 
 interface GameBoardProps {
     /**
@@ -106,25 +107,11 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     /**
-     * Returns the remaining number of cards that must be played this turn.
-     */
-    const getCardsLeftToPlayThisTurn = () => {
-        return Math.max(getCardsToPlay() - props.roomData.gameData.cardsPlayedThisTurn, 0)
-    }
-
-    /**
      * Takes a mulligan on the pile with the given index.
      */
     const mulligan = (pileIndex: number) => {
         let data: [number, string, boolean] = [pileIndex, props.playerName, autoSortHand]
         props.socket.emit("mulligan", new RoomWith(props.roomData.name, data))
-    }
-
-    /**
-     * Returns the remaining number of mulligans.
-     */
-    const getMulligans = () => {
-        return gameData.ruleSet.mulliganLimit - gameData.cardsMulliganed
     }
 
     /**
@@ -165,28 +152,6 @@ export const GameBoard = (props: GameBoardProps) => {
         let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
         return (
             <span>{deckInfo}</span>
-        )
-    }
-
-    /**
-     * Renders the hand info.
-     */
-    const renderHandInfo = () => {
-        let handInfo = `Cards left to play this turn: ${getCardsLeftToPlayThisTurn()}`
-
-        return (
-            <span>{handInfo}</span>
-        )
-    }
-
-    /**
-     * Renders the mulligan count.
-     */
-    const renderMulliganCount = () => {
-        let mulliganInfo = `Mulligans: ${getMulligans()}`
-
-        return (
-            <span>{mulliganInfo}</span>
         )
     }
 
@@ -334,17 +299,7 @@ export const GameBoard = (props: GameBoardProps) => {
     const renderTurnSummary = (gameData: GameData) => {
         return (
             <div className="turn-summary-panel">
-                <div className="game-info-text">
-                    {renderDeckInfo(gameData)}
-                </div>
-
-                <div className="game-info-text">
-                    {renderHandInfo()}
-                </div>
-
-                <div className="game-info-text">
-                    {renderMulliganCount()}
-                </div>
+                <TurnSummary gameData={gameData} />
             </div>
         )
     }

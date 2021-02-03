@@ -546,6 +546,17 @@
   padding: 5px;
 }
 
+.info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.info-container span {
+  font-size: 14pt;
+  line-height: initial;
+}
+
 .player-options-panel {
   text-align: left;
   border-radius: calc(2rem / 7);
