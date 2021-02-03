@@ -6,12 +6,17 @@ interface CardViewProps {
     /**
      * The rule set.
      */
-    ruleSet: RuleSet
+    ruleSet?: RuleSet
 
     /**
      * The card to render.
      */
     card?: Card
+
+    /**
+     * Whether to show the card's value.
+     */
+    showCardValue?: boolean
 
     /**
      * Whether the card is selected.
@@ -29,10 +34,12 @@ interface CardViewProps {
  */
 export function CardView(props: CardViewProps) {
     let card = props.card
+    let ruleSet = props.ruleSet
 
     let cardIsOnFire = card !== undefined
-                    && props.ruleSet.isOnFire()
-                    && props.ruleSet.cardIsOnFire(card)
+                    && ruleSet !== undefined
+                    && ruleSet.isOnFire()
+                    && ruleSet.cardIsOnFire(card)
 
     let className = "card"
 
@@ -48,9 +55,14 @@ export function CardView(props: CardViewProps) {
         className += " just-played"
     }
 
+    let text = "-"
+    if (card !== undefined) {
+        text = (props.showCardValue ?? true) || card.revealed ? `${card.value}` : "?"
+    }
+
     return (
         <div className={className}>
-            <span>{card?.value ?? "-"}</span>
+            <span>{text}</span>
         </div>
     )
 }

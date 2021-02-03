@@ -457,10 +457,6 @@
   color: yellow;
 }
 
-.player-name {
-  font-size: 12pt;
-}
-
 .hidden-card {
   margin: 2px;
   min-width: 20px;

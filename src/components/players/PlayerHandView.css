@@ -1,0 +1,38 @@
+.player-hand-view {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: calc(2rem / 7);
+  background-color: darkviolet;
+  border: 2px solid transparent;
+}
+
+.player-hand-view.you {
+  background-color: fuchsia;
+}
+
+.player-hand-view.current {
+  border: 2px solid yellow;
+}
+
+.player-hand-view > .player-name {
+  text-align: left;
+}
+
+.player-hand-view > .player-name > span {
+  font-size: 14pt;
+}
+
+.player-hand-cards {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  column-gap: 5px;
+  align-items: center;
+}
+
+.player-hand-cards .card {
+  width: 20px;
+  height: 20px;
+  font-size: 1rem;
+}

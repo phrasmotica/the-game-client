@@ -12,9 +12,10 @@ import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
 import { TurnSummary } from "./TurnSummary"
 
-import { PlayerList } from "../players/PlayerList"
-
 import { ClientMode } from "../../models/ClientMode"
+import { PlayerHandView } from "../players/PlayerHandView"
+
+import "./GameBoard.css"
 
 interface GameBoardProps {
     /**
@@ -345,6 +346,39 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     /**
+     * Renders the players.
+     */
+    const renderPlayers = (gameData: GameData) => {
+        return (
+            <div className="players-panel">
+                {gameData.players.map((p, i) => {
+                    let className = ""
+                    if (i > 0) {
+                        className = "margin-top-small"
+                    }
+
+                    let isCurrent = gameData.isInProgress()
+                                 && p === gameData.getCurrentPlayer()
+                    let showCardValues = gameData.isWon() || gameData.isLost()
+
+                    return (
+                        <div className={className}>
+                            <PlayerHandView
+                                key={i}
+                                playerData={{ name: p } as PlayerData}
+                                playerName={props.playerName}
+                                isCurrent={isCurrent}
+                                hand={gameData.getHand(p)!}
+                                ruleSet={gameData.ruleSet}
+                                showCardValues={showCardValues} />
+                        </div>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    /**
      * Renders the starting player vote.
      */
     const renderStartingPlayerVote = (gameData: GameData) => {
@@ -565,31 +599,27 @@ export const GameBoard = (props: GameBoardProps) => {
             </div>
 
             <div className="sidebar">
-                <div className="margin-bottom-small">
-                    {/* TODO: show the players' hand sizes and whose turn it is */}
-                    <PlayerList
-                        playersData={playersData}
-                        playerName={props.playerName}
-                        namesOnly={true} />
+                <div>
+                    {renderPlayers(gameData)}
                 </div>
 
-                <div className="margin-bottom-small">
+                <div className="margin-top-small">
                     {renderStartingPlayerVote(gameData)}
                 </div>
 
-                <div className="margin-bottom-small">
+                <div className="margin-top-small">
                     {renderEndMessage(gameData)}
                 </div>
 
-                <div className="margin-bottom-small">
+                <div className="margin-top-small">
                     {renderTurnSummary(gameData)}
                 </div>
 
-                <div className="margin-bottom-small">
+                <div className="margin-top-small">
                     {renderPlayerOptions()}
                 </div>
 
-                <div>
+                <div className="margin-top-small">
                     {renderRuleSummary(gameData)}
                 </div>
             </div>

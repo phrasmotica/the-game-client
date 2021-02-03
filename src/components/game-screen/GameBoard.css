@@ -1,0 +1,5 @@
+.players-panel {
+  padding: 5px;
+  border-radius: calc(2rem / 7);
+  background-color: darkgreen;
+}
