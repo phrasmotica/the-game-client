@@ -508,6 +508,38 @@
   line-height: initial;
 }
 
+.starting-player-selector-panel {
+  border-radius: calc(2rem / 7);
+  background-color: lightskyblue;
+  padding: 5px;
+}
+
+.starting-player-selector-text {
+  font-size: 14pt;
+}
+
+.starting-player-selector-panel .ui.selection.dropdown {
+  padding: 0.25em 0.5em;
+  min-width: unset;
+  min-height: unset;
+  width: 100%;
+}
+
+.starting-player-selector-panel .ui.selection.dropdown > .dropdown.icon {
+  padding: 0.4em;
+}
+
+.starting-player-selector-panel .ui.dropdown > .text {
+  font-size: 14pt;
+}
+
+.starting-player-selector-buttons-panel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  column-gap: 5px;
+}
+
 .turn-summary-panel {
   border-radius: calc(2rem / 7);
   background-color: limegreen;
@@ -521,17 +553,9 @@
   padding: 5px;
 }
 
-.player-options-panel label {
-  /* line-height: initial; */
-}
-
 .checkbox-label-small {
   text-align: left;
   font-size: 10pt;
-}
-
-.starting-player-selector-text {
-  font-size: 12pt;
 }
 
 .hand {

@@ -411,8 +411,17 @@ export const GameBoard = (props: GameBoardProps) => {
             return null
         }
 
+        let content = null
+        if (isSpectatorClient()) {
+            content = (
+                <span>
+                    Starting player vote in progress...
+                </span>
+            )
+        }
+
         if (isPlayerClient()) {
-            return (
+            content = (
                 <StartingPlayerSelector
                     socket={props.socket}
                     roomName={props.roomData.name}
@@ -423,9 +432,9 @@ export const GameBoard = (props: GameBoardProps) => {
         }
 
         return (
-            <span>
-                Starting player vote in progress...
-            </span>
+            <div className="starting-player-selector-panel">
+                {content}
+            </div>
         )
     }
 

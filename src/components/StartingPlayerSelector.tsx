@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 
 import { PlayerData, RoomWith } from "game-server-lib"
+import { Button, Dropdown, DropdownItemProps } from "semantic-ui-react"
 
 export interface StartingPlayerSelectorProps {
     /**
@@ -53,48 +54,55 @@ export function StartingPlayerSelector(props: StartingPlayerSelectorProps) {
         props.socket.emit("removeVoteForStartingPlayer", req)
     }
 
+    let options = props.playersData.map((p, i) => {
+        let text = p.name
+        if (p.name === props.playerName) {
+            text += " (you)"
+        }
+
+        return {
+            text: text,
+            value: i,
+        }
+    })
+
     return (
         <div>
-            <div className="flex-center margin-bottom">
-                <div className="starting-player-selector-text margin-right">
-                    <span>
-                        Select which player will start:
-                    </span>
-                </div>
-
-                <div>
-                    <select
-                        disabled={props.hasVoted}
-                        onChange={e => setSelectedPlayerIndex(e.target.selectedIndex)}>
-                        {props.playersData.map((p, i) => {
-                            let text = p.name
-                            if (p.name === props.playerName) {
-                                text += " (you)"
-                            }
-
-                            return (
-                                <option key={i}>{text}</option>
-                            )
-                        })}
-                    </select>
-                </div>
+            <div className="margin-bottom-small">
+                <span className="starting-player-selector-text">
+                    Select starting player
+                </span>
             </div>
 
-            <div className="flex-center margin-bottom">
-                <div className="margin-right">
-                    <button
+            <div className="margin-bottom-small">
+                <Dropdown
+                    selection
+                    disabled={props.hasVoted}
+                    defaultValue={options[0].value}
+                    options={options}
+                    onChange={(_, data) => setSelectedPlayerIndex(Number(data.value))}>
+                </Dropdown>
+            </div>
+
+            <div className="starting-player-selector-buttons-panel">
+                <div>
+                    <Button
+                        positive
+                        className="sidebar-button no-margin"
                         disabled={props.hasVoted}
                         onClick={addVoteForStartingPlayer}>
                         Confirm
-                    </button>
+                    </Button>
                 </div>
 
                 <div>
-                    <button
+                    <Button
+                        negative
+                        className="sidebar-button no-margin"
                         disabled={!props.hasVoted}
                         onClick={removeVoteForStartingPlayer}>
                         Cancel
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
