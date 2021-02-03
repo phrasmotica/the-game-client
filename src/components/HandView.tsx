@@ -21,7 +21,7 @@ interface HandProps {
     cardToPlay: Card | undefined
 
     /**
-     * Whether the buttons should be disabled.
+     * Whether the card buttons should be disabled.
      */
     disableButtons: boolean
 
@@ -59,6 +59,7 @@ export const HandView = (props: HandProps) => {
                                 ruleSet={props.ruleSet}
                                 card={c}
                                 isSelected={props.cardToPlay?.value === c.value}
+                                isDisabled={props.disableButtons}
                                 setCardToPlay={() => props.setCardToPlay(c)} />
                         </div>
                     )

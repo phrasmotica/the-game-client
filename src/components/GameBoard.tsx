@@ -422,9 +422,8 @@ export const GameBoard = (props: GameBoardProps) => {
         let isInProgress = gameData.isInProgress()
         let isLost = gameData.isLost()
         let isMyTurn = gameData.getCurrentPlayer() === props.playerName
-        let hasCardToPlay = gameData.cardToPlay !== undefined
 
-        let disableButtons = !isInProgress || isLost || !isMyTurn || hasCardToPlay
+        let disableButtons = !isInProgress || isLost || !isMyTurn
 
         return (
             <div className="flex-center margin-bottom">

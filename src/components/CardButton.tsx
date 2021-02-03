@@ -22,6 +22,11 @@ interface CardButtonProps {
     isSelected?: boolean
 
     /**
+     * Whether the button should be disabled.
+     */
+    isDisabled?: boolean
+
+    /**
      * Sets the card to be played.
      */
     setCardToPlay: () => void
@@ -35,6 +40,7 @@ export const CardButton = (props: CardButtonProps) => {
         <div className="card-button">
             <Button
                 className="no-margin"
+                disabled={props.isDisabled}
                 onClick={props.setCardToPlay}>
                 <CardView
                     card={props.card}
