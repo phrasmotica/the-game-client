@@ -38,6 +38,7 @@ interface GameBoardProps {
 
 export const GameBoard = (props: GameBoardProps) => {
     const [pileHistoryIndex, setPileHistoryIndex] = useState<number | undefined>()
+    const [showPlayerOptions, setShowPlayerOptions] = useState(false)
     const [showRuleSummary, setShowRuleSummary] = useState(false)
     const [showPileGaps, setShowPileGaps] = useState(false)
     const [autoSortHand, setAutoSortHand] = useState(false)
@@ -356,26 +357,43 @@ export const GameBoard = (props: GameBoardProps) => {
             return null
         }
 
+        let optionsElement = null
+        if (showPlayerOptions) {
+            optionsElement = (
+                <div className="margin-top-small">
+                    <div>
+                        <span title="Show gap size when playing a card">
+                            <Checkbox
+                                className="player-option-checkbox"
+                                label="Show pile gaps"
+                                lab
+                                onChange={(_, data) => setShowPileGaps(data.checked ?? false)} />
+                        </span>
+                    </div>
+
+                    <div>
+                        <span title="Sort hand automatically when drawing cards">
+                            <Checkbox
+                                className="player-option-checkbox"
+                                label="Auto-sort hand"
+                                onChange={(_, data) => setAutoSortHand(data.checked ?? false)} />
+                        </span>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <div className="player-options-panel">
                 <div>
-                    <span title="Show gap size when playing a card">
-                        <Checkbox
-                            className="player-option-checkbox"
-                            label="Show pile gaps"
-                            lab
-                            onChange={(_, data) => setShowPileGaps(data.checked ?? false)} />
-                    </span>
+                    <Button
+                        className="sidebar-button no-margin"
+                        onClick={() => setShowPlayerOptions(!showPlayerOptions)}>
+                        {showPlayerOptions ? "Hide" : "Show"} options
+                    </Button>
                 </div>
 
-                <div>
-                    <span title="Sort hand automatically when drawing cards">
-                        <Checkbox
-                            className="player-option-checkbox"
-                            label="Auto-sort hand"
-                            onChange={(_, data) => setAutoSortHand(data.checked ?? false)} />
-                    </span>
-                </div>
+                {optionsElement}
             </div>
         )
     }
