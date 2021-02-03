@@ -4,7 +4,7 @@ import socketIOClient, { Socket } from "socket.io-client"
 import { Message, RoomData } from "game-server-lib"
 import { GameData } from "the-game-lib"
 
-import { GameBoard } from "./components/GameBoard"
+import { GameBoard } from "./components/game-screen/GameBoard"
 import { GameLobby } from "./components/room-lobby/GameLobby"
 import { ServerBrowser } from "./components/server-browser/ServerBrowser"
 

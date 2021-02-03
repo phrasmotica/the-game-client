@@ -10,10 +10,11 @@ import { HandView } from "./HandView"
 import { PileView } from "./PileView"
 import { RuleSummary } from "./RuleSummary"
 import { StartingPlayerSelector } from "./StartingPlayerSelector"
-
-import { ClientMode } from "../models/ClientMode"
-import { PlayerList } from "./players/PlayerList"
 import { TurnSummary } from "./TurnSummary"
+
+import { PlayerList } from "../players/PlayerList"
+
+import { ClientMode } from "../../models/ClientMode"
 
 interface GameBoardProps {
     /**
@@ -144,16 +145,6 @@ export const GameBoard = (props: GameBoardProps) => {
      * Returns whether the client is in spectator mode.
      */
     const isSpectatorClient = () => props.clientMode === ClientMode.Spectator
-
-    /**
-     * Renders the deck info.
-     */
-    const renderDeckInfo = (gameData: GameData) => {
-        let deckInfo = `Cards left in deck: ${gameData.deck.size()}`
-        return (
-            <span>{deckInfo}</span>
-        )
-    }
 
     /**
      * Renders the piles.

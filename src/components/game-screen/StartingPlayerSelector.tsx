@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 
 import { PlayerData, RoomWith } from "game-server-lib"
-import { Button, Dropdown, DropdownItemProps } from "semantic-ui-react"
+import { Button, Dropdown } from "semantic-ui-react"
 
 export interface StartingPlayerSelectorProps {
     /**
