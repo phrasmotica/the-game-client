@@ -3,3 +3,9 @@
   border-radius: calc(2rem / 7);
   background-color: darkgreen;
 }
+
+.end-message {
+  margin-top: 5px;
+  border-top: 1px solid white;
+  padding-top: 5px;
+}

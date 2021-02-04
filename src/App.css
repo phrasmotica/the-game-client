@@ -479,10 +479,6 @@
   font-size: 10pt;
 }
 
-.end-message {
-  margin: 10px;
-}
-
 .rule-summary-panel {
   border-radius: calc(2rem / 7);
   background-color: seagreen;

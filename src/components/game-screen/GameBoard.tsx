@@ -286,17 +286,6 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     /**
-     * Renders the turn summary.
-     */
-    const renderTurnSummary = (gameData: GameData) => {
-        return (
-            <div className="turn-summary-panel">
-                <TurnSummary gameData={gameData} />
-            </div>
-        )
-    }
-
-    /**
      * Renders the player options.
      */
     const renderPlayerOptions = () => {
@@ -492,41 +481,27 @@ export const GameBoard = (props: GameBoardProps) => {
      * Renders the end message.
      */
     const renderEndMessage = (gameData: GameData) => {
-        console.log(gameData.isLost())
-
         if (gameData.isWon()) {
-            if (isPlayerClient()) {
-                return (
-                    <div className="end-message">
-                        <span>You won!</span>
-                    </div>
-                )
-            }
+            let text = isPlayerClient() ? "You won!" : "Game won!"
 
             return (
                 <div className="end-message">
-                    <span>Game won!</span>
+                    <span>{text}</span>
                 </div>
             )
         }
 
         if (gameData.isLost()) {
-            if (isPlayerClient()) {
-                return (
-                    <div className="end-message">
-                        <span>You lost!</span>
-                    </div>
-                )
-            }
+            let text = isPlayerClient() ? "You lost!" : "Game lost!"
 
             return (
                 <div className="end-message">
-                    <span>Game lost!</span>
+                    <span>{text}</span>
                 </div>
             )
         }
 
-        return <div></div>
+        return null
     }
 
     /**
@@ -574,7 +549,6 @@ export const GameBoard = (props: GameBoardProps) => {
     }
 
     let gameData = props.roomData.gameData
-    let playersData = gameData.players.map(p => ({ name: p } as PlayerData))
 
     return (
         <div className="game-board">
@@ -608,11 +582,11 @@ export const GameBoard = (props: GameBoardProps) => {
                 </div>
 
                 <div className="margin-top-small">
-                    {renderEndMessage(gameData)}
-                </div>
+                    <div className="turn-summary-panel">
+                        <TurnSummary gameData={gameData} />
 
-                <div className="margin-top-small">
-                    {renderTurnSummary(gameData)}
+                        {renderEndMessage(gameData)}
+                    </div>
                 </div>
 
                 <div className="margin-top-small">
